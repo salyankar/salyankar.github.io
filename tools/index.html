@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tools · Satya Salyankar</title>
+<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="../">About</a>
+      <a href="./">Tools</a>
+      <a href="../travel/">Travel</a>
+      <a href="../watches/">Watches</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head wrap">
+    <div class="eyebrow">Cybersecurity tools</div>
+    <h1>Tools</h1>
+    <p>
+      Small, single-purpose security tools I built in conversation with Claude. Each one is a
+      single HTML file that runs entirely in your browser — no accounts, no server, nothing
+      leaves your machine. Open one, use it, close the tab.
+    </p>
+  </div>
+
+  <section class="section wrap">
+    <!--
+      ================================================================
+      HOW TO ADD A TOOL
+      1. Create a folder:  tools/<tool-slug>/   and save the tool as  index.html  inside it.
+      2. Copy one of the <article class="card tool"> blocks below and edit
+         the title, description, tags, date and links.
+      ================================================================
+    -->
+    <div class="grid">
+
+      <article class="card tool">
+        <div class="icon">⛨</div>
+        <h3><a href="argus-risk-register/">Argus Risk Register</a></h3>
+        <p>
+          A lightweight cyber risk register. Capture risks, score likelihood and impact, track
+          owners and treatment plans, map controls and regulations, and get a heat-map view of
+          where the exposure is. Export to CSV; data stays in your browser.
+        </p>
+        <div class="tags">
+          <span class="tag">risk management</span>
+          <span class="tag">GRC</span>
+          <span class="tag">browser-only</span>
+        </div>
+        <div class="card-foot">
+          <span class="meta">v1 · Sep 2026</span>
+          <span class="status live">live</span>
+        </div>
+      </article>
+
+      <!-- Example of a not-yet-published tool. Delete or repurpose. -->
+      <article class="card tool">
+        <div class="icon">✓</div>
+        <h3><a href="#" aria-disabled="true">Next tool goes here</a></h3>
+        <p>
+          <span class="todo">Placeholder.</span> Build a tool with Claude, drop the HTML file into
+          <code>tools/&lt;name&gt;/index.html</code>, copy this card and point the link at it.
+        </p>
+        <div class="tags">
+          <span class="tag">idea</span>
+        </div>
+        <div class="card-foot">
+          <span class="meta">—</span>
+          <span class="status wip">in progress</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="section wrap prose">
+    <h2>How these are built</h2>
+    <p>
+      Each tool starts as a description of a problem I keep running into at work. I work through
+      the design with Claude — what the tool should and shouldn't do, what the data model is, how
+      it should feel to use — and it produces a self-contained page. I test it, push back on the
+      rough edges, and publish it here when it's genuinely useful.
+    </p>
+    <p>
+      Because they're single files with no backend, you can also save any tool to your own machine
+      and run it offline. If you find a bug or want a feature, <a href="../#elsewhere">get in touch</a>.
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a></span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

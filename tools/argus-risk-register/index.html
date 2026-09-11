@@ -1,0 +1,999 @@
+<title>Argus Risk Register</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --surface-2:#E9EDF2; --line:#D3DAE3; --line-strong:#B9C2CE;
+  --ink:#141A23; --ink-2:#4A5361; --ink-3:#7A8493;
+  --accent:#0F6E78; --accent-ink:#FFFFFF; --accent-soft:#DCEFF0; --focus:#1B96A3;
+  --low:#2F7D4F; --med:#B8891A; --high:#C95F22; --crit:#A93232;
+  --low-bg:#DDF0E4; --med-bg:#FBEEC6; --high-bg:#FADCC6; --crit-bg:#F5D0D0;
+  --shadow:0 10px 30px rgba(20,26,35,.12);
+  --display:"IBM Plex Sans Condensed",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1218; --surface:#161C25; --surface-2:#1E2632; --line:#2A3441; --line-strong:#3A4655;
+    --ink:#E7EBF1; --ink-2:#AAB4C1; --ink-3:#7A8594;
+    --accent:#45B6BF; --accent-ink:#0A1417; --accent-soft:#173B3F; --focus:#6CD0D8;
+    --low:#6CC28F; --med:#E2B84A; --high:#EE8A4F; --crit:#E86868;
+    --low-bg:#17301F; --med-bg:#3A2E10; --high-bg:#3F2413; --crit-bg:#3E1A1A;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1218; --surface:#161C25; --surface-2:#1E2632; --line:#2A3441; --line-strong:#3A4655;
+  --ink:#E7EBF1; --ink-2:#AAB4C1; --ink-3:#7A8594;
+  --accent:#45B6BF; --accent-ink:#0A1417; --accent-soft:#173B3F; --focus:#6CD0D8;
+  --low:#6CC28F; --med:#E2B84A; --high:#EE8A4F; --crit:#E86868;
+  --low-bg:#17301F; --med-bg:#3A2E10; --high-bg:#3F2413; --crit-bg:#3E1A1A;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.15}
+h1{font-size:22px;font-weight:700;letter-spacing:.01em}
+h2{font-size:20px;font-weight:600}
+h3{font-size:15px;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.muted{color:var(--ink-2)}
+.small{font-size:12.5px}
+
+/* ---- shell ---- */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:1320px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:30px;height:30px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px}
+.brand small{display:block;font-size:12px;color:var(--ink-3);font-family:var(--body);font-weight:400}
+.org-chip{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+.org-chip b{color:var(--ink);font-weight:600}
+.sync{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);padding:4px 9px;border:1px solid var(--line);border-radius:999px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.sync.ok i{background:var(--low)}
+.sync.local i{background:var(--med)}
+nav.tabs{max-width:1320px;margin:0 auto;padding:0 24px;display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font-family:var(--display);font-weight:600;font-size:14px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button[aria-current="page"]{color:var(--accent);border-bottom-color:var(--accent)}
+main{max-width:1320px;margin:0 auto;padding:22px 24px 60px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.page-head p{max-width:64ch}
+.notice{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--med);background:var(--surface);border-radius:6px;margin-bottom:18px;font-size:13px}
+.notice .grow{flex:1}
+
+/* ---- controls ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:6px;border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;font-weight:500;font-size:13px;line-height:1.2}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:default}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12.5px;font-weight:500;color:var(--ink-2)}
+.field input,.field select,.field textarea{padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);min-width:0;width:100%}
+.field textarea{min-height:72px;resize:vertical}
+.field .hint{font-size:12px;color:var(--ink-3)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.toolbar input[type=search],.toolbar select{padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface)}
+.toolbar .spacer{flex:1}
+
+/* ---- chips / bands ---- */
+.score{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12.5px;font-weight:500;padding:2px 8px;border-radius:5px;border:1px solid transparent;white-space:nowrap}
+.score b{font-weight:500}
+.b-low{background:var(--low-bg);color:var(--low);border-color:color-mix(in srgb,var(--low) 35%,transparent)}
+.b-med{background:var(--med-bg);color:var(--med);border-color:color-mix(in srgb,var(--med) 35%,transparent)}
+.b-high{background:var(--high-bg);color:var(--high);border-color:color-mix(in srgb,var(--high) 35%,transparent)}
+.b-crit{background:var(--crit-bg);color:var(--crit);border-color:color-mix(in srgb,var(--crit) 35%,transparent)}
+.pill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-2);white-space:nowrap}
+.pill.st-Identified{border-color:var(--ink-3)}
+.pill.st-Assessing{border-color:var(--med);color:var(--med)}
+.pill.st-Treating{border-color:var(--accent);color:var(--accent)}
+.pill.st-Accepted{border-color:var(--ink-3)}
+.pill.st-Closed{border-color:var(--low);color:var(--low)}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:4px;background:var(--surface-2);color:var(--ink-2);margin:2px 3px 2px 0}
+.delta{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.delta.down{color:var(--low)}
+
+/* ---- table ---- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font-family:var(--display);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr.clickable{cursor:pointer}
+tbody tr.clickable:hover td{background:var(--surface-2)}
+td .t{font-weight:500}
+td .sub{font-size:12px;color:var(--ink-3)}
+.empty{padding:40px;text-align:center;color:var(--ink-3)}
+
+/* ---- KPI ---- */
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.kpi .v{font-family:var(--display);font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12.5px;color:var(--ink-2)}
+.kpi.crit .v{color:var(--crit)}
+.kpi.good .v{color:var(--low)}
+
+/* ---- bars ---- */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px 1fr 36px;gap:10px;align-items:center;font-size:12.5px}
+.bar .lab{color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .track{height:14px;background:var(--surface-2);border-radius:3px;display:flex;overflow:hidden}
+.bar .seg{height:100%}
+.bar .n{font-family:var(--mono);text-align:right;color:var(--ink-2)}
+.seg.low{background:var(--low)}.seg.med{background:var(--med)}.seg.high{background:var(--high)}.seg.crit{background:var(--crit)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* ---- heat map ---- */
+.heat{display:grid;grid-template-columns:auto 1fr;gap:6px}
+.heat .ylab{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-family:var(--display)}
+.heat .cells{display:grid;grid-template-columns:auto repeat(5,1fr);grid-auto-rows:auto;gap:4px}
+.heat .rl{font-size:11px;color:var(--ink-3);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-family:var(--mono)}
+.heat .cl{font-size:11px;color:var(--ink-3);text-align:center;font-family:var(--mono);padding-top:4px}
+.cell{aspect-ratio:1.5;min-height:46px;border-radius:5px;border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;cursor:pointer;position:relative;background:var(--surface-2);color:var(--ink-3)}
+.cell.has{color:var(--ink);font-weight:500}
+.cell.low.has{background:var(--low-bg)} .cell.med.has{background:var(--med-bg)} .cell.high.has{background:var(--high-bg)} .cell.crit.has{background:var(--crit-bg)}
+.cell.low{background:color-mix(in srgb,var(--low-bg) 45%,var(--surface-2))}
+.cell.med{background:color-mix(in srgb,var(--med-bg) 45%,var(--surface-2))}
+.cell.high{background:color-mix(in srgb,var(--high-bg) 45%,var(--surface-2))}
+.cell.crit{background:color-mix(in srgb,var(--crit-bg) 45%,var(--surface-2))}
+.cell.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.heat .xlab{grid-column:2;text-align:center;font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;font-family:var(--display);padding-top:4px}
+
+/* ---- footprint ---- */
+.continent{border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.continent .ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.continent .ch b{font-family:var(--display);font-weight:600}
+.countries{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 10px}
+.countries label{display:flex;gap:6px;align-items:center;font-size:13px;padding:2px 0;cursor:pointer}
+.checkrow{display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer}
+.reg{padding:10px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.reg:last-child{border-bottom:0}
+.reg .why{font-size:12px;color:var(--ink-3);grid-column:1/-1}
+ul.plain{margin:0;padding-left:18px}
+ul.plain li{margin:3px 0}
+
+/* ---- guide ---- */
+.figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px}
+.figure svg{display:block;width:100%;height:auto;max-width:100%;color:var(--ink)}
+.figure figcaption{font-size:12.5px;color:var(--ink-2);margin-top:10px;max-width:90ch}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:1000px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.step .n{font-family:var(--display);font-weight:700;font-size:26px;line-height:1;color:var(--accent)}
+.step h3{font-size:15px}
+.step p{font-size:13px;color:var(--ink-2)}
+.step .go{margin-top:auto;align-self:flex-start;text-decoration:none;color:inherit}
+.gloss{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:10px 18px;margin:0}
+.gloss dt{font-family:var(--display);font-weight:600;font-size:14px;padding-top:1px}
+.gloss dd{margin:0;font-size:13px;color:var(--ink-2);max-width:75ch}
+@media (max-width:600px){.gloss{grid-template-columns:1fr}.gloss dd{margin-bottom:6px}}
+
+/* ---- dialog ---- */
+dialog{border:0;border-radius:10px;padding:0;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);width:min(920px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
+dialog::backdrop{background:rgba(10,14,20,.55)}
+.dlg-head{position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;z-index:1}
+.dlg-body{padding:18px 20px;display:flex;flex-direction:column;gap:18px}
+.dlg-foot{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:12px 20px;display:flex;gap:8px;align-items:center}
+fieldset{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:0;display:flex;flex-direction:column;gap:12px}
+legend{font-family:var(--display);font-weight:600;font-size:13px;padding:0 6px;color:var(--ink-2)}
+.dimrow{display:grid;grid-template-columns:1fr 130px;gap:10px;align-items:center}
+.dimrow select{padding:5px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface)}
+.scoreline{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13px;padding:8px 10px;background:var(--surface-2);border-radius:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line-strong);border-radius:999px;padding:3px 9px;font-size:12px;cursor:pointer;user-select:none}
+.chip input{margin:0}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.fn-group{display:flex;flex-direction:column;gap:6px}
+.fn-group .eyebrow{margin-top:4px}
+details summary{cursor:pointer;font-weight:500;color:var(--ink-2)}
+.isolist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3px 12px;margin-top:8px}
+.isolist label{display:flex;gap:6px;align-items:flex-start;font-size:12.5px;cursor:pointer}
+.isolist label span.c{font-family:var(--mono);color:var(--ink-3);white-space:nowrap}
+.copybox{width:100%;min-height:200px;font-family:var(--mono);font-size:12px;padding:10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface-2)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:6px;font-size:13px;box-shadow:var(--shadow);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){.toast{transition:none}}
+.scale{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12.5px}
+.scale .k{font-family:var(--mono);color:var(--ink-3)}
+.top10 li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.top10 li:last-child{border-bottom:0}
+.top10{list-style:none;margin:0;padding:0}
+.top10 .id{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div><h1>Argus Risk Register</h1><small>Hundred-eyed watch over cyber risk</small></div>
+    </div>
+    <div class="org-chip" id="orgChip"></div>
+    <span class="sync" id="sync"><i></i><span>Connecting…</span></span>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<main id="main"></main>
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast"></div>
+<input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+
+<script>
+/* =====================================================================
+   Reference data
+   ===================================================================== */
+const STATUSES=['Identified','Assessing','Treating','Accepted','Closed'];
+const TREATMENTS=['Mitigate','Accept','Transfer','Avoid'];
+const CATEGORIES=['Ransomware & malware','Data breach & privacy','Third-party & supply chain','Identity & access','Cloud & infrastructure','Application & software','OT / IoT / devices','Insider threat','Availability & resilience','Fraud & social engineering','Compliance & legal','Physical & environmental'];
+const LIKELIHOOD=[[1,'Rare','Less than once in 10 years'],[2,'Unlikely','Once in 3–10 years'],[3,'Possible','Once in 1–3 years'],[4,'Likely','About once a year'],[5,'Almost certain','Several times a year']];
+const IMPACT_LEVELS=['Negligible','Minor','Moderate','Major','Severe'];
+const REVENUE_BANDS=[['lt10','Under $10M',5e6],['10-50','$10M – $50M',3e7],['50-250','$50M – $250M',1.5e8],['250-1b','$250M – $1B',6e8],['1b-10b','$1B – $10B',5e9],['gt10b','Over $10B',2e10]];
+const HEADCOUNT=['1–50','51–250','251–1,000','1,001–5,000','5,001–20,000','20,000+'];
+const FIN_PCT=[[0,0.001],[0.001,0.005],[0.005,0.02],[0.02,0.05],[0.05,1]];
+
+const SECTORS={
+  healthcare:{name:'Healthcare & Life Sciences',
+    dims:[['patient','Patient safety & care delivery'],['phi','Patient data (PHI) confidentiality'],['reg','Regulatory & compliance (HIPAA, MDR, GDPR)'],['resil','Clinical service resiliency'],['fin','Financial loss']],
+    drivers:['Ransomware groups actively target hospitals, payers and pharma','Legacy and connected medical devices with slow patching cycles','Broad clinical-staff access to PHI raises phishing and insider exposure','Deep reliance on third-party EHR, billing and lab providers'],
+    templates:[
+      {t:'Ransomware encrypts the EHR platform',cat:'Ransomware & malware',asset:'Electronic health record system',threat:'Ransomware affiliate via phished credentials',L:4,I:5,nist:['PR.PS','DE.CM','RC.RP'],iso:['A.8.7','A.8.13','A.5.30']},
+      {t:'Unpatched connected medical devices on clinical network',cat:'OT / IoT / devices',asset:'Infusion pumps, imaging, patient monitors',threat:'Exploitation of known device vulnerabilities',L:4,I:4,nist:['ID.AM','PR.PS','PR.IR'],iso:['A.8.8','A.8.22','A.8.9']},
+      {t:'PHI exposure through third-party billing vendor',cat:'Third-party & supply chain',asset:'Claims and billing data',threat:'Vendor breach or misconfiguration',L:3,I:4,nist:['GV.SC','PR.DS'],iso:['A.5.19','A.5.21','A.5.34']},
+      {t:'Clinician credential theft via phishing',cat:'Fraud & social engineering',asset:'Clinical user accounts',threat:'Credential phishing / MFA fatigue',L:5,I:3,nist:['PR.AA','PR.AT','DE.CM'],iso:['A.8.5','A.6.3','A.8.16']},
+      {t:'Unencrypted PHI on lost or stolen mobile devices',cat:'Data breach & privacy',asset:'Laptops, tablets, phones',threat:'Device loss or theft',L:3,I:3,nist:['PR.DS','ID.AM'],iso:['A.8.1','A.8.24','A.7.9']}]},
+  financial:{name:'Financial Services & Insurance',
+    dims:[['cust','Customer financial data confidentiality'],['reg','Regulatory, licensing & supervisory action'],['avail','Transaction & service availability'],['fraud','Fraud & direct financial loss'],['trust','Market & customer trust']],
+    drivers:['Highest-value target for fraud, credential stuffing and account takeover','Dense third-party and fintech API integrations widen the perimeter','Intense supervisory scrutiny (DORA, NYDFS 500, PRA/FCA) raises consequence of gaps','Legacy core platforms are hard to patch and segment'],
+    templates:[
+      {t:'Account takeover via credential stuffing',cat:'Identity & access',asset:'Customer online banking accounts',threat:'Credential stuffing with leaked password sets',L:5,I:4,nist:['PR.AA','DE.CM'],iso:['A.8.5','A.8.16']},
+      {t:'Payment fraud through open-banking API abuse',cat:'Application & software',asset:'Payment and open-banking APIs',threat:'Logic abuse and token theft',L:3,I:4,nist:['PR.PS','DE.AE','PR.AA'],iso:['A.8.25','A.8.29','A.8.26']},
+      {t:'Core banking outage from ransomware',cat:'Ransomware & malware',asset:'Core banking platform',threat:'Ransomware via exposed remote access',L:3,I:5,nist:['PR.IR','RC.RP','DE.CM'],iso:['A.8.7','A.8.13','A.5.30']},
+      {t:'Third-party fintech partner data breach',cat:'Third-party & supply chain',asset:'Shared customer records',threat:'Partner compromise',L:4,I:4,nist:['GV.SC','PR.DS'],iso:['A.5.19','A.5.20','A.5.21']},
+      {t:'Insider leakage of material non-public information',cat:'Insider threat',asset:'Deal and trading data',threat:'Malicious or negligent insider',L:2,I:4,nist:['PR.AA','PR.DS','DE.CM'],iso:['A.8.2','A.8.12','A.8.15']}]},
+  automotive:{name:'Automotive & Mobility',
+    dims:[['safety','Vehicle & road safety'],['cv','Connected-vehicle security & recall exposure'],['reg','Regulatory (UNECE R155/R156, ISO/SAE 21434)'],['cust','Customer & telematics data'],['prod','Production line downtime'],['ip','Intellectual property theft']],
+    drivers:['Connected and OTA-updated vehicles expose a growing remote attack surface','Multi-tier supplier chains ship firmware and components with unknown security posture','IT/OT convergence in plants exposes production to enterprise malware','High-value design and battery IP attracts state-sponsored actors'],
+    templates:[
+      {t:'Remote exploitation of telematics control unit',cat:'OT / IoT / devices',asset:'Vehicle telematics unit (TCU)',threat:'Remote code execution over cellular interface',L:3,I:5,nist:['ID.RA','PR.PS','DE.CM'],iso:['A.8.8','A.8.25','A.8.29']},
+      {t:'Malicious over-the-air update injection',cat:'Application & software',asset:'OTA update pipeline',threat:'Signing key compromise or pipeline tampering',L:2,I:5,nist:['PR.PS','PR.DS','GV.SC'],iso:['A.8.24','A.8.32','A.8.25']},
+      {t:'Plant OT ransomware halts production',cat:'Ransomware & malware',asset:'Assembly-line MES and PLCs',threat:'Ransomware crossing IT/OT boundary',L:4,I:4,nist:['PR.IR','PR.PS','RC.RP'],iso:['A.8.22','A.8.13','A.5.30']},
+      {t:'Supplier ships ECU firmware with exploitable vulnerability',cat:'Third-party & supply chain',asset:'Tier-1 ECU firmware',threat:'Insecure supplier development practices',L:4,I:4,nist:['GV.SC','ID.RA'],iso:['A.5.21','A.5.19','A.8.29']},
+      {t:'Telematics location data exposure',cat:'Data breach & privacy',asset:'Vehicle location and driver data',threat:'Cloud backend misconfiguration',L:3,I:3,nist:['PR.DS','ID.AM'],iso:['A.5.23','A.8.9','A.5.34']}]},
+  manufacturing:{name:'Manufacturing & Industrial',
+    dims:[['prod','Production downtime'],['safety','Worker & site safety'],['ip','IP & trade-secret loss'],['supply','Customer & supply-chain commitments'],['reg','Regulatory (IEC 62443, NIS2)']],
+    drivers:['Flat networks let IT malware reach OT and shut lines','Unsupported PLC/HMI firmware cannot be patched','Vendors and integrators hold standing remote access','Just-in-time production makes even short outages costly'],
+    templates:[
+      {t:'Ransomware bridges IT to OT network',cat:'Ransomware & malware',asset:'Plant control network',threat:'Ransomware via flat network',L:4,I:5,nist:['PR.IR','PR.PS','RC.RP'],iso:['A.8.22','A.8.7','A.8.13']},
+      {t:'Unsupported PLC and HMI firmware',cat:'OT / IoT / devices',asset:'Line controllers',threat:'Exploitation of unpatched OT',L:4,I:4,nist:['ID.AM','PR.PS'],iso:['A.8.8','A.8.9']},
+      {t:'Standing remote access for maintenance vendors',cat:'Third-party & supply chain',asset:'Vendor VPN and jump hosts',threat:'Vendor credential compromise',L:3,I:4,nist:['PR.AA','GV.SC','DE.CM'],iso:['A.5.19','A.8.2','A.8.16']},
+      {t:'Theft of design files via spear phishing',cat:'Insider threat',asset:'CAD and process documentation',threat:'Targeted phishing / espionage',L:3,I:4,nist:['PR.AT','PR.DS','DE.CM'],iso:['A.6.3','A.8.12','A.5.12']}]},
+  tech:{name:'Technology & SaaS',
+    dims:[['cust','Customer data confidentiality'],['avail','Platform availability & SLA breach'],['reg','Regulatory & contractual (SOC 2, GDPR, DORA as provider)'],['ip','Source code & IP'],['churn','Reputation & customer churn']],
+    drivers:['Multi-tenant platforms concentrate many customers\' data in one breach','Fast-moving CI/CD and open-source dependencies widen the supply-chain surface','Public APIs and cloud misconfiguration are the most common breach paths','Engineers hold broad production access'],
+    templates:[
+      {t:'Cloud storage misconfiguration exposes customer data',cat:'Cloud & infrastructure',asset:'Object storage and databases',threat:'Public bucket / permissive IAM',L:4,I:4,nist:['PR.PS','ID.AM','DE.CM'],iso:['A.5.23','A.8.9','A.8.16']},
+      {t:'Compromised open-source dependency in build pipeline',cat:'Third-party & supply chain',asset:'CI/CD pipeline and packages',threat:'Malicious package / typosquat',L:3,I:4,nist:['GV.SC','PR.PS'],iso:['A.5.21','A.8.25','A.8.28']},
+      {t:'Secrets committed to source repositories',cat:'Application & software',asset:'API keys and tokens',threat:'Credential leakage',L:4,I:4,nist:['PR.AA','PR.DS'],iso:['A.5.17','A.8.24','A.8.28']},
+      {t:'DDoS against public API and web tier',cat:'Availability & resilience',asset:'Edge and API gateway',threat:'Volumetric / L7 DDoS',L:4,I:3,nist:['PR.IR','DE.CM','RS.MI'],iso:['A.8.6','A.8.20','A.8.14']},
+      {t:'Privileged engineer access misuse in production',cat:'Insider threat',asset:'Production environment',threat:'Insider misuse or account compromise',L:2,I:4,nist:['PR.AA','DE.CM'],iso:['A.8.2','A.8.15','A.8.3']}]},
+  retail:{name:'Retail & E-commerce',
+    dims:[['card','Cardholder data (PCI DSS)'],['pii','Customer PII & loyalty data'],['sales','Sales availability (peak seasons)'],['fraud','Fraud & chargebacks'],['brand','Brand trust']],
+    drivers:['Checkout pages are targeted by web-skimming groups','In-store POS estates run on aged, distributed hardware','Loyalty programmes are monetised by account-takeover crews','Peak seasons concentrate revenue, so outages are amplified'],
+    templates:[
+      {t:'Web-skimming (Magecart) on checkout page',cat:'Application & software',asset:'E-commerce checkout',threat:'Malicious script injection',L:4,I:4,nist:['PR.PS','DE.CM'],iso:['A.8.25','A.8.29','A.8.16']},
+      {t:'POS malware across store estate',cat:'Ransomware & malware',asset:'Point-of-sale terminals',threat:'POS memory-scraping malware',L:3,I:4,nist:['PR.PS','ID.AM','DE.CM'],iso:['A.8.7','A.8.9','A.8.22']},
+      {t:'Loyalty account takeover',cat:'Identity & access',asset:'Customer loyalty accounts',threat:'Credential stuffing',L:5,I:3,nist:['PR.AA','DE.CM'],iso:['A.8.5','A.8.16']},
+      {t:'Peak-season DDoS on storefront',cat:'Availability & resilience',asset:'Web storefront',threat:'DDoS extortion',L:3,I:4,nist:['PR.IR','RS.MI'],iso:['A.8.6','A.8.14']},
+      {t:'Third-party marketing pixel leaks customer PII',cat:'Data breach & privacy',asset:'Web analytics and marketing tags',threat:'Over-collection by embedded scripts',L:4,I:3,nist:['GV.SC','PR.DS'],iso:['A.5.34','A.5.19']}]},
+  energy:{name:'Energy & Utilities',
+    dims:[['safety','Public & worker safety'],['cont','Service continuity & grid reliability'],['reg','Regulatory (NERC CIP, NIS2, national CNI rules)'],['env','Environmental harm'],['fin','Financial loss']],
+    drivers:['State-sponsored actors pre-position in energy OT','Legacy OT protocols lack authentication','Remote substations and field sites have thin physical and network controls','Convergence with IT and cloud analytics opens new paths'],
+    templates:[
+      {t:'Nation-state intrusion into SCADA / EMS',cat:'OT / IoT / devices',asset:'SCADA and energy management systems',threat:'Advanced persistent threat',L:3,I:5,nist:['DE.CM','PR.IR','ID.RA'],iso:['A.8.16','A.8.22','A.5.7']},
+      {t:'Insecure remote access to substations',cat:'Identity & access',asset:'Substation gateways',threat:'Credential theft on remote access',L:3,I:5,nist:['PR.AA','PR.IR'],iso:['A.8.5','A.6.7','A.8.20']},
+      {t:'Smart-meter data manipulation',cat:'Application & software',asset:'AMI head-end and meters',threat:'Firmware tampering / spoofing',L:2,I:3,nist:['PR.PS','DE.AE'],iso:['A.8.24','A.8.9']},
+      {t:'Ransomware on corporate IT spreads to OT',cat:'Ransomware & malware',asset:'Corporate IT and DMZ',threat:'Ransomware via phishing',L:4,I:4,nist:['PR.PS','PR.IR','RC.RP'],iso:['A.8.7','A.8.22','A.8.13']}]},
+  government:{name:'Government & Public Sector',
+    dims:[['citizen','Citizen data & privacy'],['service','Public service continuity'],['natsec','National security / classified information'],['trust','Public trust & political consequence'],['legal','Legal & statutory duty']],
+    drivers:['Municipal and agency systems are frequent ransomware targets','Large legacy estates without vendor support','Foreign-state espionage against sensitive records','Budget constraints slow remediation'],
+    templates:[
+      {t:'Ransomware on citizen-services portal',cat:'Ransomware & malware',asset:'Citizen services platform',threat:'Ransomware',L:4,I:4,nist:['PR.PS','RC.RP','DE.CM'],iso:['A.8.7','A.8.13','A.5.30']},
+      {t:'Insider disclosure of sensitive records',cat:'Insider threat',asset:'Case and identity records',threat:'Privileged insider',L:2,I:5,nist:['PR.AA','DE.CM'],iso:['A.8.2','A.8.15','A.8.12']},
+      {t:'Unsupported legacy systems in production',cat:'Cloud & infrastructure',asset:'Legacy application servers',threat:'Exploitation of unpatched systems',L:4,I:4,nist:['ID.AM','PR.PS'],iso:['A.8.8','A.8.9']},
+      {t:'Compromise of official communications channels',cat:'Fraud & social engineering',asset:'Email and public web',threat:'Impersonation and defacement',L:3,I:3,nist:['PR.AA','RS.CO'],iso:['A.8.5','A.5.26']}]},
+  education:{name:'Education & Research',
+    dims:[['data','Student & staff personal data'],['research','Research data & IP'],['teach','Teaching, exam & enrolment continuity'],['fin','Financial (tuition, aid, grants)'],['safe','Safeguarding & welfare']],
+    drivers:['Open networks and BYOD culture','Ransomware timed to exam and enrolment periods','Research collaborations attract state actors','Under-resourced IT with sprawling estates'],
+    templates:[
+      {t:'Ransomware during exam period',cat:'Ransomware & malware',asset:'Learning management and exam systems',threat:'Ransomware',L:4,I:4,nist:['PR.PS','RC.RP'],iso:['A.8.7','A.8.13','A.5.30']},
+      {t:'Compromised student and staff accounts',cat:'Identity & access',asset:'Identity provider',threat:'Phishing and password reuse',L:5,I:3,nist:['PR.AA','PR.AT'],iso:['A.8.5','A.6.3']},
+      {t:'Research data exfiltration by foreign actor',cat:'Data breach & privacy',asset:'Research repositories',threat:'Targeted intrusion',L:3,I:4,nist:['PR.DS','DE.CM'],iso:['A.8.12','A.8.16','A.5.12']},
+      {t:'Unmanaged personal devices on campus network',cat:'OT / IoT / devices',asset:'Campus network',threat:'Malware from unmanaged devices',L:4,I:2,nist:['ID.AM','PR.IR'],iso:['A.8.1','A.8.22']}]},
+  telecom:{name:'Telecommunications',
+    dims:[['avail','Network availability (critical infrastructure)'],['sub','Subscriber data & lawful-intercept confidentiality'],['reg','Regulatory (NIS2, telecom security acts)'],['fraud','SIM-swap & interconnect fraud'],['natsec','National security']],
+    drivers:['Core networks are strategic targets for state actors','Signalling protocols (SS7, Diameter) have weak authentication','Subscriber databases are large, valuable and widely accessed','Supplier concentration in network equipment'],
+    templates:[
+      {t:'SIM-swap through retail social engineering',cat:'Fraud & social engineering',asset:'Subscriber provisioning',threat:'Social engineering of retail staff',L:5,I:3,nist:['PR.AT','PR.AA','DE.AE'],iso:['A.6.3','A.8.5']},
+      {t:'Signalling (SS7 / Diameter) abuse',cat:'Application & software',asset:'Signalling interconnects',threat:'Location tracking and interception',L:3,I:4,nist:['PR.PS','DE.CM'],iso:['A.8.20','A.8.21']},
+      {t:'Core network supplier vulnerability',cat:'Third-party & supply chain',asset:'Packet core equipment',threat:'Vendor firmware flaw',L:3,I:5,nist:['GV.SC','ID.RA'],iso:['A.5.21','A.8.8']},
+      {t:'Subscriber database breach',cat:'Data breach & privacy',asset:'CRM and subscriber records',threat:'Credential compromise / insider',L:3,I:4,nist:['PR.AA','PR.DS','DE.CM'],iso:['A.8.3','A.8.12','A.8.15']}]},
+  professional:{name:'Professional Services',
+    dims:[['client','Client confidential data'],['legal','Contractual & legal liability'],['deliv','Service delivery continuity'],['rep','Reputation'],['fin','Financial loss']],
+    drivers:['Business email compromise targets invoice and payment flows','Client files move through email and shared drives','Highly mobile workforce on laptops and personal devices','Trusted-adviser status makes firms an attractive pivot to clients'],
+    templates:[
+      {t:'Business email compromise / invoice fraud',cat:'Fraud & social engineering',asset:'Finance mailboxes',threat:'BEC',L:5,I:3,nist:['PR.AA','PR.AT','DE.AE'],iso:['A.8.5','A.6.3','A.6.8']},
+      {t:'Client data exposure via file-sharing links',cat:'Data breach & privacy',asset:'Document management',threat:'Over-permissive sharing',L:4,I:4,nist:['PR.DS','PR.AA'],iso:['A.8.3','A.8.12','A.5.12']},
+      {t:'Laptop loss with unencrypted client files',cat:'Physical & environmental',asset:'Staff laptops',threat:'Loss or theft',L:3,I:3,nist:['PR.DS','ID.AM'],iso:['A.8.1','A.8.24','A.7.9']},
+      {t:'Compromised Microsoft 365 tenant',cat:'Cloud & infrastructure',asset:'M365 tenant',threat:'Token theft / consent phishing',L:3,I:5,nist:['PR.AA','DE.CM','RS.MA'],iso:['A.5.23','A.8.5','A.8.16']}]},
+  general:{name:'Other / General',
+    dims:[['conf','Confidentiality of sensitive data'],['integ','Integrity of systems & data'],['avail','Availability of services'],['fin','Financial loss'],['reg','Regulatory & legal']],
+    drivers:['Phishing remains the most common initial access','Unpatched internet-facing systems','Weak identity controls without MFA','Third-party access and shared data'],
+    templates:[
+      {t:'Ransomware via phishing',cat:'Ransomware & malware',asset:'Corporate IT',threat:'Ransomware',L:4,I:4,nist:['PR.PS','PR.AT','RC.RP'],iso:['A.8.7','A.6.3','A.8.13']},
+      {t:'Compromised privileged accounts',cat:'Identity & access',asset:'Admin accounts',threat:'Credential theft',L:3,I:4,nist:['PR.AA','DE.CM'],iso:['A.8.2','A.8.5']},
+      {t:'Third-party vendor breach',cat:'Third-party & supply chain',asset:'Shared data with vendors',threat:'Vendor compromise',L:3,I:3,nist:['GV.SC'],iso:['A.5.19','A.5.21']}]}
+};
+
+const CONTINENTS=[
+  ['North America',[['US','United States'],['CA','Canada'],['MX','Mexico']]],
+  ['South America',[['BR','Brazil'],['AR','Argentina'],['CL','Chile'],['CO','Colombia'],['PE','Peru']]],
+  ['Europe',[['GB','United Kingdom'],['DE','Germany'],['FR','France'],['IT','Italy'],['ES','Spain'],['NL','Netherlands'],['BE','Belgium'],['SE','Sweden'],['NO','Norway'],['DK','Denmark'],['FI','Finland'],['PL','Poland'],['IE','Ireland'],['CH','Switzerland'],['AT','Austria'],['PT','Portugal'],['CZ','Czechia'],['RO','Romania'],['HU','Hungary'],['GR','Greece']]],
+  ['Middle East & Africa',[['AE','United Arab Emirates'],['SA','Saudi Arabia'],['IL','Israel'],['TR','Türkiye'],['ZA','South Africa'],['NG','Nigeria'],['KE','Kenya'],['EG','Egypt']]],
+  ['Asia-Pacific',[['IN','India'],['CN','China'],['JP','Japan'],['KR','South Korea'],['SG','Singapore'],['AU','Australia'],['NZ','New Zealand'],['ID','Indonesia'],['MY','Malaysia'],['TH','Thailand'],['VN','Vietnam'],['PH','Philippines'],['HK','Hong Kong'],['TW','Taiwan']]]
+];
+const COUNTRY_NAME=Object.fromEntries(CONTINENTS.flatMap(c=>c[1]));
+const EU=new Set(['DE','FR','IT','ES','NL','BE','SE','DK','FI','PL','IE','AT','PT','CZ','RO','HU','GR']);
+const EEA=new Set([...EU,'NO']);
+const PRIVACY_LAWS={US:'CCPA/CPRA and other US state privacy laws',CA:'PIPEDA (and Quebec Law 25)',MX:'LFPDPPP',BR:'LGPD',AR:'Personal Data Protection Law 25.326',CL:'Law 19.628 / Law 21.719',CO:'Law 1581 of 2012',PE:'Law 29733',GB:'UK GDPR and Data Protection Act 2018',CH:'Federal Act on Data Protection (revFADP)',AE:'UAE PDPL (Federal Decree-Law 45/2021)',SA:'Saudi PDPL',IL:'Protection of Privacy Law',TR:'KVKK',ZA:'POPIA',NG:'Nigeria Data Protection Act 2023',KE:'Data Protection Act 2019',EG:'Personal Data Protection Law 151/2020',IN:'Digital Personal Data Protection Act 2023',CN:'PIPL, Cybersecurity Law and Data Security Law',JP:'APPI',KR:'PIPA',SG:'PDPA',AU:'Privacy Act 1988 (incl. Notifiable Data Breaches)',NZ:'Privacy Act 2020',ID:'Personal Data Protection Law (PDP Law)',MY:'PDPA 2010',TH:'PDPA',VN:'Decree 13/2023 on Personal Data Protection',PH:'Data Privacy Act 2012',HK:'PDPO',TW:'Personal Data Protection Act'};
+
+const NIS2_SECTORS=new Set(['healthcare','financial','energy','tech','telecom','manufacturing','government','automotive']);
+const SOCI_SECTORS=new Set(['energy','healthcare','financial','telecom','government','education','tech']);
+const REGS=[
+  {n:'EU GDPR',s:'Personal data of EU/EEA residents',a:p=>p.countries.some(c=>EEA.has(c)),why:'Operations in an EU/EEA country'},
+  {n:'NIS2 Directive (EU 2022/2555)',s:'Cyber risk management and incident reporting for essential and important entities',a:p=>NIS2_SECTORS.has(p.sector)&&p.countries.some(c=>EU.has(c)),why:'EU operations in a NIS2-listed sector'},
+  {n:'DORA (EU 2022/2554)',s:'ICT risk, incident reporting, resilience testing and third-party oversight for financial entities',a:p=>p.sector==='financial'&&p.countries.some(c=>EU.has(c)),why:'Financial entity operating in the EU'},
+  {n:'EU Cyber Resilience Act',s:'Security requirements for products with digital elements sold in the EU',a:p=>['tech','manufacturing','automotive','telecom'].includes(p.sector)&&p.countries.some(c=>EU.has(c)),why:'Sector places products with digital elements on the EU market'},
+  {n:'HIPAA / HITECH',s:'Security and privacy rules for protected health information',a:p=>p.sector==='healthcare'&&p.countries.includes('US'),why:'US healthcare operations'},
+  {n:'FDA premarket cybersecurity (FD&C §524B)',s:'Cybersecurity requirements for cyber medical devices',a:p=>p.sector==='healthcare'&&p.countries.includes('US'),why:'US healthcare / medical device context — applies if you manufacture devices'},
+  {n:'SEC cybersecurity disclosure rules',s:'Form 8-K material incident disclosure within four business days; 10-K governance disclosure',a:p=>p.listed&&p.countries.includes('US'),why:'Publicly listed with US operations — applies to SEC registrants'},
+  {n:'GLBA Safeguards Rule',s:'Information security programme for customer financial data',a:p=>p.sector==='financial'&&p.countries.includes('US'),why:'US financial institution'},
+  {n:'NYDFS Part 500',s:'Cybersecurity requirements for New York-licensed financial services',a:p=>p.sector==='financial'&&p.countries.includes('US'),why:'US financial services — applies if licensed in New York'},
+  {n:'PCI DSS v4.0',s:'Protection of cardholder data',a:p=>['retail','financial','tech','telecom','healthcare','education','professional'].includes(p.sector),why:'Sector typically stores, processes or transmits cardholder data'},
+  {n:'NERC CIP',s:'Critical infrastructure protection standards for the bulk electric system',a:p=>p.sector==='energy'&&(p.countries.includes('US')||p.countries.includes('CA')),why:'Energy operations in North America'},
+  {n:'FERPA',s:'Privacy of student education records',a:p=>p.sector==='education'&&p.countries.includes('US'),why:'US education institution'},
+  {n:'FISMA / FedRAMP',s:'Federal information security and cloud authorisation',a:p=>p.sector==='government'&&p.countries.includes('US'),why:'US public sector'},
+  {n:'CMMC 2.0',s:'Cybersecurity maturity for the US defence industrial base',a:p=>['government','manufacturing','automotive','tech'].includes(p.sector)&&p.countries.includes('US'),why:'US operations in a sector that often contracts with the DoD — applies if you handle FCI/CUI'},
+  {n:'UNECE R155 / R156',s:'Vehicle cybersecurity and software-update management systems (type approval)',a:p=>p.sector==='automotive'&&p.countries.some(c=>EEA.has(c)||['GB','JP','KR','AU'].includes(c)),why:'Automotive with sales in a 1958 Agreement market'},
+  {n:'ISO/SAE 21434',s:'Road vehicle cybersecurity engineering',a:p=>p.sector==='automotive',why:'Automotive sector'},
+  {n:'TISAX',s:'Automotive industry information security assessment',a:p=>p.sector==='automotive'&&p.countries.some(c=>EU.has(c)),why:'Automotive supplier/OEM working with European OEMs'},
+  {n:'IEC 62443',s:'Security for industrial automation and control systems',a:p=>['manufacturing','energy','automotive'].includes(p.sector),why:'Sector operates OT / ICS environments'},
+  {n:'CERT-In cybersecurity directions (2022)',s:'Six-hour incident reporting and log retention in India',a:p=>p.countries.includes('IN'),why:'Operations in India'},
+  {n:'Australian SOCI Act',s:'Security of critical infrastructure obligations',a:p=>SOCI_SECTORS.has(p.sector)&&p.countries.includes('AU'),why:'Australian operations in a critical-infrastructure sector'},
+  {n:'China Cybersecurity Law & MLPS 2.0',s:'Network security grading, data localisation and cross-border transfer rules',a:p=>p.countries.includes('CN'),why:'Operations in China'},
+  {n:'Singapore Cybersecurity Act',s:'Critical information infrastructure obligations',a:p=>SOCI_SECTORS.has(p.sector)&&p.countries.includes('SG'),why:'Singapore operations in a CII sector'}
+];
+
+const NIST=[
+  ['GV','Govern',[['GV.OC','Organizational context'],['GV.RM','Risk management strategy'],['GV.RR','Roles, responsibilities & authorities'],['GV.PO','Policy'],['GV.OV','Oversight'],['GV.SC','Cybersecurity supply chain risk management']]],
+  ['ID','Identify',[['ID.AM','Asset management'],['ID.RA','Risk assessment'],['ID.IM','Improvement']]],
+  ['PR','Protect',[['PR.AA','Identity management, authentication & access control'],['PR.AT','Awareness & training'],['PR.DS','Data security'],['PR.PS','Platform security'],['PR.IR','Technology infrastructure resilience']]],
+  ['DE','Detect',[['DE.CM','Continuous monitoring'],['DE.AE','Adverse event analysis']]],
+  ['RS','Respond',[['RS.MA','Incident management'],['RS.AN','Incident analysis'],['RS.CO','Incident response reporting & communication'],['RS.MI','Incident mitigation']]],
+  ['RC','Recover',[['RC.RP','Incident recovery plan execution'],['RC.CO','Incident recovery communication']]]
+];
+const NIST_NAME=Object.fromEntries(NIST.flatMap(f=>f[2]));
+const ISO=[['A.5.1','Policies for information security'],['A.5.7','Threat intelligence'],['A.5.9','Inventory of information and other associated assets'],['A.5.10','Acceptable use of information and assets'],['A.5.12','Classification of information'],['A.5.15','Access control'],['A.5.16','Identity management'],['A.5.17','Authentication information'],['A.5.18','Access rights'],['A.5.19','Information security in supplier relationships'],['A.5.20','Addressing information security within supplier agreements'],['A.5.21','Managing information security in the ICT supply chain'],['A.5.23','Information security for use of cloud services'],['A.5.24','Incident management planning and preparation'],['A.5.26','Response to information security incidents'],['A.5.29','Information security during disruption'],['A.5.30','ICT readiness for business continuity'],['A.5.31','Legal, statutory, regulatory and contractual requirements'],['A.5.34','Privacy and protection of PII'],['A.6.3','Information security awareness, education and training'],['A.6.7','Remote working'],['A.6.8','Information security event reporting'],['A.7.9','Security of assets off-premises'],['A.7.10','Storage media'],['A.8.1','User endpoint devices'],['A.8.2','Privileged access rights'],['A.8.3','Information access restriction'],['A.8.5','Secure authentication'],['A.8.6','Capacity management'],['A.8.7','Protection against malware'],['A.8.8','Management of technical vulnerabilities'],['A.8.9','Configuration management'],['A.8.10','Information deletion'],['A.8.12','Data leakage prevention'],['A.8.13','Information backup'],['A.8.14','Redundancy of information processing facilities'],['A.8.15','Logging'],['A.8.16','Monitoring activities'],['A.8.20','Networks security'],['A.8.21','Security of network services'],['A.8.22','Segregation of networks'],['A.8.23','Web filtering'],['A.8.24','Use of cryptography'],['A.8.25','Secure development life cycle'],['A.8.26','Application security requirements'],['A.8.28','Secure coding'],['A.8.29','Security testing in development and acceptance'],['A.8.32','Change management']];
+const ISO_NAME=Object.fromEntries(ISO);
+
+/* =====================================================================
+   Scoring
+   ===================================================================== */
+const BANDS=[{min:17,key:'crit',label:'Critical'},{min:10,key:'high',label:'High'},{min:5,key:'med',label:'Medium'},{min:0,key:'low',label:'Low'}];
+const band=s=>BANDS.find(b=>s>=b.min);
+const clamp=(v,d)=>{v=parseInt(v,10);return v>=1&&v<=5?v:d;};
+const inh=r=>clamp(r.iL,3)*clamp(r.iI,3);
+const res=r=>clamp(r.rL,clamp(r.iL,3))*clamp(r.rI,clamp(r.iI,3));
+const reduction=r=>{const a=inh(r),b=res(r);return a?Math.round((a-b)/a*100):0;};
+const fmtMoney=v=>v>=1e9?'$'+(v/1e9).toFixed(v/1e9<10?1:0)+'B':v>=1e6?'$'+Math.round(v/1e6)+'M':'$'+Math.round(v/1e3)+'K';
+
+/* =====================================================================
+   State & storage
+   ===================================================================== */
+const S={view:'dashboard',profile:null,risks:[],mode:'connecting',q:'',fStatus:'',fBand:'',cell:null,dl:null,navigated:false,landed:false};
+let db=null;
+const DEFAULT_PROFILE={name:'',sector:'general',revenue:'50-250',headcount:'251–1,000',listed:false,countries:[]};
+const profile=()=>Object.assign({},DEFAULT_PROFILE,S.profile||{});
+const sector=()=>SECTORS[profile().sector]||SECTORS.general;
+
+const store={
+  async saveProfile(p){
+    S.profile=p; if(db){await db.doc('org/profile').set(p);} else {localStorage.setItem('srr.profile',JSON.stringify(p)); render();}
+  },
+  async saveRisk(r){
+    r.updatedAt=new Date().toISOString();
+    if(db){await db.collection('risks').doc(r.id).set(r);}
+    else {const i=S.risks.findIndex(x=>x.id===r.id); if(i>=0)S.risks[i]=r; else S.risks.push(r); this.localFlush(); render();}
+  },
+  async deleteRisk(id){
+    if(db){await db.collection('risks').doc(id).delete();}
+    else {S.risks=S.risks.filter(x=>x.id!==id); this.localFlush(); render();}
+  },
+  localFlush(){localStorage.setItem('srr.risks',JSON.stringify(S.risks));},
+  nextId(){const n=S.risks.reduce((m,r)=>Math.max(m,parseInt((r.id||'').replace(/\D/g,''),10)||0),0)+1;return 'R-'+String(n).padStart(3,'0');}
+};
+
+function setSync(mode,text){S.mode=mode;const el=document.getElementById('sync');el.className='sync '+(mode==='db'?'ok':mode==='local'?'local':'');el.querySelector('span').textContent=text;}
+
+async function boot(){
+  render();
+  try{
+    db=window.claude&&window.claude.use?await window.claude.use('db'):null;
+  }catch(e){db=null;}
+  if(db){
+    setSync('db','Shared register · live');
+    db.doc('org/profile').onSnapshot(s=>{S.profile=s.exists?s.data():null;render();},e=>{setSync('','Sync error: '+e.code);});
+    db.collection('risks').onSnapshot(s=>{S.risks=s.docs.map(d=>d.data());render();},e=>{setSync('','Sync error: '+e.code);});
+  }else{
+    setSync('local','Local only · this browser');
+    try{S.profile=JSON.parse(localStorage.getItem('srr.profile')||'null');S.risks=JSON.parse(localStorage.getItem('srr.risks')||'[]');}catch(e){}
+    render();
+  }
+  try{S.dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){S.dl=null;}
+}
+
+/* =====================================================================
+   Rendering
+   ===================================================================== */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=(sel,root=document)=>root.querySelector(sel);
+const VIEWS=[['org','Organization profile'],['dashboard','Dashboard'],['heatmap','Heat map'],['register','Risk register'],['frameworks','Controls & regulations'],['guide','Guide']];
+
+function scoreChip(r,kind){
+  const s=kind==='i'?inh(r):res(r); const b=band(s);
+  const L=kind==='i'?clamp(r.iL,3):clamp(r.rL,clamp(r.iL,3)), I=kind==='i'?clamp(r.iI,3):clamp(r.rI,clamp(r.iI,3));
+  return `<span class="score b-${b.key}" title="${b.label} — likelihood ${L} × impact ${I}"><b>${s}</b><span>${b.label}</span></span>`;
+}
+
+function render(){
+  const p=profile();
+  // land on the profile tab until one exists, unless the viewer already picked a tab
+  if(!S.landed&&S.mode!=='connecting'){S.landed=true;if(!S.navigated&&!p.name)S.view='org';}
+  $('#orgChip').innerHTML=p.name?`<span>Organization</span><b>${esc(p.name)}</b><span class="pill">${esc(sector().name)}</span>`:`<span class="muted">No organization profile yet</span>`;
+  $('#tabs').innerHTML=VIEWS.map(([k,l])=>`<button data-view="${k}" ${S.view===k?'aria-current="page"':''}>${l}</button>`).join('');
+  const m=$('#main');
+  const notice=p.isExample?`<div class="notice"><span class="grow"><b>Sample data.</b> This register is pre-filled with example risks for <b>${esc(p.name)}</b> so you can see how the tool works. Replace the organization profile and risks with your own, or clear everything.</span><button class="btn sm" data-act="clear-sample">Clear sample data</button></div>`:'';
+  const views={dashboard:vDashboard,register:vRegister,heatmap:vHeat,frameworks:vFrameworks,org:vOrg,guide:vGuide};
+  m.innerHTML=notice+views[S.view]();
+}
+
+/* ---- Dashboard ---- */
+function vDashboard(){
+  const p=profile(), rs=S.risks, open=rs.filter(r=>r.status!=='Closed');
+  if(!rs.length&&!p.name) return `<div class="page-head"><div><h2>Welcome</h2><p class="muted">Start by describing your organization — sector, revenue and where you operate — so the impact factors, likelihood drivers and regulatory obligations fit your business. Then build the register.</p></div><div class="row"><button class="btn" data-view="guide">How it works</button><button class="btn primary" data-view="org">Set up organization</button></div></div>`;
+  const crit=open.filter(r=>band(res(r)).key==='crit').length;
+  const high=open.filter(r=>band(res(r)).key==='high').length;
+  const avgRed=open.length?Math.round(open.reduce((a,r)=>a+reduction(r),0)/open.length):0;
+  const today=new Date().toISOString().slice(0,10);
+  const overdue=open.filter(r=>r.due&&r.due<today&&r.status!=='Accepted').length;
+  const regs=REGS.filter(g=>g.a(p));
+  const byBand=k=>['low','med','high','crit'].map(b=>open.filter(r=>band(k==='i'?inh(r):res(r)).key===b).length);
+  const iB=byBand('i'),rB=byBand('r');
+  const barRow=(lab,counts,total)=>`<div class="bar"><span class="lab" title="${esc(lab)}">${esc(lab)}</span><div class="track">${['low','med','high','crit'].map((b,i)=>counts[i]?`<div class="seg ${b}" style="width:${counts[i]/total*100}%" title="${BANDS.find(x=>x.key===b).label}: ${counts[i]}"></div>`:'').join('')}</div><span class="n">${counts.reduce((a,b)=>a+b,0)}</span></div>`;
+  const maxCat=Math.max(1,...CATEGORIES.map(c=>open.filter(r=>r.cat===c).length));
+  const cats=CATEGORIES.map(c=>{const rr=open.filter(r=>r.cat===c);if(!rr.length)return '';return barRow(c,['low','med','high','crit'].map(b=>rr.filter(r=>band(res(r)).key===b).length),maxCat);}).join('');
+  const statuses=STATUSES.map(s=>`<div class="bar"><span class="lab">${s}</span><div class="track"><div class="seg" style="width:${rs.filter(r=>r.status===s).length/Math.max(1,rs.length)*100}%;background:var(--accent);opacity:${s==='Closed'?.45:1}"></div></div><span class="n">${rs.filter(r=>r.status===s).length}</span></div>`).join('');
+  const top=[...open].sort((a,b)=>res(b)-res(a)||inh(b)-inh(a)).slice(0,8);
+  const fnCov=NIST.map(([f,name,cats])=>{const n=open.filter(r=>(r.nist||[]).some(c=>c.startsWith(f+'.'))).length;return `<div class="bar"><span class="lab">${f} · ${name}</span><div class="track"><div class="seg" style="width:${n/Math.max(1,open.length)*100}%;background:var(--accent)"></div></div><span class="n">${n}</span></div>`;}).join('');
+  return `
+  <div class="page-head"><div><h2>Risk posture</h2><p class="muted">${open.length} open risk${open.length===1?'':'s'} across ${new Set(open.map(r=>r.cat)).size} categories · residual view unless stated</p></div><button class="btn primary" data-act="new">Add risk</button></div>
+  <div class="grid g4" style="margin-bottom:16px">
+    <div class="kpi"><span class="v">${open.length}</span><span class="l">Open risks</span></div>
+    <div class="kpi ${crit?'crit':''}"><span class="v">${crit}</span><span class="l">Critical residual (17–25)</span></div>
+    <div class="kpi"><span class="v">${high}</span><span class="l">High residual (10–16)</span></div>
+    <div class="kpi good"><span class="v">${avgRed}%</span><span class="l">Average risk reduction from controls</span></div>
+  </div>
+  <div class="grid g3">
+    <div class="panel stack">
+      <div class="panel-head"><h3>Inherent vs residual</h3><span class="small muted">open risks</span></div>
+      <div class="bars">${barRow('Inherent',iB,Math.max(1,open.length))}${barRow('Residual',rB,Math.max(1,open.length))}</div>
+      <div class="legend"><span><i style="background:var(--low)"></i>Low</span><span><i style="background:var(--med)"></i>Medium</span><span><i style="background:var(--high)"></i>High</span><span><i style="background:var(--crit)"></i>Critical</span></div>
+      <div class="panel-head" style="margin-top:6px"><h3>By status</h3><span class="small muted">all risks</span></div>
+      <div class="bars">${statuses}</div>
+      ${overdue?`<p class="small" style="color:var(--high)">${overdue} treatment${overdue===1?'':'s'} past due date</p>`:''}
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>By category</h3><span class="small muted">residual band</span></div>
+      <div class="bars">${cats||'<p class="muted small">No open risks yet.</p>'}</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Highest residual risks</h3></div>
+      <ol class="top10">${top.map(r=>`<li class="clickable" data-open="${esc(r.id)}" style="cursor:pointer"><span class="id">${esc(r.id)}</span><span>${esc(r.title)}<br><span class="small muted">${esc(r.owner||'Unassigned')} · ${esc(r.status)}</span></span>${scoreChip(r,'r')}</li>`).join('')||'<li class="muted small">Nothing to show yet.</li>'}</ol>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>NIST CSF 2.0 coverage</h3><span class="small muted">open risks mapped per function</span></div>
+      <div class="bars">${fnCov}</div>
+    </div>
+    <div class="panel" style="grid-column:span 2">
+      <div class="panel-head"><h3>Regulatory obligations</h3><span class="small muted">${regs.length} from sector &amp; footprint · <a href="#" data-view="frameworks">see all</a></span></div>
+      ${p.countries.length?`<div class="chips">${regs.slice(0,8).map(g=>`<span class="chip" title="${esc(g.why)}">${esc(g.n)}</span>`).join('')}${p.countries.filter(c=>PRIVACY_LAWS[c]).slice(0,6).map(c=>`<span class="chip" title="${esc(COUNTRY_NAME[c])}">${esc(PRIVACY_LAWS[c].split(' (')[0].split(' and ')[0])}</span>`).join('')}</div>`:'<p class="muted small">Add countries of operation in the organization profile to see obligations.</p>'}
+    </div>
+  </div>`;
+}
+
+/* ---- Register ---- */
+function filtered(){
+  const q=S.q.trim().toLowerCase();
+  return S.risks.filter(r=>{
+    if(S.fStatus&&r.status!==S.fStatus)return false;
+    if(S.fBand&&band(res(r)).key!==S.fBand)return false;
+    if(q&&!(`${r.id} ${r.title} ${r.cat} ${r.owner} ${r.asset} ${r.threat}`.toLowerCase().includes(q)))return false;
+    return true;
+  }).sort((a,b)=>res(b)-res(a)||a.id.localeCompare(b.id));
+}
+function vRegister(){
+  const rows=filtered();
+  const sec=sector();
+  return `
+  <div class="page-head"><div><h2>Risk register</h2><p class="muted">Inherent score is before controls; residual is what remains after the controls you list. Click a row to edit.</p></div>
+    <div class="row"><button class="btn" data-act="template">From ${esc(sec.name)} templates</button><button class="btn primary" data-act="new">Add risk</button></div></div>
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="Search id, title, owner, asset…" value="${esc(S.q)}">
+    <select id="fStatus"><option value="">All statuses</option>${STATUSES.map(s=>`<option ${S.fStatus===s?'selected':''}>${s}</option>`).join('')}</select>
+    <select id="fBand"><option value="">All residual bands</option>${BANDS.map(b=>`<option value="${b.key}" ${S.fBand===b.key?'selected':''}>${b.label}</option>`).join('')}</select>
+    <span class="spacer"></span>
+    <button class="btn sm" data-act="import">Import CSV</button>
+    <button class="btn sm" data-act="export">Export CSV</button>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>ID</th><th>Risk</th><th>Owner</th><th>Inherent</th><th>Residual</th><th>Δ</th><th>Status</th><th>Treatment</th><th>Due</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr class="clickable" data-open="${esc(r.id)}">
+      <td class="mono">${esc(r.id)}</td>
+      <td><div class="t">${esc(r.title)}</div><div class="sub">${esc(r.cat||'')}${r.asset?' · '+esc(r.asset):''}</div></td>
+      <td>${esc(r.owner||'—')}</td>
+      <td>${scoreChip(r,'i')}</td>
+      <td>${scoreChip(r,'r')}</td>
+      <td><span class="delta ${reduction(r)>0?'down':''}">${reduction(r)>0?'−'+reduction(r)+'%':'—'}</span></td>
+      <td><span class="pill st-${esc(r.status)}">${esc(r.status)}</span></td>
+      <td>${esc(r.treatment||'—')}</td>
+      <td class="mono small">${esc(r.due||'—')}</td>
+    </tr>`).join('')||`<tr><td colspan="9" class="empty">${S.risks.length?'No risks match these filters.':'No risks yet. Add one, or start from the sector templates.'}</td></tr>`}</tbody>
+  </table></div>`;
+}
+
+/* ---- Heat map ---- */
+function heatGrid(kind){
+  const open=S.risks.filter(r=>r.status!=='Closed');
+  const L=r=>kind==='i'?clamp(r.iL,3):clamp(r.rL,clamp(r.iL,3)), I=r=>kind==='i'?clamp(r.iI,3):clamp(r.rI,clamp(r.iI,3));
+  let cells='';
+  for(let l=5;l>=1;l--){
+    cells+=`<div class="rl">${l}</div>`;
+    for(let i=1;i<=5;i++){
+      const n=open.filter(r=>L(r)===l&&I(r)===i).length; const b=band(l*i).key;
+      const sel=S.cell&&S.cell.k===kind&&S.cell.l===l&&S.cell.i===i;
+      cells+=`<div class="cell ${b} ${n?'has':''} ${sel?'sel':''}" data-cell="${kind},${l},${i}" title="Likelihood ${l} × Impact ${i} = ${l*i}">${n||''}</div>`;
+    }
+  }
+  cells+=`<div></div>${[1,2,3,4,5].map(i=>`<div class="cl">${i}</div>`).join('')}`;
+  return `<div class="heat"><div class="ylab">Likelihood</div><div class="cells">${cells}</div><div class="xlab">Impact</div></div>`;
+}
+function vHeat(){
+  const open=S.risks.filter(r=>r.status!=='Closed');
+  let sel='';
+  if(S.cell){
+    const {k,l,i}=S.cell;
+    const rows=open.filter(r=>{const L=k==='i'?clamp(r.iL,3):clamp(r.rL,clamp(r.iL,3)),I=k==='i'?clamp(r.iI,3):clamp(r.rI,clamp(r.iI,3));return L===l&&I===i;});
+    sel=`<div class="panel"><div class="panel-head"><h3>${k==='i'?'Inherent':'Residual'} · likelihood ${l} × impact ${i} = ${l*i} (${band(l*i).label})</h3><button class="btn sm" data-act="clearcell">Clear</button></div>
+    ${rows.length?`<ol class="top10">${rows.map(r=>`<li data-open="${esc(r.id)}" style="cursor:pointer"><span class="id">${esc(r.id)}</span><span>${esc(r.title)}<br><span class="small muted">${esc(r.cat)} · ${esc(r.owner||'Unassigned')}</span></span><span class="pill st-${esc(r.status)}">${esc(r.status)}</span></li>`).join('')}</ol>`:'<p class="muted small">No open risks in this cell.</p>'}</div>`;
+  }
+  const moved=[...open].filter(r=>reduction(r)>0).sort((a,b)=>(inh(b)-res(b))-(inh(a)-res(a))).slice(0,6);
+  return `
+  <div class="page-head"><div><h2>Heat map</h2><p class="muted">5 × 5 likelihood-by-impact grid for open risks. Left is before controls, right is after. Click a cell to list its risks.</p></div></div>
+  <div class="grid g2" style="margin-bottom:14px">
+    <div class="panel"><div class="panel-head"><h3>Inherent</h3><span class="small muted">before controls</span></div>${heatGrid('i')}</div>
+    <div class="panel"><div class="panel-head"><h3>Residual</h3><span class="small muted">after controls</span></div>${heatGrid('r')}</div>
+  </div>
+  <div class="grid g2">
+    ${sel||`<div class="panel"><div class="panel-head"><h3>Scoring bands</h3></div><div class="scale"><span class="k">1–4</span><span><span class="score b-low">Low</span> Monitor; accept within appetite</span><span class="k">5–9</span><span><span class="score b-med">Medium</span> Treat within 12 months; owner assigned</span><span class="k">10–16</span><span><span class="score b-high">High</span> Treat within 90 days; leadership visibility</span><span class="k">17–25</span><span><span class="score b-crit">Critical</span> Immediate action; executive escalation</span></div></div>`}
+    <div class="panel"><div class="panel-head"><h3>Largest reductions from controls</h3></div>
+      <ol class="top10">${moved.map(r=>`<li data-open="${esc(r.id)}" style="cursor:pointer"><span class="id">${esc(r.id)}</span><span>${esc(r.title)}</span><span class="row" style="gap:6px">${scoreChip(r,'i')}<span class="muted">→</span>${scoreChip(r,'r')}</span></li>`).join('')||'<li class="muted small">No controls recorded yet.</li>'}</ol></div>
+  </div>`;
+}
+
+/* ---- Frameworks & regulations ---- */
+function vFrameworks(){
+  const p=profile(), open=S.risks.filter(r=>r.status!=='Closed');
+  const regs=REGS.filter(g=>g.a(p));
+  const privacy=p.countries.filter(c=>PRIVACY_LAWS[c]);
+  const nistRows=NIST.map(([f,name,cats])=>`<tr><td colspan="3" style="background:var(--surface-2)"><b class="eyebrow" style="color:var(--ink-2)">${f} · ${name}</b></td></tr>`+cats.map(([c,n])=>{const rr=open.filter(r=>(r.nist||[]).includes(c));return `<tr><td class="mono">${c}</td><td>${esc(n)}</td><td>${rr.length?rr.map(r=>`<span class="tag" title="${esc(r.title)}">${esc(r.id)}</span>`).join(''):'<span class="muted small">—</span>'}</td></tr>`;}).join('')).join('');
+  const isoUsed=ISO.filter(([c])=>open.some(r=>(r.iso||[]).includes(c)));
+  return `
+  <div class="page-head"><div><h2>Controls &amp; regulations</h2><p class="muted">Which framework controls your open risks lean on, and which obligations follow from your sector and footprint.</p></div></div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="panel-head"><h3>Applicable regulations &amp; standards</h3><span class="small muted">${regs.length+privacy.length} identified</span></div>
+      ${(regs.length||privacy.length)?'':'<p class="muted small">Set the sector and countries of operation in the organization profile.</p>'}
+      ${regs.map(g=>`<div class="reg"><b>${esc(g.n)}</b><span class="small muted">${esc(g.s)}</span><span class="why">Why: ${esc(g.why)}</span></div>`).join('')}
+      ${privacy.length?`<div class="reg"><b>National data-protection laws</b><span></span><span class="why"><ul class="plain">${privacy.map(c=>`<li><b>${esc(COUNTRY_NAME[c])}</b> — ${esc(PRIVACY_LAWS[c])}</li>`).join('')}</ul></span></div>`:''}
+      <p class="small muted" style="margin-top:12px">Indicative only — applicability depends on entity type, thresholds and licensing. Confirm with counsel.</p>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <div class="panel-head"><h3>ISO/IEC 27001:2022 Annex A controls in use</h3><span class="small muted">${isoUsed.length} of ${ISO.length} listed</span></div>
+        ${isoUsed.length?`<div class="tablewrap" style="border:0"><table><tbody>${isoUsed.map(([c,n])=>{const rr=open.filter(r=>(r.iso||[]).includes(c));return `<tr><td class="mono">${c}</td><td>${esc(n)}</td><td>${rr.map(r=>`<span class="tag" title="${esc(r.title)}">${esc(r.id)}</span>`).join('')}</td></tr>`;}).join('')}</tbody></table></div>`:'<p class="muted small">No ISO controls mapped yet — open a risk and tick the controls it relies on.</p>'}
+      </div>
+    </div>
+    <div class="panel" style="grid-column:1/-1">
+      <div class="panel-head"><h3>NIST CSF 2.0 mapping</h3><span class="small muted">open risks by category</span></div>
+      <div class="tablewrap" style="border:0"><table><thead><tr><th>Category</th><th>Name</th><th>Risks</th></tr></thead><tbody>${nistRows}</tbody></table></div>
+    </div>
+  </div>`;
+}
+
+/* ---- Organization ---- */
+function vOrg(){
+  const p=profile(), sec=sector();
+  const rev=REVENUE_BANDS.find(b=>b[0]===p.revenue)||REVENUE_BANDS[2];
+  const scale=FIN_PCT.map(([a,b],i)=>`<span class="k">${i+1} · ${IMPACT_LEVELS[i]}</span><span>${i===4?'over '+fmtMoney(a*rev[2]):i===0?'under '+fmtMoney(b*rev[2]):fmtMoney(a*rev[2])+' – '+fmtMoney(b*rev[2])}</span>`).join('');
+  const regs=REGS.filter(g=>g.a(p)).length+p.countries.filter(c=>PRIVACY_LAWS[c]).length;
+  return `
+  <div class="page-head"><div><h2>Organization profile</h2><p class="muted">Sector picks the impact dimensions and likelihood drivers used when scoring; revenue sets the financial-impact scale; footprint drives regulatory obligations.</p></div></div>
+  <form id="orgForm" class="grid g2" style="align-items:start">
+    <div class="stack">
+      <div class="panel stack">
+        <div class="grid g2">
+          <div class="field" style="grid-column:1/-1"><label for="oName">Organization name</label><input id="oName" name="name" value="${esc(p.name)}" placeholder="e.g. Northwind Health"></div>
+          <div class="field"><label for="oSector">Industry sector</label><select id="oSector" name="sector">${Object.entries(SECTORS).map(([k,s])=>`<option value="${k}" ${p.sector===k?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>
+          <div class="field"><label for="oRev">Annual revenue</label><select id="oRev" name="revenue">${REVENUE_BANDS.map(b=>`<option value="${b[0]}" ${p.revenue===b[0]?'selected':''}>${b[1]}</option>`).join('')}</select></div>
+          <div class="field"><label for="oHead">Headcount</label><select id="oHead" name="headcount">${HEADCOUNT.map(h=>`<option ${p.headcount===h?'selected':''}>${h}</option>`).join('')}</select></div>
+          <div class="field"><label>&nbsp;</label><label class="checkrow"><input type="checkbox" name="listed" ${p.listed?'checked':''}> Publicly listed company</label></div>
+        </div>
+      </div>
+      <div class="panel stack">
+        <div class="panel-head"><h3>Global footprint</h3><span class="small muted" id="cCount">${p.countries.length} countr${p.countries.length===1?'y':'ies'}</span></div>
+        ${CONTINENTS.map(([cont,list])=>`<div class="continent"><div class="ch"><b>${cont}</b><button type="button" class="btn sm" data-cont="${esc(cont)}">Select all</button></div><div class="countries">${list.map(([c,n])=>`<label><input type="checkbox" name="c" value="${c}" ${p.countries.includes(c)?'checked':''}>${esc(n)}</label>`).join('')}</div></div>`).join('')}
+      </div>
+      <div class="row"><button class="btn primary" type="submit">Save profile</button><span class="small muted" id="orgSaved"></span></div>
+    </div>
+    <div class="stack">
+      <div class="panel stack" id="sectorInfo">
+        <div><span class="eyebrow">Impact dimensions · ${esc(sec.name)}</span><p class="small muted">Each risk is rated 1–5 on every dimension; inherent impact is the highest rating.</p></div>
+        <ul class="plain">${sec.dims.map(d=>`<li>${esc(d[1])}</li>`).join('')}</ul>
+        <div><span class="eyebrow">Likelihood drivers</span></div>
+        <ul class="plain">${sec.drivers.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>
+        <div><span class="eyebrow">Financial impact scale · ${esc(rev[1])} revenue</span><p class="small muted">Loss per event as a share of annual revenue.</p></div>
+        <div class="scale">${scale}</div>
+        <div><span class="eyebrow">Regulatory obligations</span><p class="small">${regs} identified from sector and footprint · <a href="#" data-view="frameworks">review</a></p></div>
+      </div>
+    </div>
+  </form>`;
+}
+
+/* ---- Guide ---- */
+function vGuide(){
+  const sec=sector();
+  const flow=`<figure class="figure">
+  <svg viewBox="0 0 1080 320" role="img" aria-label="How the register works: the organization profile feeds sector templates and impact dimensions into risk entry; each risk is scored inherent (likelihood times highest impact dimension), then controls are recorded and residual is scored; inherent and residual scores feed the heat maps and dashboard, while the profile's sector and countries feed the regulatory obligations list.">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+    <g fill="none" stroke="currentColor" stroke-width="1.4">
+      <rect x="20" y="60" width="180" height="70" rx="8"/>
+      <rect x="300" y="60" width="160" height="70" rx="8"/>
+      <rect x="580" y="60" width="160" height="70" rx="8"/>
+      <rect x="860" y="60" width="200" height="70" rx="8"/>
+      <rect x="20" y="230" width="180" height="70" rx="8" stroke-dasharray="5 4"/>
+      <rect x="500" y="230" width="200" height="70" rx="8" stroke-dasharray="5 4"/>
+      <rect x="860" y="230" width="200" height="70" rx="8" stroke-dasharray="5 4"/>
+      <line x1="200" y1="105" x2="298" y2="105" marker-end="url(#ah)"/>
+      <line x1="460" y1="105" x2="578" y2="105" marker-end="url(#ah)"/>
+      <line x1="740" y1="105" x2="858" y2="105" marker-end="url(#ah)"/>
+      <line x1="100" y1="130" x2="100" y2="228" marker-end="url(#ah)"/>
+      <line x1="620" y1="130" x2="620" y2="228" marker-end="url(#ah)"/>
+      <path d="M900 130 V180 H680 V228" marker-end="url(#ah)"/>
+      <line x1="960" y1="130" x2="960" y2="228" marker-end="url(#ah)"/>
+    </g>
+    <g font-family="IBM Plex Sans Condensed, system-ui, sans-serif" font-size="13" font-weight="600" fill="currentColor" text-anchor="middle">
+      <text x="110" y="90">1 · Organization profile</text>
+      <text x="380" y="90">2 · Add risks</text>
+      <text x="660" y="90">3 · Score inherent risk</text>
+      <text x="960" y="90">4 · Controls &amp; residual</text>
+      <text x="110" y="260">Regulatory obligations</text>
+      <text x="600" y="260">Heat maps</text>
+      <text x="960" y="260">Dashboard &amp; reports</text>
+    </g>
+    <g font-family="IBM Plex Sans, system-ui, sans-serif" font-size="11" fill="currentColor" text-anchor="middle" opacity=".75">
+      <text x="110" y="112">sector · revenue · footprint</text>
+      <text x="380" y="112">manual · templates · CSV</text>
+      <text x="660" y="112">likelihood × highest impact</text>
+      <text x="960" y="112">what remains after controls</text>
+      <text x="110" y="282">from sector + countries</text>
+      <text x="600" y="282">inherent (left) · residual (right)</text>
+      <text x="960" y="282">NIST / ISO mapping · CSV export</text>
+      <text x="249" y="82">sector templates,</text>
+      <text x="249" y="95">impact dimensions</text>
+      <text x="519" y="82">likelihood 1–5,</text>
+      <text x="519" y="95">each dimension 1–5</text>
+      <text x="799" y="82">controls lower</text>
+      <text x="799" y="95">L and/or I</text>
+      <text x="108" y="185" text-anchor="start">sector · countries · listed</text>
+      <text x="612" y="185" text-anchor="end">inherent score</text>
+      <text x="790" y="174">residual score</text>
+      <text x="968" y="185" text-anchor="start">scores, status, due</text>
+    </g>
+  </svg>
+  <figcaption>How a risk moves through the tool. Solid boxes are the four things you do, in order; dashed boxes are the views the tool derives from them. The profile shapes how you score; scoring produces two numbers per risk; both feed the heat maps and dashboard. The profile's sector and countries separately drive the obligations list.</figcaption>
+  </figure>`;
+  const steps=[
+    ['Describe the organization','Set the sector, revenue band, headcount, listing status and every country you operate in. Sector chooses the impact dimensions and likelihood drivers you will score against; revenue sets the financial-impact scale; footprint drives the regulations list.','org','Open profile'],
+    ['Build the register','Add risks one at a time, start from the sector templates (pre-scored and mapped), or import a CSV from an existing register. Give each risk an owner and a category.','register','Open register'],
+    ['Score inherent risk','Pick a likelihood (1–5) and rate each sector impact dimension (1–5). Inherent impact is the highest dimension; inherent score is likelihood × impact, banded Low / Medium / High / Critical.','register','Add a risk'],
+    ['Record controls, score residual','List the controls already in place, then score likelihood and impact again as they stand with those controls. The gap between the two scores is the reduction your controls deliver.','heatmap','Compare on heat map'],
+    ['Monitor and report','Watch the dashboard for critical residual risks, overdue treatments and framework coverage; use the controls tab for NIST CSF / ISO 27001 mapping and your obligations; export CSV for board packs.','dashboard','Open dashboard']
+  ];
+  const terms=[
+    ['Asset','Anything of value that could be harmed: a system, dataset, process, facility or person. Written in the "Asset at risk" field.'],
+    ['Threat','A cause with the potential to harm an asset — a ransomware crew, a careless insider, a cloud outage, a lost laptop.'],
+    ['Vulnerability','A weakness a threat can exploit: an unpatched device, a shared password, a flat network. Name it in the scenario text.'],
+    ['Risk','A threat acting on a vulnerability to harm an asset, expressed as likelihood × impact. One row in the register.'],
+    ['Likelihood','How often the scenario is expected to occur, 1 (rare, less than once in 10 years) to 5 (almost certain, several times a year).'],
+    ['Impact','How bad it would be if it happened, 1 (negligible) to 5 (severe), rated on the dimensions that matter for your sector — for '+sec.name+': '+sec.dims.map(d=>d[1].toLowerCase()).join(', ')+'.'],
+    ['Inherent risk','The risk before any controls are considered — the raw exposure. Scored first so the value of controls is visible.'],
+    ['Residual risk','The risk that remains after existing controls. The dashboard, heat map bands and treatment decisions use this number.'],
+    ['Risk score','Likelihood × impact, from 1 to 25. Bands: 1–4 Low, 5–9 Medium, 10–16 High, 17–25 Critical.'],
+    ['Risk reduction','(Inherent − residual) ÷ inherent, shown as a percentage. A quick read on how much work the current controls are doing.'],
+    ['Control','A safeguard that lowers likelihood (MFA, patching, segmentation) or impact (backups, encryption, incident response). Listed in free text and mapped to framework controls.'],
+    ['Treatment','The decision on what to do: Mitigate (add controls), Accept (live with it within appetite), Transfer (insurance, contract), Avoid (stop the activity).'],
+    ['Status','Where the risk is in its lifecycle: Identified → Assessing → Treating → Accepted or Closed. Closed risks drop out of the heat maps and open-risk counts.'],
+    ['Risk owner','The person or team accountable for the risk and its treatment — usually the business owner of the asset, not the security team.'],
+    ['Risk appetite','How much residual risk leadership is willing to carry. The bands suggest response times; the appetite itself is your policy decision.'],
+    ['Heat map','The 5 × 5 grid of likelihood (rows) against impact (columns). Each cell holds the count of open risks scored there; colour is the band.'],
+    ['NIST CSF 2.0','The NIST Cybersecurity Framework: six functions (Govern, Identify, Protect, Detect, Respond, Recover) split into categories such as PR.AA or DE.CM. Mapping a risk to categories shows which capabilities it depends on.'],
+    ['ISO/IEC 27001:2022 Annex A','The 93 reference controls in the ISO information-security standard, numbered A.5.x to A.8.x. The tool lists the ones most often tied to cyber risks.'],
+    ['Regulatory obligation','A law, regulation or standard that applies because of your sector and where you operate — GDPR, HIPAA, NIS2, PCI DSS and so on. Indicative; confirm with counsel.'],
+    ['Category','A grouping used for reporting: ransomware, third-party, identity, OT / IoT and others. Pick the one that best describes the cause.']
+  ];
+  const impactWords=['Absorbed in normal operations','Minor disruption, contained locally','Noticeable disruption or a reportable event','Major disruption; regulatory or contractual consequences','Threat to safety, licence or viability'];
+  return `
+  <div class="page-head"><div><h2>Guide</h2><p class="muted">How the register works, in the order you will use it, followed by the terms it uses.</p></div></div>
+  <div class="stack">
+    ${flow}
+    <div class="steps">${steps.map((st,i)=>`<div class="step"><span class="n">${i+1}</span><h3>${esc(st[0])}</h3><p>${esc(st[1])}</p><a href="#" class="btn sm go" data-view="${st[2]}">${esc(st[3])}</a></div>`).join('')}</div>
+    <div class="grid g2" style="align-items:start">
+      <div class="panel">
+        <div class="panel-head"><h3>Scoring at a glance</h3></div>
+        <div class="stack">
+          <div><span class="eyebrow">Likelihood</span><div class="scale" style="margin-top:6px">${LIKELIHOOD.map(l=>`<span class="k">${l[0]} · ${l[1]}</span><span>${l[2]}</span>`).join('')}</div></div>
+          <div><span class="eyebrow">Impact</span><div class="scale" style="margin-top:6px">${IMPACT_LEVELS.map((n,i)=>`<span class="k">${i+1} · ${n}</span><span>${impactWords[i]}</span>`).join('')}</div></div>
+          <div><span class="eyebrow">Bands (likelihood × impact)</span><div class="scale" style="margin-top:6px"><span class="k">1–4</span><span><span class="score b-low">Low</span> Monitor; accept within appetite</span><span class="k">5–9</span><span><span class="score b-med">Medium</span> Treat within 12 months</span><span class="k">10–16</span><span><span class="score b-high">High</span> Treat within 90 days</span><span class="k">17–25</span><span><span class="score b-crit">Critical</span> Immediate action; executive escalation</span></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>Working as a team</h3></div>
+        <ul class="plain small" style="color:var(--ink-2)">
+          <li>Everyone with the link edits the same register; changes appear live for others.</li>
+          <li>If two people save the same risk at once, the last save wins — agree an owner per risk.</li>
+          <li>Update "Last reviewed" every time a risk is re-scored; stale reviews are the usual audit finding.</li>
+          <li>Export a CSV before big changes as a snapshot; import restores rows by risk ID.</li>
+          <li>The regulations list is indicative — thresholds, licensing and entity type decide applicability.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Terminology</h3><span class="small muted">${terms.length} terms</span></div>
+      <dl class="gloss">${terms.map(t=>`<dt>${esc(t[0])}</dt><dd>${esc(t[1])}</dd>`).join('')}</dl>
+    </div>
+  </div>`;
+}
+
+/* =====================================================================
+   Risk editor
+   ===================================================================== */
+function openEditor(r){
+  const sec=sector(), isNew=!r;
+  r=r?JSON.parse(JSON.stringify(r)):{id:store.nextId(),title:'',cat:CATEGORIES[0],asset:'',threat:'',desc:'',owner:'',status:'Identified',treatment:'Mitigate',iL:3,iI:3,rL:3,rI:3,dims:{},controls:'',nist:[],iso:[],due:'',reviewed:new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()};
+  r.dims=r.dims||{}; r.nist=r.nist||[]; r.iso=r.iso||[];
+  const sel=(name,opts,val)=>`<select name="${name}">${opts.map(o=>`<option value="${esc(o[0])}" ${String(val)===String(o[0])?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`;
+  const lOpts=LIKELIHOOD.map(l=>[l[0],`${l[0]} · ${l[1]} — ${l[2]}`]);
+  const iOpts=IMPACT_LEVELS.map((n,i)=>[i+1,`${i+1} · ${n}`]);
+  const dlg=$('#dlg');
+  dlg.innerHTML=`<form id="riskForm" method="dialog">
+    <div class="dlg-head"><span class="mono muted">${esc(r.id)}</span><h2 style="flex:1">${isNew?'New risk':'Edit risk'}</h2><button type="button" class="btn sm" data-act="close">Close</button></div>
+    <div class="dlg-body">
+      <fieldset><legend>Description</legend>
+        <div class="grid g2">
+          <div class="field" style="grid-column:1/-1"><label>Title</label><input name="title" required value="${esc(r.title)}" placeholder="What could go wrong, in one line"></div>
+          <div class="field"><label>Category</label>${sel('cat',CATEGORIES.map(c=>[c,c]),r.cat)}</div>
+          <div class="field"><label>Owner</label><input name="owner" value="${esc(r.owner)}" placeholder="Accountable person or team"></div>
+          <div class="field"><label>Asset at risk</label><input name="asset" value="${esc(r.asset)}"></div>
+          <div class="field"><label>Threat / cause</label><input name="threat" value="${esc(r.threat)}"></div>
+          <div class="field" style="grid-column:1/-1"><label>Description &amp; scenario</label><textarea name="desc">${esc(r.desc)}</textarea></div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Inherent risk — before controls</legend>
+        <div class="field"><label>Likelihood</label>${sel('iL',lOpts,r.iL)}<span class="hint">${esc(sec.drivers[0])}.</span></div>
+        <div><label class="small" style="font-weight:500;color:var(--ink-2)">Impact by dimension (${esc(sec.name)})</label><span class="hint small muted"> — inherent impact is the highest rating</span></div>
+        ${sec.dims.map(([k,l])=>`<div class="dimrow"><span class="small">${esc(l)}</span><select name="dim_${k}" data-dim><option value="">—</option>${IMPACT_LEVELS.map((n,i)=>`<option value="${i+1}" ${String(r.dims[k])===String(i+1)?'selected':''}>${i+1} · ${n}</option>`).join('')}</select></div>`).join('')}
+        <div class="field"><label>Inherent impact</label>${sel('iI',iOpts,r.iI)}<span class="hint">Filled from the dimensions above; override if needed.</span></div>
+        <div class="scoreline">Inherent score: <span id="iScore"></span></div>
+      </fieldset>
+      <fieldset><legend>Controls &amp; residual risk</legend>
+        <div class="field"><label>Existing controls</label><textarea name="controls" placeholder="What is already in place that reduces likelihood or impact">${esc(r.controls)}</textarea></div>
+        <div class="grid g2">
+          <div class="field"><label>Residual likelihood</label>${sel('rL',lOpts,r.rL)}</div>
+          <div class="field"><label>Residual impact</label>${sel('rI',iOpts,r.rI)}</div>
+        </div>
+        <div class="scoreline">Residual score: <span id="rScore"></span><span class="muted" id="rRed"></span></div>
+        <div class="grid g3">
+          <div class="field"><label>Status</label>${sel('status',STATUSES.map(s=>[s,s]),r.status)}</div>
+          <div class="field"><label>Treatment</label>${sel('treatment',TREATMENTS.map(s=>[s,s]),r.treatment)}</div>
+          <div class="field"><label>Treatment due</label><input type="date" name="due" value="${esc(r.due)}"></div>
+          <div class="field"><label>Last reviewed</label><input type="date" name="reviewed" value="${esc(r.reviewed)}"></div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Framework mapping</legend>
+        <div class="fn-group">${NIST.map(([f,name,cats])=>`<span class="eyebrow">${f} · ${name}</span><div class="chips">${cats.map(([c,n])=>`<label class="chip ${r.nist.includes(c)?'on':''}" title="${esc(n)}"><input type="checkbox" name="nist" value="${c}" ${r.nist.includes(c)?'checked':''} hidden>${c}</label>`).join('')}</div>`).join('')}</div>
+        <details ${r.iso.length?'open':''}><summary>ISO/IEC 27001:2022 Annex A controls (${r.iso.length} selected)</summary>
+          <div class="isolist">${ISO.map(([c,n])=>`<label><input type="checkbox" name="iso" value="${c}" ${r.iso.includes(c)?'checked':''}><span class="c">${c}</span><span>${esc(n)}</span></label>`).join('')}</div>
+        </details>
+      </fieldset>
+    </div>
+    <div class="dlg-foot">${isNew?'':'<button type="button" class="btn danger sm" data-act="delete">Delete</button>'}<span style="flex:1"></span><button type="button" class="btn" data-act="close">Cancel</button><button type="submit" class="btn primary">Save risk</button></div>
+  </form>`;
+  dlg.dataset.id=r.id; dlg.dataset.created=r.createdAt||new Date().toISOString(); dlg.dataset.new=isNew?'1':'';
+  updateEditorScores();
+  dlg.showModal();
+}
+function updateEditorScores(){
+  const f=$('#riskForm'); if(!f)return;
+  const dims=[...f.querySelectorAll('[data-dim]')].map(s=>parseInt(s.value,10)).filter(Boolean);
+  if(dims.length&&f.dataset.touchedI!=='1'){f.iI.value=Math.max(...dims);}
+  const r={iL:f.iL.value,iI:f.iI.value,rL:f.rL.value,rI:f.rI.value};
+  $('#iScore').innerHTML=scoreChip(r,'i'); $('#rScore').innerHTML=scoreChip(r,'r');
+  const red=reduction(r); $('#rRed').textContent=red>0?`${red}% reduction from controls`:red<0?'residual exceeds inherent — check the controls':'no reduction recorded';
+  f.querySelectorAll('label.chip').forEach(l=>l.classList.toggle('on',l.querySelector('input').checked));
+}
+function readEditor(){
+  const f=$('#riskForm'), dlg=$('#dlg'), sec=sector();
+  const dims={}; sec.dims.forEach(([k])=>{const v=f['dim_'+k].value;if(v)dims[k]=+v;});
+  return {id:dlg.dataset.id,title:f.title.value.trim(),cat:f.cat.value,asset:f.asset.value.trim(),threat:f.threat.value.trim(),desc:f.desc.value.trim(),owner:f.owner.value.trim(),
+    status:f.status.value,treatment:f.treatment.value,iL:+f.iL.value,iI:+f.iI.value,rL:+f.rL.value,rI:+f.rI.value,dims,controls:f.controls.value.trim(),
+    nist:[...f.querySelectorAll('input[name=nist]:checked')].map(i=>i.value),iso:[...f.querySelectorAll('input[name=iso]:checked')].map(i=>i.value),
+    due:f.due.value,reviewed:f.reviewed.value,createdAt:dlg.dataset.created};
+}
+
+function openTemplates(){
+  const sec=sector(), dlg=$('#dlg');
+  const have=new Set(S.risks.map(r=>r.title.toLowerCase()));
+  dlg.innerHTML=`<div class="dlg-head"><h2 style="flex:1">${esc(sec.name)} risk templates</h2><button type="button" class="btn sm" data-act="close">Close</button></div>
+  <div class="dlg-body"><p class="muted small">Common scenarios for your sector, pre-scored and mapped to NIST CSF and ISO 27001. Adjust after adding.</p>
+  <div class="tablewrap"><table><thead><tr><th>Scenario</th><th>Category</th><th>Inherent</th><th></th></tr></thead><tbody>
+  ${sec.templates.map((t,i)=>`<tr><td><div class="t">${esc(t.t)}</div><div class="sub">${esc(t.asset)} · ${esc(t.threat)}</div></td><td>${esc(t.cat)}</td><td>${scoreChip({iL:t.L,iI:t.I},'i')}</td><td>${have.has(t.t.toLowerCase())?'<span class="small muted">Added</span>':`<button class="btn sm" data-tpl="${i}">Add</button>`}</td></tr>`).join('')}
+  </tbody></table></div></div>`;
+  dlg.showModal();
+}
+async function addTemplate(i){
+  const t=sector().templates[i];
+  const r={id:store.nextId(),title:t.t,cat:t.cat,asset:t.asset,threat:t.threat,desc:'',owner:'',status:'Identified',treatment:'Mitigate',iL:t.L,iI:t.I,rL:t.L,rI:t.I,dims:{},controls:'',nist:t.nist,iso:t.iso,due:'',reviewed:new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()};
+  await store.saveRisk(r); toast(`${r.id} added — open it to record controls`);
+  $('#dlg').close(); openTemplates();
+}
+
+/* =====================================================================
+   CSV
+   ===================================================================== */
+const CSV_COLS=['id','title','category','asset','threat','description','owner','status','treatment','inherent_likelihood','inherent_impact','residual_likelihood','residual_impact','controls','nist_csf','iso_27001','treatment_due','last_reviewed'];
+function toCSV(){
+  const sec=sector(); const dimCols=sec.dims.map(([k])=>'impact_'+k);
+  const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const rows=[[...CSV_COLS,'inherent_score','residual_score',...dimCols].join(',')];
+  S.risks.forEach(r=>rows.push([r.id,r.title,r.cat,r.asset,r.threat,r.desc,r.owner,r.status,r.treatment,r.iL,r.iI,r.rL,r.rI,r.controls,(r.nist||[]).join('; '),(r.iso||[]).join('; '),r.due,r.reviewed,inh(r),res(r),...sec.dims.map(([k])=>(r.dims||{})[k]??'')].map(q).join(',')));
+  return rows.join('\n');
+}
+function parseCSV(text){
+  const out=[];let row=[],cur='',inQ=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(inQ){if(c==='"'){if(text[i+1]==='"'){cur+='"';i++;}else inQ=false;}else cur+=c;}
+    else if(c==='"')inQ=true; else if(c===','){row.push(cur);cur='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cur);out.push(row);row=[];cur='';}
+    else cur+=c;}
+  if(cur||row.length){row.push(cur);out.push(row);}
+  return out.filter(r=>r.some(v=>v.trim()));
+}
+async function importCSV(file){
+  const text=await file.text(); const rows=parseCSV(text); if(rows.length<2){toast('CSV has no data rows');return;}
+  const head=rows[0].map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_'));
+  const idx=n=>head.indexOf(n);
+  const alias={title:['title','risk','name','risk_title'],category:['category','cat'],asset:['asset','asset_at_risk'],threat:['threat','cause','threat_cause'],description:['description','desc','scenario'],owner:['owner','risk_owner'],status:['status'],treatment:['treatment','response'],iL:['inherent_likelihood','likelihood','il'],iI:['inherent_impact','impact','ii'],rL:['residual_likelihood','rl'],rI:['residual_impact','ri'],controls:['controls','existing_controls','mitigations'],nist:['nist_csf','nist'],iso:['iso_27001','iso'],due:['treatment_due','due','due_date'],reviewed:['last_reviewed','reviewed']};
+  const col=k=>{for(const a of alias[k]){const i=idx(a);if(i>=0)return i;}return -1;};
+  const get=(r,k)=>{const i=col(k);return i>=0?(r[i]||'').trim():'';};
+  const sec=sector(); const dimIdx=sec.dims.map(([k])=>[k,idx('impact_'+k)]);
+  const idI=idx('id'); let added=0,updated=0;
+  for(const row of rows.slice(1)){
+    const title=get(row,'title'); if(!title)continue;
+    let id=idI>=0?row[idI].trim():''; const existing=S.risks.find(r=>r.id===id);
+    if(!id||(!existing&&S.risks.some(r=>r.id===id)))id=store.nextId();
+    const base=existing||{id,createdAt:new Date().toISOString(),dims:{},nist:[],iso:[]};
+    const dims=Object.assign({},base.dims); dimIdx.forEach(([k,i])=>{if(i>=0&&row[i])dims[k]=clamp(row[i],3);});
+    const iL=clamp(get(row,'iL'),base.iL||3), iI=clamp(get(row,'iI'),base.iI||3);
+    const r=Object.assign({},base,{id,title,cat:CATEGORIES.includes(get(row,'category'))?get(row,'category'):(base.cat||CATEGORIES[0]),asset:get(row,'asset'),threat:get(row,'threat'),desc:get(row,'description'),owner:get(row,'owner'),
+      status:STATUSES.includes(get(row,'status'))?get(row,'status'):(base.status||'Identified'),treatment:TREATMENTS.includes(get(row,'treatment'))?get(row,'treatment'):(base.treatment||'Mitigate'),
+      iL,iI,rL:clamp(get(row,'rL'),iL),rI:clamp(get(row,'rI'),iI),dims,controls:get(row,'controls'),
+      nist:get(row,'nist').split(/[;,]\s*/).map(s=>s.trim()).filter(c=>NIST_NAME[c]),iso:get(row,'iso').split(/[;,]\s*/).map(s=>s.trim()).filter(c=>ISO_NAME[c]),
+      due:get(row,'due'),reviewed:get(row,'reviewed')||base.reviewed||''});
+    if(!existing)S.risks.push(r); // keep nextId moving even before the store echoes back
+    await store.saveRisk(r); existing?updated++:added++;
+  }
+  toast(`Imported ${added} new, ${updated} updated`);
+}
+async function exportCSV(){
+  const csv=toCSV(); const name=`risk-register-${new Date().toISOString().slice(0,10)}.csv`;
+  if(S.dl){try{await S.dl.save({filename:name,data:csv});toast('Exported '+name);return;}catch(e){if(e&&e.code==='declined')return;}}
+  const dlg=$('#dlg');
+  dlg.innerHTML=`<div class="dlg-head"><h2 style="flex:1">Export CSV</h2><button type="button" class="btn sm" data-act="close">Close</button></div><div class="dlg-body"><p class="small muted">Direct download is not available in this view. Copy the CSV below and paste it into a file named <span class="mono">${esc(name)}</span>.</p><textarea class="copybox" id="copybox" readonly>${esc(csv)}</textarea><div class="row"><button class="btn primary" data-act="copy">Copy to clipboard</button></div></div>`;
+  dlg.showModal();
+}
+
+/* =====================================================================
+   Events
+   ===================================================================== */
+let toastT; function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+document.addEventListener('click',async e=>{
+  const v=e.target.closest('[data-view]'); if(v){e.preventDefault();S.navigated=true;S.view=v.dataset.view;S.cell=null;render();window.scrollTo(0,0);return;}
+  const open=e.target.closest('[data-open]'); if(open){const r=S.risks.find(x=>x.id===open.dataset.open);if(r)openEditor(r);return;}
+  const cell=e.target.closest('[data-cell]'); if(cell){const [k,l,i]=cell.dataset.cell.split(',');S.cell=(S.cell&&S.cell.k===k&&S.cell.l===+l&&S.cell.i===+i)?null:{k,l:+l,i:+i};render();return;}
+  const cont=e.target.closest('[data-cont]'); if(cont){const boxes=[...cont.closest('.continent').querySelectorAll('input[type=checkbox]')];const all=boxes.every(b=>b.checked);boxes.forEach(b=>b.checked=!all);updateCountryCount();return;}
+  const tpl=e.target.closest('[data-tpl]'); if(tpl){tpl.disabled=true;await addTemplate(+tpl.dataset.tpl);return;}
+  const act=e.target.closest('[data-act]'); if(!act)return;
+  const a=act.dataset.act;
+  if(a==='new')openEditor(null);
+  else if(a==='template')openTemplates();
+  else if(a==='close')$('#dlg').close();
+  else if(a==='clearcell'){S.cell=null;render();}
+  else if(a==='import')$('#csvFile').click();
+  else if(a==='export')exportCSV();
+  else if(a==='copy'){try{await navigator.clipboard.writeText($('#copybox').value);toast('Copied');}catch(err){$('#copybox').select();toast('Select all and copy');}}
+  else if(a==='delete'){const id=$('#dlg').dataset.id;if(confirm(`Delete ${id}? This cannot be undone.`)){await store.deleteRisk(id);$('#dlg').close();toast(`${id} deleted`);}}
+  else if(a==='clear-sample'){if(confirm('Remove all sample risks and the sample organization profile?')){for(const r of [...S.risks])await store.deleteRisk(r.id);await store.saveProfile(Object.assign({},DEFAULT_PROFILE));S.view='org';render();toast('Sample data cleared');}}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){S.q=e.target.value;renderTableOnly();}
+  if(e.target.closest('#riskForm')){if(e.target.name==='iI')$('#riskForm').dataset.touchedI='1';updateEditorScores();}
+  if(e.target.name==='c')updateCountryCount();
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='fStatus'){S.fStatus=e.target.value;renderTableOnly();}
+  if(e.target.id==='fBand'){S.fBand=e.target.value;renderTableOnly();}
+  if(e.target.id==='csvFile'&&e.target.files[0]){importCSV(e.target.files[0]);e.target.value='';}
+  if(e.target.id==='oSector'){ // live preview of what the sector changes
+    const tmp=S.profile; S.profile=Object.assign({},profile(),{sector:e.target.value}); const html=vOrg(); S.profile=tmp;
+    const d=document.createElement('div'); d.innerHTML=html; $('#sectorInfo').innerHTML=d.querySelector('#sectorInfo').innerHTML;
+  }
+});
+function renderTableOnly(){const wrap=$('.tablewrap');if(!wrap)return;const d=document.createElement('div');d.innerHTML=vRegister();wrap.innerHTML=d.querySelector('.tablewrap').innerHTML;}
+function updateCountryCount(){const n=document.querySelectorAll('input[name=c]:checked').length;const el=$('#cCount');if(el)el.textContent=`${n} countr${n===1?'y':'ies'}`;}
+document.addEventListener('submit',async e=>{
+  if(e.target.id==='riskForm'){e.preventDefault();const r=readEditor();if(!r.title){toast('Give the risk a title');return;}await store.saveRisk(r);$('#dlg').close();toast(`${r.id} saved`);}
+  if(e.target.id==='orgForm'){e.preventDefault();const f=e.target;
+    const p={name:f.name.value.trim(),sector:f.sector.value,revenue:f.revenue.value,headcount:f.headcount.value,listed:f.listed.checked,countries:[...f.querySelectorAll('input[name=c]:checked')].map(i=>i.value),updatedAt:new Date().toISOString()};
+    await store.saveProfile(p);toast('Profile saved');S.view='dashboard';render();window.scrollTo(0,0);}
+});
+boot();
+</script>

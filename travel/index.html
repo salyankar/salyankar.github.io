@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Travel · Satya Salyankar</title>
+<meta name="description" content="Travel photographs and notes by Satya Salyankar.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="../">About</a>
+      <a href="../tools/">Tools</a>
+      <a href="./">Travel</a>
+      <a href="../watches/">Watches</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head wrap">
+    <div class="eyebrow">Travel</div>
+    <h1>Places I've been</h1>
+    <p>
+      Photographs and short write-ups from trips. Not guides — just what I saw, what surprised me,
+      and the things I'd tell a friend who was going next.
+    </p>
+  </div>
+
+  <section class="section wrap">
+    <!--
+      ================================================================
+      HOW TO ADD A TRIP
+      1. Copy the folder  travel/sample-kyoto/  to  travel/<trip-slug>/
+      2. Put your photos in  travel/<trip-slug>/photos/  (JPGs resized to ~2000px wide keep the
+         repo small and the page fast). Name the cover image cover.jpg.
+      3. Edit  travel/<trip-slug>/index.html  — title, dates, story, gallery captions.
+      4. Copy the card below, newest trip first, and point it at the new folder.
+      ================================================================
+    -->
+    <div class="grid">
+
+      <article class="card">
+        <div class="card-cover"><img src="sample-kyoto/photos/cover.svg" alt="" loading="lazy"></div>
+        <div class="meta">Sample · Spring 2026 · 6 days</div>
+        <h3><a href="sample-kyoto/">Kyoto, Japan</a></h3>
+        <p>
+          <span class="todo">Sample entry.</span> Temples before the crowds, the best coffee of the
+          trip in a converted machiya, and a lesson about rain and trains.
+        </p>
+        <div class="tags">
+          <span class="tag">Japan</span>
+          <span class="tag">cities</span>
+          <span class="tag">food</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a></span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

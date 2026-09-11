@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Satya Salyankar</title>
+<meta name="description" content="Satya Salyankar — cybersecurity, tools built with Claude, travel, and watches.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="./">About</a>
+      <a href="tools/">Tools</a>
+      <a href="travel/">Travel</a>
+      <a href="watches/">Watches</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="eyebrow">Hello</div>
+    <h1>I'm Satya Salyankar.</h1>
+    <p class="lede">
+      I work in cybersecurity, build small security tools with Claude, travel whenever I can,
+      and have more opinions about watches than anyone asked for.
+    </p>
+    <div class="hero-row">
+      <a class="btn primary" href="tools/">See the tools</a>
+      <a class="btn" href="travel/">Travel log</a>
+      <a class="btn" href="watches/">Watch opinions</a>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="grid-2">
+      <div class="prose">
+        <h2>About</h2>
+        <p>
+          <span class="todo">TODO: replace this bio.</span>
+          I'm a cybersecurity professional based in <span class="todo">city, country</span>.
+          Day to day I spend my time on <span class="todo">risk management / detection / cloud security — pick your focus</span>,
+          and I'm interested in how much of the boring parts of security work can be turned into
+          small, focused tools.
+        </p>
+        <p>
+          Most of the tools on this site were built in a conversation with Claude: I describe the
+          problem, we iterate on the tool together, and the result gets published here as a single
+          HTML file that runs entirely in your browser — nothing is sent to a server.
+        </p>
+        <p>
+          Away from the keyboard I travel, take too many photographs, and think about watches:
+          mechanical ones mostly, and mostly the sensible sizes.
+        </p>
+
+        <h3 id="elsewhere">Elsewhere</h3>
+        <ul>
+          <li><a href="https://github.com/" rel="me">GitHub</a> <span class="todo">TODO: your GitHub URL</span></li>
+          <li><a href="https://www.linkedin.com/" rel="me">LinkedIn</a> <span class="todo">TODO: your LinkedIn URL</span></li>
+          <li>Email: <span class="todo">TODO: add an address only if you want it public</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>On this site</h2>
+        <div class="grid" style="grid-template-columns:1fr">
+          <article class="card tool">
+            <div class="icon">⛨</div>
+            <h3><a href="tools/">Security tools</a></h3>
+            <p>Browser-based tools for security work — risk registers, checklists, calculators. Built with Claude, free to use.</p>
+          </article>
+          <article class="card">
+            <h3><a href="travel/">Travel</a></h3>
+            <p>Photographs and notes from trips: where I went, what surprised me, what I'd do differently.</p>
+          </article>
+          <article class="card">
+            <h3><a href="watches/">Watches</a></h3>
+            <p>Opinions on watches I own, have tried on, or keep thinking about. Specs, honest verdicts, no affiliate links.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a></span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

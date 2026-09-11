@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watches · Satya Salyankar</title>
+<meta name="description" content="Watch opinions and reviews by Satya Salyankar.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="../">About</a>
+      <a href="../tools/">Tools</a>
+      <a href="../travel/">Travel</a>
+      <a href="./">Watches</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head wrap">
+    <div class="eyebrow">Watches</div>
+    <h1>Watch opinions</h1>
+    <p>
+      Thoughts on watches I own, have worn for a while, or keep circling back to. I care about
+      how a watch wears more than what it signals. No affiliate links, nothing sponsored.
+    </p>
+  </div>
+
+  <section class="section wrap">
+    <!--
+      ================================================================
+      HOW TO ADD A WATCH POST
+      1. Copy the folder  watches/sample-36mm/  to  watches/<post-slug>/
+      2. Drop a photo in that folder (watch.jpg) and edit index.html —
+         specs table, the write-up, and the verdict box.
+      3. Copy the card below, newest first, and point it at the new folder.
+      ================================================================
+    -->
+    <div class="grid">
+
+      <article class="card">
+        <div class="card-cover"><img src="sample-36mm/watch.svg" alt="" loading="lazy"></div>
+        <div class="meta">Sample · Opinion · Sep 2026</div>
+        <h3><a href="sample-36mm/">The case for 36mm</a></h3>
+        <p>
+          <span class="todo">Sample post.</span> Why the "small" size is the right size for most
+          wrists, and why the spec sheet number that matters isn't diameter.
+        </p>
+        <div class="tags">
+          <span class="tag">opinion</span>
+          <span class="tag">sizing</span>
+        </div>
+        <div class="card-foot">
+          <span class="rating">★★★★☆ · would recommend</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a></span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
