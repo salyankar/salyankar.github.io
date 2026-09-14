@@ -44,20 +44,19 @@ Once you're happy with the format, delete the `sample-*` folders and their cards
 
 ## Publishing (first time)
 
-1. Create a new **public** repository on GitHub (e.g. `satya-site`). Don't add a README or
+1. Create a new **public** repository on GitHub named exactly `salyankar.github.io`. Don't add a README or
    .gitignore there — this folder already has them.
 2. From this folder:
    ```
-   git remote add origin https://github.com/<your-username>/satya-site.git
+   git remote add origin https://github.com/salyankar/salyankar.github.io.git
    git push -u origin main
    ```
 3. On GitHub: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**,
    Branch: `main`, folder `/ (root)`. Save.
-4. After a minute the site is live at `https://<your-username>.github.io/satya-site/`.
+4. After a minute the site is live at `https://salyankar.github.io/`.
 
-To get `https://<your-username>.github.io/` with no suffix, name the repository
-`<your-username>.github.io` instead. For a custom domain, add it under Settings → Pages
-and create a `CNAME` file in this folder containing the domain.
+For a custom domain later, add it under Settings → Pages and create a `CNAME` file in this
+folder containing the domain.
 
 ## Publishing (every time after)
 
