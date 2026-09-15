@@ -4,7 +4,9 @@
   var root = document.documentElement;
   var stored = null;
   try { stored = localStorage.getItem('theme'); } catch (e) {}
-  if (stored === 'dark' || stored === 'light') root.setAttribute('data-theme', stored);
+  // A page can pin its theme with <html data-theme="..." data-theme-lock>; the toggle is skipped there.
+  var locked = root.hasAttribute('data-theme-lock');
+  if (!locked && (stored === 'dark' || stored === 'light')) root.setAttribute('data-theme', stored);
 
   function current() {
     var t = root.getAttribute('data-theme');
@@ -19,7 +21,8 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var btn = document.querySelector('.theme-btn');
-    if (btn) {
+    if (btn && locked) btn.remove();
+    if (btn && !locked) {
       paint(btn);
       btn.addEventListener('click', function () {
         var next = current() === 'dark' ? 'light' : 'dark';

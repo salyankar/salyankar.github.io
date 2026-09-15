@@ -7,97 +7,56 @@
 <meta name="description" content="Satya Salyankar — cybersecurity, tools built with Claude, travel, and watches.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css">
-<script src="assets/site.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preload" as="image" href="assets/landing.jpg">
+<style>
+  /* Landing page — full-bleed photo with name and an Enter button. Standalone styles; the
+     rest of the site uses assets/site.css. Swap the photo by replacing assets/landing.jpg. */
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:#0b0c0e;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .landing{position:relative;min-height:100vh;min-height:100dvh;overflow:hidden}
+  .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:38% 40%}
+  /* Scrim: keeps the text legible over the bright window on the right without flattening the photo. */
+  .scrim{position:absolute;inset:0;background:
+      linear-gradient(to left, rgba(8,10,14,.72) 0%, rgba(8,10,14,.45) 38%, rgba(8,10,14,0) 62%),
+      linear-gradient(to bottom, rgba(8,10,14,.35) 0%, rgba(8,10,14,0) 30%)}
+  .content{position:absolute;right:clamp(24px,9vw,140px);top:44%;transform:translateY(-60%);
+      text-align:left;max-width:min(520px,80vw)}
+  .name{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-weight:500;
+      font-size:clamp(20px,3.2vw,34px);letter-spacing:.14em;margin:0 0 6px;white-space:nowrap;
+      text-shadow:0 2px 18px rgba(0,0,0,.55)}
+  .name .slash{opacity:.55}
+  .tagline{margin:0 0 30px;font-size:clamp(15px,1.5vw,18px);font-weight:400;letter-spacing:.02em;color:rgba(255,255,255,.88);
+      text-shadow:0 1px 12px rgba(0,0,0,.6)}
+  .enter{display:inline-block;padding:13px 32px;border:1.5px solid rgba(255,255,255,.9);color:#fff;text-decoration:none;
+      font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
+      background:rgba(8,10,14,.25);backdrop-filter:blur(2px);transition:background .2s,color .2s,transform .2s}
+  .enter:hover,.enter:focus-visible{background:#fff;color:#0b0c0e;outline:none;transform:translateY(-1px)}
+  .foot{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.55)}
+  .foot a{color:inherit}
+  @media (max-width:720px){
+    .photo{object-position:42% 30%}
+    .scrim{background:linear-gradient(to top, rgba(8,10,14,.88) 0%, rgba(8,10,14,.55) 40%, rgba(8,10,14,0) 70%)}
+    .content{right:auto;left:24px;top:auto;bottom:18vh;transform:none;max-width:calc(100vw - 48px)}
+    .name{font-size:clamp(18px,6vw,26px);letter-spacing:.1em}
+  }
+  @media (prefers-reduced-motion:reduce){.enter{transition:none}}
+</style>
 </head>
 <body>
+<main class="landing">
+  <img class="photo" src="assets/landing.jpg" alt="Satya Salyankar sitting in a diner booth, looking out of the window" fetchpriority="high">
+  <div class="scrim" aria-hidden="true"></div>
 
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="./"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
-    <nav class="nav" aria-label="Main">
-      <a href="./">About</a>
-      <a href="tools/">Tools</a>
-      <a href="travel/">Travel</a>
-      <a href="watches/">Watches</a>
-      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
-    </nav>
+  <div class="content">
+    <h1 class="name"><span class="slash">\</span>satyasalyankar<span class="slash">\</span></h1>
+    <p class="tagline">Cybersecurity · Tools · Travel · Time</p>
+    <a class="enter" href="home/">Enter</a>
   </div>
-</header>
 
-<main>
-  <section class="hero wrap">
-    <div class="eyebrow">Hello</div>
-    <h1>I'm Satya Salyankar.</h1>
-    <p class="lede">
-      I work in cybersecurity, build small security tools with Claude, travel whenever I can,
-      and have more opinions about watches than anyone asked for.
-    </p>
-    <div class="hero-row">
-      <a class="btn primary" href="tools/">See the tools</a>
-      <a class="btn" href="travel/">Travel log</a>
-      <a class="btn" href="watches/">Watch opinions</a>
-    </div>
-  </section>
-
-  <section class="section wrap">
-    <div class="grid-2">
-      <div class="prose">
-        <h2>About</h2>
-        <p>
-          <span class="todo">TODO: replace this bio.</span>
-          I'm a cybersecurity professional based in <span class="todo">city, country</span>.
-          Day to day I spend my time on <span class="todo">risk management / detection / cloud security — pick your focus</span>,
-          and I'm interested in how much of the boring parts of security work can be turned into
-          small, focused tools.
-        </p>
-        <p>
-          Most of the tools on this site were built in a conversation with Claude: I describe the
-          problem, we iterate on the tool together, and the result gets published here as a single
-          HTML file that runs entirely in your browser — nothing is sent to a server.
-        </p>
-        <p>
-          Away from the keyboard I travel, take too many photographs, and think about watches:
-          mechanical ones mostly, and mostly the sensible sizes.
-        </p>
-
-        <h3 id="elsewhere">Elsewhere</h3>
-        <ul>
-          <li><a href="https://github.com/salyankar" rel="me">github.com/salyankar</a></li>
-          <li><a href="https://www.linkedin.com/" rel="me">LinkedIn</a> <span class="todo">TODO: your LinkedIn URL</span></li>
-          <li>Email: <span class="todo">TODO: add an address only if you want it public</span></li>
-        </ul>
-      </div>
-
-      <div>
-        <h2>On this site</h2>
-        <div class="grid" style="grid-template-columns:1fr">
-          <article class="card tool">
-            <div class="icon">⛨</div>
-            <h3><a href="tools/">Security tools</a></h3>
-            <p>Browser-based tools for security work — risk registers, checklists, calculators. Built with Claude, free to use.</p>
-          </article>
-          <article class="card">
-            <h3><a href="travel/">Travel</a></h3>
-            <p>Photographs and notes from trips: where I went, what surprised me, what I'd do differently.</p>
-          </article>
-          <article class="card">
-            <h3><a href="watches/">Watches</a></h3>
-            <p>Opinions on watches I own, have tried on, or keep thinking about. Specs, honest verdicts, no affiliate links.</p>
-          </article>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="foot"><a href="home/">salyankar.github.io</a></div>
 </main>
-
-<footer class="site-footer">
-  <div class="wrap">
-    <span>© <span id="yr">2026</span> Satya Salyankar</span>
-    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a> · <a href="https://github.com/salyankar/salyankar.github.io">Source</a></span>
-  </div>
-</footer>
-<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 </body>
 </html>

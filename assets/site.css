@@ -95,7 +95,7 @@ main{padding:40px 0 72px}
 .nav a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
 .theme-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:8px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;font-size:16px;margin-left:6px}
 .theme-btn:hover{border-color:var(--line-strong);color:var(--ink)}
-@media (max-width:640px){.nav a{padding:6px 9px;font-size:14px}.brand .text{display:none}}
+@media (max-width:640px){.nav{gap:0}.nav a{padding:6px 7px;font-size:13.5px}.brand .text{display:none}}
 
 /* ---- hero / page heads ---- */
 .hero{padding:48px 0 16px}

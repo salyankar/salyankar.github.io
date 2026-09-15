@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume · Satya Salyankar</title>
+<meta name="description" content="Satya Salyankar — resume.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js"></script>
+<style>
+  .role{display:grid;grid-template-columns:150px 1fr;gap:8px 24px;padding:18px 0;border-top:1px solid var(--line)}
+  .role .when{font-family:var(--mono);font-size:13px;color:var(--ink-3);padding-top:3px}
+  .role h3{margin:0 0 2px}
+  .role .org{color:var(--ink-2);margin-bottom:8px}
+  .role ul{margin:0;padding-left:18px;color:var(--ink-2)}
+  @media (max-width:560px){.role{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../home/"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="../home/">Home</a>
+      <a href="./">Resume</a>
+      <a href="../tools/">Tools</a>
+      <a href="../travel/">Travel</a>
+      <a href="../watches/">Time</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head wrap">
+    <div class="eyebrow">Resume</div>
+    <h1>Satya Salyankar</h1>
+    <p><span class="todo">TODO: one-line professional summary.</span> Cybersecurity professional focused on <span class="todo">your specialism</span>.</p>
+    <p class="small">
+      <a class="btn small" href="#" aria-disabled="true">Download PDF</a>
+      <span class="todo">TODO: drop resume.pdf in this folder and point the link at it</span>
+    </p>
+  </div>
+
+  <section class="section wrap prose">
+    <h2>Experience</h2>
+
+    <!-- Copy one .role block per job, newest first. -->
+    <div class="role">
+      <div class="when">2023 — present</div>
+      <div>
+        <h3><span class="todo">Job title</span></h3>
+        <div class="org"><span class="todo">Company</span> · <span class="todo">City</span></div>
+        <ul>
+          <li><span class="todo">What you owned and the outcome — one line each.</span></li>
+          <li><span class="todo">Second achievement.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="role">
+      <div class="when">2019 — 2023</div>
+      <div>
+        <h3><span class="todo">Previous title</span></h3>
+        <div class="org"><span class="todo">Company</span></div>
+        <ul>
+          <li><span class="todo">Achievement.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Skills</h2>
+    <div class="tags">
+      <span class="tag">risk management</span><span class="tag">GRC</span><span class="tag">cloud security</span>
+      <span class="tag">threat modelling</span><span class="tag">incident response</span><span class="todo">TODO: edit</span>
+    </div>
+
+    <h2>Certifications &amp; education</h2>
+    <ul>
+      <li><span class="todo">e.g. CISSP · year</span></li>
+      <li><span class="todo">Degree · University · year</span></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a> · <a href="https://github.com/salyankar/salyankar.github.io">Source</a></span>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>

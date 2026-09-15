@@ -4,13 +4,16 @@ Personal website for Satya Salyankar. Plain HTML/CSS — no build step, no frame
 Hosted on GitHub Pages.
 
 ```
-index.html                  About / home page
+index.html                  Landing page (full-screen photo + Enter)
+home/index.html             Hub page: hello + Resume / Tools / Travel / Time tiles
+resume/index.html           Resume
 tools/index.html            Tool gallery
 tools/<tool>/index.html     One folder per tool (single self-contained HTML file)
 travel/index.html           Trip list
 travel/<trip>/index.html    One folder per trip, photos in travel/<trip>/photos/
 watches/index.html          Watch post list
 watches/<post>/index.html   One folder per post
+assets/landing.jpg          Landing photo (replace to change it; keep ~2400px wide)
 assets/site.css             Shared styles (colors, fonts, layout)
 assets/site.js              Theme toggle + current-nav highlight
 404.html                    Not-found page (GitHub Pages serves this automatically)
