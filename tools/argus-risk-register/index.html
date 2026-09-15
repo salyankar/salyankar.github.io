@@ -1,4 +1,4 @@
-<title>Argus Risk Register</title>
+<title>Argus Watch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
@@ -188,6 +188,13 @@ ul.plain li{margin:3px 0}
 .gloss dd{margin:0;font-size:13px;color:var(--ink-2);max-width:75ch}
 @media (max-width:600px){.gloss{grid-template-columns:1fr}.gloss dd{margin-bottom:6px}}
 
+/* ---- reports ---- */
+.ixprev{font-family:Georgia,"Times New Roman",serif;font-size:14px;line-height:1.55;max-width:none}
+.ixprev h3{font-family:var(--display);margin-top:8px}
+.ixprev p{margin:0 0 10px;max-width:80ch}
+.ixprev mark,mark{background:var(--med-bg);color:var(--med);padding:0 3px;border-radius:3px}
+#xbrlForm textarea{font-size:13px;line-height:1.5}
+
 /* ---- dialog ---- */
 dialog{border:0;border-radius:10px;padding:0;background:var(--surface);color:var(--ink);box-shadow:var(--shadow);width:min(920px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
 dialog::backdrop{background:rgba(10,14,20,.55)}
@@ -225,7 +232,7 @@ details summary{cursor:pointer;font-weight:500;color:var(--ink-2)}
   <div class="top-in">
     <div class="brand">
       <div class="brand-mark">A</div>
-      <div><h1>Argus Risk Register</h1><small>Hundred-eyed watch over cyber risk</small></div>
+      <div><h1>Argus Watch</h1><small>Cyber risk management, every eye open</small></div>
     </div>
     <div class="org-chip" id="orgChip"></div>
     <span class="sync" id="sync"><i></i><span>Connecting…</span></span>
@@ -418,7 +425,7 @@ const fmtMoney=v=>v>=1e9?'$'+(v/1e9).toFixed(v/1e9<10?1:0)+'B':v>=1e6?'$'+Math.r
 /* =====================================================================
    State & storage
    ===================================================================== */
-const S={view:'dashboard',profile:null,risks:[],mode:'connecting',q:'',fStatus:'',fBand:'',cell:null,dl:null,navigated:false,landed:false};
+const S={view:'dashboard',profile:null,risks:[],mode:'connecting',q:'',fStatus:'',fBand:'',cell:null,dl:null,navigated:false,landed:false,disclosure:null};
 let db=null;
 const DEFAULT_PROFILE={name:'',sector:'general',revenue:'50-250',headcount:'251–1,000',listed:false,countries:[]};
 const profile=()=>Object.assign({},DEFAULT_PROFILE,S.profile||{});
@@ -437,6 +444,9 @@ const store={
     if(db){await db.collection('risks').doc(id).delete();}
     else {S.risks=S.risks.filter(x=>x.id!==id); this.localFlush(); render();}
   },
+  async saveDisclosure(x){
+    S.disclosure=x; if(db){await db.doc('org/disclosure').set(x);} else {localStorage.setItem('srr.disclosure',JSON.stringify(x));}
+  },
   localFlush(){localStorage.setItem('srr.risks',JSON.stringify(S.risks));},
   nextId(){const n=S.risks.reduce((m,r)=>Math.max(m,parseInt((r.id||'').replace(/\D/g,''),10)||0),0)+1;return 'R-'+String(n).padStart(3,'0');}
 };
@@ -452,9 +462,10 @@ async function boot(){
     setSync('db','Shared register · live');
     db.doc('org/profile').onSnapshot(s=>{S.profile=s.exists?s.data():null;render();},e=>{setSync('','Sync error: '+e.code);});
     db.collection('risks').onSnapshot(s=>{S.risks=s.docs.map(d=>d.data());render();},e=>{setSync('','Sync error: '+e.code);});
+    db.doc('org/disclosure').onSnapshot(s=>{S.disclosure=s.exists?s.data():null;render();},()=>{});
   }else{
     setSync('local','Local only · this browser');
-    try{S.profile=JSON.parse(localStorage.getItem('srr.profile')||'null');S.risks=JSON.parse(localStorage.getItem('srr.risks')||'[]');}catch(e){}
+    try{S.profile=JSON.parse(localStorage.getItem('srr.profile')||'null');S.risks=JSON.parse(localStorage.getItem('srr.risks')||'[]');S.disclosure=JSON.parse(localStorage.getItem('srr.disclosure')||'null');}catch(e){}
     render();
   }
   try{S.dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null;}catch(e){S.dl=null;}
@@ -465,7 +476,7 @@ async function boot(){
    ===================================================================== */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $=(sel,root=document)=>root.querySelector(sel);
-const VIEWS=[['org','Organization profile'],['dashboard','Dashboard'],['heatmap','Heat map'],['register','Risk register'],['frameworks','Controls & regulations'],['guide','Guide']];
+const VIEWS=[['org','Organization profile'],['dashboard','Dashboard'],['heatmap','Heat map'],['register','Risk register'],['frameworks','Controls & regulations'],['reports','Reports'],['guide','Guide']];
 
 function scoreChip(r,kind){
   const s=kind==='i'?inh(r):res(r); const b=band(s);
@@ -480,8 +491,9 @@ function render(){
   $('#orgChip').innerHTML=p.name?`<span>Organization</span><b>${esc(p.name)}</b><span class="pill">${esc(sector().name)}</span>`:`<span class="muted">No organization profile yet</span>`;
   $('#tabs').innerHTML=VIEWS.map(([k,l])=>`<button data-view="${k}" ${S.view===k?'aria-current="page"':''}>${l}</button>`).join('');
   const m=$('#main');
+  if(S.view==='reports'&&$('#xbrlForm'))return; // live updates must not wipe a disclosure draft being edited
   const notice=p.isExample?`<div class="notice"><span class="grow"><b>Sample data.</b> This register is pre-filled with example risks for <b>${esc(p.name)}</b> so you can see how the tool works. Replace the organization profile and risks with your own, or clear everything.</span><button class="btn sm" data-act="clear-sample">Clear sample data</button></div>`:'';
-  const views={dashboard:vDashboard,register:vRegister,heatmap:vHeat,frameworks:vFrameworks,org:vOrg,guide:vGuide};
+  const views={dashboard:vDashboard,register:vRegister,heatmap:vHeat,frameworks:vFrameworks,org:vOrg,guide:vGuide,reports:vReports};
   m.innerHTML=notice+views[S.view]();
 }
 
@@ -951,6 +963,362 @@ async function exportCSV(){
 }
 
 /* =====================================================================
+   Reports — dashboard/heat map extracts and 10-K Item 1C iXBRL draft
+   ===================================================================== */
+const LIBS={
+  pptx:['https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',()=>window.PptxGenJS],
+  docx:['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js',()=>window.docx],
+  pdf:['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf&&window.jspdf.jsPDF],
+  pdfTable:['https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js',()=>window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable]
+};
+const libCache={};
+function loadLib(k){ // document libraries are loaded on first use, not with the page
+  if(libCache[k])return libCache[k];
+  const [url,probe]=LIBS[k];
+  libCache[k]=new Promise((res,rej)=>{
+    if(probe())return res(probe());
+    const s=document.createElement('script');s.src=url;
+    s.onload=()=>probe()?res(probe()):rej(new Error('Library did not initialise: '+k));
+    s.onerror=()=>{delete libCache[k];rej(new Error('Could not load '+k));};
+    document.head.appendChild(s);
+  });
+  return libCache[k];
+}
+const BAND_KEYS=['low','med','high','crit'], BAND_LABELS=['Low','Medium','High','Critical'];
+const BAND_HEX={low:'2F7D4F',med:'B8891A',high:'C95F22',crit:'A93232'};
+const BAND_BG={low:'DDF0E4',med:'FBEEC6',high:'FADCC6',crit:'F5D0D0'};
+const hexRgb=h=>[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+
+function reportData(){
+  const p=profile(), all=S.risks, open=all.filter(r=>r.status!=='Closed');
+  const today=new Date().toISOString().slice(0,10);
+  const L=(r,k)=>k==='i'?clamp(r.iL,3):clamp(r.rL,clamp(r.iL,3)), I=(r,k)=>k==='i'?clamp(r.iI,3):clamp(r.rI,clamp(r.iI,3));
+  const grid=k=>{const g=[];for(let l=5;l>=1;l--){const row=[];for(let i=1;i<=5;i++)row.push(open.filter(r=>L(r,k)===l&&I(r,k)===i).length);g.push(row);}return g;};
+  const bands=k=>BAND_KEYS.map(b=>open.filter(r=>band(k==='i'?inh(r):res(r)).key===b).length);
+  const cats=CATEGORIES.map(c=>{const rr=open.filter(r=>r.cat===c);return {name:c,n:rr.length,bands:BAND_KEYS.map(b=>rr.filter(r=>band(res(r)).key===b).length)};}).filter(c=>c.n);
+  const rB=bands('r');
+  return {p,org:p.name||'Organization',sector:sector().name,dims:sector().dims.map(d=>d[1]),date:today,
+    dateLong:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),all,open,
+    kpi:{open:open.length,crit:rB[3],high:rB[2],avgRed:open.length?Math.round(open.reduce((a,r)=>a+reduction(r),0)/open.length):0,
+      overdue:open.filter(r=>r.due&&r.due<today&&r.status!=='Accepted').length,closed:all.length-open.length},
+    bands:{i:bands('i'),r:rB},grid:{i:grid('i'),r:grid('r')},
+    top:[...open].sort((a,b)=>res(b)-res(a)||inh(b)-inh(a)).slice(0,10),cats,
+    regs:REGS.filter(g=>g.a(p)).map(g=>g.n).concat(p.countries.filter(c=>PRIVACY_LAWS[c]).map(c=>COUNTRY_NAME[c]+' — '+PRIVACY_LAWS[c])),
+    status:STATUSES.map(s=>[s,all.filter(r=>r.status===s).length])};
+}
+
+async function deliver(name,data){
+  if(S.dl){try{await S.dl.save({filename:name,data});toast('Saved '+name);return true;}catch(e){if(e&&e.code==='declined')return false;console.warn(e);}}
+  if(typeof data==='string'){
+    const dlg=$('#dlg');
+    dlg.innerHTML=`<div class="dlg-head"><h2 style="flex:1">${esc(name)}</h2><button type="button" class="btn sm" data-act="close">Close</button></div><div class="dlg-body"><p class="small muted">Direct download is not available in this view. Copy the contents below into a file named <span class="mono">${esc(name)}</span>.</p><textarea class="copybox" id="copybox" readonly>${esc(data)}</textarea><div class="row"><button class="btn primary" data-act="copy">Copy to clipboard</button></div></div>`;
+    dlg.showModal();return false;
+  }
+  toast('Download is not available in this view — open the page in claude.ai to save files');
+  return false;
+}
+async function runExport(btn,fn){
+  const label=btn.textContent; btn.disabled=true; btn.textContent='Preparing…';
+  try{await fn();}catch(e){console.error(e);toast('Export failed: '+(e.message||e));}
+  finally{btn.disabled=false;btn.textContent=label;}
+}
+
+/* ---- PowerPoint ---- */
+async function exportPptx(){
+  const P=await loadLib('pptx'); const d=reportData(); const pptx=new P(); pptx.layout='LAYOUT_WIDE';
+  const ACC='0F6E78',INK='141A23',MUT='4A5361',LINE='D3DAE3',SOFT='F2F4F7';
+  pptx.defineSlideMaster({title:'M',background:{color:'FFFFFF'},objects:[{rect:{x:0,y:0,w:'100%',h:0.08,fill:{color:ACC}}},{text:{text:`${d.org} · Cyber risk posture · ${d.dateLong}`,options:{x:0.5,y:7.0,w:9,h:0.3,fontSize:9,color:'7A8493'}}}]});
+  const H=(s,t)=>s.addText(t,{x:0.5,y:0.3,w:12,h:0.5,fontSize:24,bold:true,color:INK});
+  let s=pptx.addSlide(); s.background={color:ACC};
+  s.addText('Cyber risk posture',{x:0.7,y:2.2,w:11,h:1,fontSize:40,bold:true,color:'FFFFFF'});
+  s.addText(d.org,{x:0.7,y:3.2,w:11,h:0.6,fontSize:24,color:'FFFFFF'});
+  s.addText(`${d.sector} · ${d.dateLong} · ${d.kpi.open} open risks`,{x:0.7,y:3.9,w:11,h:0.5,fontSize:14,color:'DCEFF0'});
+  s=pptx.addSlide({masterName:'M'}); H(s,'Summary');
+  const kpis=[[d.kpi.open,'Open risks',INK],[d.kpi.crit,'Critical residual (17–25)',BAND_HEX.crit],[d.kpi.high,'High residual (10–16)',BAND_HEX.high],[d.kpi.avgRed+'%','Avg. reduction from controls',BAND_HEX.low],[d.kpi.overdue,'Treatments overdue',d.kpi.overdue?BAND_HEX.high:INK]];
+  kpis.forEach((k,i)=>{const x=0.5+i*2.5;s.addShape(pptx.shapes.RECTANGLE,{x,y:1.0,w:2.3,h:1.3,fill:{color:SOFT},line:{color:LINE,width:0.75}});s.addText(String(k[0]),{x:x+0.15,y:1.05,w:2,h:0.7,fontSize:30,bold:true,color:k[2]});s.addText(k[1],{x:x+0.15,y:1.7,w:2.1,h:0.5,fontSize:11,color:MUT});});
+  s.addChart(pptx.charts.BAR,[{name:'Inherent',labels:BAND_LABELS,values:d.bands.i},{name:'Residual',labels:BAND_LABELS,values:d.bands.r}],
+    {x:0.5,y:2.6,w:6.4,h:4.2,barDir:'col',barGrouping:'clustered',chartColors:['9AA7B8',ACC],showLegend:true,legendPos:'b',showTitle:true,title:'Open risks by band — inherent vs residual',titleFontSize:12,catAxisLabelFontSize:10,valAxisLabelFontSize:10,valAxisMajorUnit:1,showValue:true,dataLabelFontSize:9});
+  s.addText('Status of all risks',{x:7.4,y:2.6,w:5,h:0.4,fontSize:12,bold:true,color:INK});
+  s.addTable([[{text:'Status',options:{bold:true,fill:{color:SOFT}}},{text:'Risks',options:{bold:true,fill:{color:SOFT}}}],...d.status.map(([n,v])=>[n,String(v)])],{x:7.4,y:3.05,w:5.4,colW:[3.6,1.8],fontSize:11,border:{type:'solid',color:LINE,pt:0.5},rowH:0.35,color:INK});
+  s=pptx.addSlide({masterName:'M'}); H(s,'Heat maps — open risks');
+  const heat=(kind,x0,title)=>{
+    s.addText(title,{x:x0,y:0.9,w:5.5,h:0.4,fontSize:14,bold:true,color:INK});
+    const cell=0.95,gx=x0+0.6,gy=1.5;
+    for(let r=0;r<5;r++){const l=5-r;s.addText(String(l),{x:x0+0.15,y:gy+r*cell,w:0.4,h:cell,fontSize:10,color:MUT,align:'right',valign:'middle'});
+      for(let c=0;c<5;c++){const i=c+1,n=d.grid[kind][r][c],b=band(l*i).key;
+        s.addShape(pptx.shapes.RECTANGLE,{x:gx+c*cell,y:gy+r*cell,w:cell-0.05,h:cell-0.05,fill:{color:n?BAND_BG[b]:SOFT},line:{color:n?BAND_HEX[b]:LINE,width:0.75}});
+        if(n)s.addText(String(n),{x:gx+c*cell,y:gy+r*cell,w:cell-0.05,h:cell-0.05,fontSize:16,bold:true,color:BAND_HEX[b],align:'center',valign:'middle'});}}
+    for(let c=0;c<5;c++)s.addText(String(c+1),{x:gx+c*cell,y:gy+5*cell,w:cell,h:0.3,fontSize:10,color:MUT,align:'center'});
+    s.addText('Impact',{x:gx,y:gy+5*cell+0.28,w:5*cell,h:0.3,fontSize:10,color:MUT,align:'center'});
+    s.addText('Likelihood',{x:x0-0.45,y:gy+2.1,w:1.2,h:0.4,fontSize:10,color:MUT,align:'center',rotate:270});
+  };
+  heat('i',0.9,'Inherent — before controls'); heat('r',7.2,'Residual — after controls');
+  s=pptx.addSlide({masterName:'M'}); H(s,'Highest residual risks');
+  const hdr=t=>({text:t,options:{bold:true,fill:{color:SOFT},color:INK}});
+  const sc=v=>({text:String(v),options:{color:BAND_HEX[band(v).key],bold:true,align:'center'}});
+  s.addTable([['ID','Risk','Owner','Inherent','Residual','Status'].map(hdr),...d.top.map(r=>[r.id,r.title,r.owner||'—',sc(inh(r)),sc(res(r)),r.status])],
+    {x:0.5,y:1.0,w:12.3,colW:[0.9,5.6,2.2,1.1,1.1,1.4],fontSize:11,color:INK,border:{type:'solid',color:LINE,pt:0.5},autoPage:true});
+  s=pptx.addSlide({masterName:'M'}); H(s,'Open risks by category — residual band');
+  s.addTable([['Category','Total',...BAND_LABELS].map(hdr),...d.cats.map(c=>[c.name,String(c.n),...c.bands.map(String)])],
+    {x:0.5,y:1.0,w:12.3,colW:[4.8,1.5,1.5,1.5,1.5,1.5],fontSize:11,color:INK,border:{type:'solid',color:LINE,pt:0.5},autoPage:true});
+  if(d.regs.length){s=pptx.addSlide({masterName:'M'}); H(s,'Regulatory obligations');
+    s.addText(d.regs.map(t=>({text:t,options:{bullet:true,breakLine:true}})),{x:0.5,y:1.0,w:12.3,h:5.6,fontSize:12,color:INK,valign:'top',paraSpaceAfter:4});
+    s.addText('Indicative — confirm applicability with counsel.',{x:0.5,y:6.6,w:12,h:0.3,fontSize:9,italic:true,color:'7A8493'});}
+  const blob=await pptx.write({outputType:'blob'});
+  await deliver(`cyber-risk-posture-${d.date}.pptx`,blob);
+}
+
+/* ---- Word ---- */
+async function exportDocx(){
+  const D=await loadLib('docx'); const d=reportData();
+  const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,HeadingLevel,WidthType,AlignmentType,ShadingType,BorderStyle}=D;
+  const P=(t,o={})=>new Paragraph({children:[new TextRun({text:t,...o})],spacing:{after:120}});
+  const H=(t,l)=>new Paragraph({text:t,heading:l,spacing:{before:240,after:120}});
+  const bd={style:BorderStyle.SINGLE,size:4,color:'D3DAE3'}; const borders={top:bd,bottom:bd,left:bd,right:bd};
+  const cell=(t,o={})=>new TableCell({borders,width:o.w?{size:o.w,type:WidthType.PERCENTAGE}:undefined,shading:o.fill?{fill:o.fill,type:ShadingType.CLEAR,color:'auto'}:undefined,verticalAlign:'center',margins:{top:60,bottom:60,left:100,right:100},
+    children:[new Paragraph({alignment:o.align||AlignmentType.LEFT,children:[new TextRun({text:String(t),bold:!!o.bold,color:o.color,size:o.size||20})]})]});
+  const isObj=c=>c!==null&&typeof c==='object'&&'t' in c;
+  const table=(rows,widths)=>new Table({width:{size:100,type:WidthType.PERCENTAGE},rows:rows.map((r,ri)=>new TableRow({tableHeader:ri===0,children:r.map((c,ci)=>isObj(c)?cell(c.t,Object.assign({w:widths&&widths[ci]},c)):cell(c,{bold:ri===0,fill:ri===0?'F2F4F7':undefined,w:widths&&widths[ci]}))}))});
+  const heat=kind=>{const rows=[];for(let r=0;r<5;r++){const l=5-r;const row=[{t:l,bold:true,color:'7A8493',align:AlignmentType.CENTER}];
+      for(let c=0;c<5;c++){const i=c+1,n=d.grid[kind][r][c],b=band(l*i).key;row.push({t:n||'',bold:true,color:BAND_HEX[b],fill:n?BAND_BG[b]:'F7F8FA',align:AlignmentType.CENTER,size:24});}rows.push(row);}
+    rows.push([{t:'L ↑ / I →',color:'7A8493',size:14},...[1,2,3,4,5].map(i=>({t:i,color:'7A8493',align:AlignmentType.CENTER}))]);
+    return new Table({width:{size:62,type:WidthType.PERCENTAGE},rows:rows.map(r=>new TableRow({height:{value:560,rule:'atLeast'},children:r.map(c=>cell(c.t,c))}))});};
+  const sc=v=>({t:v,bold:true,color:BAND_HEX[band(v).key],align:AlignmentType.CENTER});
+  const children=[
+    new Paragraph({children:[new TextRun({text:'Cyber risk posture',bold:true,size:56,color:'0F6E78'})],spacing:{after:80}}),
+    P(`${d.org} · ${d.sector} · ${d.dateLong}`,{color:'4A5361',size:22}),
+    H('Summary',HeadingLevel.HEADING_1),
+    table([['Metric','Value'],['Open risks',d.kpi.open],['Critical residual (17–25)',d.kpi.crit],['High residual (10–16)',d.kpi.high],['Average risk reduction from controls',d.kpi.avgRed+'%'],['Treatments past due date',d.kpi.overdue],['Closed risks',d.kpi.closed]],[60,40]),
+    H('Open risks by band — inherent vs residual',HeadingLevel.HEADING_2),
+    table([['Band','Inherent','Residual'],...BAND_LABELS.map((b,i)=>[b,d.bands.i[i],d.bands.r[i]])],[40,30,30]),
+    H('Status of all risks',HeadingLevel.HEADING_2),
+    table([['Status','Risks'],...d.status],[60,40]),
+    H('Heat map — inherent (before controls)',HeadingLevel.HEADING_1), heat('i'),
+    P('Rows are likelihood 5 (top) to 1; columns are impact 1 to 5. Each cell shows the number of open risks scored there.',{color:'7A8493',size:18}),
+    H('Heat map — residual (after controls)',HeadingLevel.HEADING_1), heat('r'),
+    H('Highest residual risks',HeadingLevel.HEADING_1),
+    table([['ID','Risk','Owner','Inherent','Residual','Status'],...d.top.map(r=>[r.id,r.title,r.owner||'—',sc(inh(r)),sc(res(r)),r.status])],[9,41,18,10,10,12]),
+    H('Open risks by category — residual band',HeadingLevel.HEADING_1),
+    table([['Category','Total',...BAND_LABELS],...d.cats.map(c=>[c.name,c.n,...c.bands])],[40,12,12,12,12,12])
+  ];
+  if(d.regs.length){children.push(H('Regulatory obligations',HeadingLevel.HEADING_1));d.regs.forEach(t=>children.push(new Paragraph({text:t,bullet:{level:0}})));children.push(P('Indicative — confirm applicability with counsel.',{color:'7A8493',size:18,italics:true}));}
+  const doc=new Document({creator:'Argus Watch',title:'Cyber risk posture',styles:{default:{document:{run:{font:'Calibri',size:22}}}},sections:[{children}]});
+  const blob=await Packer.toBlob(doc);
+  await deliver(`cyber-risk-posture-${d.date}.docx`,blob);
+}
+
+/* ---- PDF ---- */
+async function exportPdf(){
+  const jsPDF=await loadLib('pdf'); await loadLib('pdfTable'); const d=reportData();
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'}); const W=297,H=210,M=14;
+  const ACC=hexRgb('0F6E78'),INK=[20,26,35],MUT=[74,83,97],FAINT=[122,132,147],LINE=[211,218,227],SOFT=[242,244,247];
+  const font=(st,sz,col)=>{doc.setFont('helvetica',st);doc.setFontSize(sz);doc.setTextColor(...col);};
+  const title=t=>{doc.setFillColor(...ACC);doc.rect(0,0,W,3,'F');font('bold',20,INK);doc.text(t,M,M+6);};
+  const tbl=o=>doc.autoTable(Object.assign({theme:'grid',styles:{fontSize:9,lineColor:LINE,textColor:INK,cellPadding:2},headStyles:{fillColor:SOFT,textColor:INK,fontStyle:'bold'}},o));
+  doc.setFillColor(...ACC);doc.rect(0,0,W,H,'F');font('bold',34,[255,255,255]);doc.text('Cyber risk posture',M+6,82);font('normal',18,[255,255,255]);doc.text(d.org,M+6,96);font('normal',12,[220,239,240]);doc.text(`${d.sector} · ${d.dateLong} · ${d.kpi.open} open risks`,M+6,107);
+  doc.addPage(); title('Summary');
+  const kpis=[[d.kpi.open,'Open risks',INK],[d.kpi.crit,'Critical residual (17–25)',hexRgb(BAND_HEX.crit)],[d.kpi.high,'High residual (10–16)',hexRgb(BAND_HEX.high)],[d.kpi.avgRed+'%','Avg. reduction from controls',hexRgb(BAND_HEX.low)],[d.kpi.overdue,'Treatments overdue',d.kpi.overdue?hexRgb(BAND_HEX.high):INK]];
+  kpis.forEach((k,i)=>{const x=M+i*54,y=30;doc.setFillColor(...SOFT);doc.setDrawColor(...LINE);doc.roundedRect(x,y,50,26,2,2,'FD');font('bold',20,k[2]);doc.text(String(k[0]),x+4,y+12);font('normal',8.5,MUT);doc.text(k[1],x+4,y+20);});
+  font('bold',12,INK);doc.text('Open risks by band — inherent vs residual',M,70);
+  const maxB=Math.max(1,...d.bands.i,...d.bands.r);
+  BAND_LABELS.forEach((b,i)=>{const y=78+i*16;font('normal',9,MUT);doc.text(b,M,y+4);const wI=d.bands.i[i]/maxB*100,wR=d.bands.r[i]/maxB*100;
+    doc.setFillColor(154,167,184);doc.rect(M+22,y,wI,5,'F');doc.setFillColor(...ACC);doc.rect(M+22,y+6,wR,5,'F');font('normal',9,INK);doc.text(String(d.bands.i[i]),M+24+wI,y+4);doc.text(String(d.bands.r[i]),M+24+wR,y+10);});
+  font('normal',8,MUT);doc.setFillColor(154,167,184);doc.rect(M,146,4,4,'F');doc.text('Inherent',M+6,149.5);doc.setFillColor(...ACC);doc.rect(M+28,146,4,4,'F');doc.text('Residual',M+34,149.5);
+  font('bold',12,INK);doc.text('Status of all risks',165,70);
+  tbl({startY:74,margin:{left:165},tableWidth:110,head:[['Status','Risks']],body:d.status.map(([n,v])=>[n,String(v)])});
+  doc.addPage(); title('Heat maps — open risks');
+  const heat=(kind,x0,t)=>{font('bold',12,INK);doc.text(t,x0,32);const c=22,gx=x0+10,gy=38;
+    for(let r=0;r<5;r++){const l=5-r;font('normal',8,FAINT);doc.text(String(l),x0+6,gy+r*c+c/2+1.5,{align:'right'});
+      for(let ci=0;ci<5;ci++){const i=ci+1,n=d.grid[kind][r][ci],b=band(l*i).key;doc.setFillColor(...hexRgb(n?BAND_BG[b]:'F2F4F7'));doc.setDrawColor(...(n?hexRgb(BAND_HEX[b]):LINE));doc.roundedRect(gx+ci*c,gy+r*c,c-1.5,c-1.5,1.5,1.5,'FD');
+        if(n){font('bold',14,hexRgb(BAND_HEX[b]));doc.text(String(n),gx+ci*c+(c-1.5)/2,gy+r*c+c/2+1.5,{align:'center'});}}}
+    font('normal',8,FAINT);for(let ci=0;ci<5;ci++)doc.text(String(ci+1),gx+ci*c+(c-1.5)/2,gy+5*c+3,{align:'center'});doc.text('Impact',gx+2.5*c,gy+5*c+9,{align:'center'});doc.text('Likelihood',x0-1,gy+2.5*c+8,{angle:90});};
+  heat('i',M+8,'Inherent — before controls'); heat('r',M+150,'Residual — after controls');
+  doc.addPage(); title('Highest residual risks');
+  tbl({startY:26,head:[['ID','Risk','Owner','Inherent','Residual','Status']],body:d.top.map(r=>[r.id,r.title,r.owner||'—',String(inh(r)),String(res(r)),r.status]),
+    columnStyles:{0:{cellWidth:18},3:{halign:'center',cellWidth:20},4:{halign:'center',cellWidth:20},5:{cellWidth:26}},
+    didParseCell:h=>{if(h.section==='body'&&(h.column.index===3||h.column.index===4)){h.cell.styles.textColor=hexRgb(BAND_HEX[band(parseInt(h.cell.raw,10)).key]);h.cell.styles.fontStyle='bold';}}});
+  doc.addPage(); title('Open risks by category — residual band');
+  tbl({startY:26,head:[['Category','Total',...BAND_LABELS]],body:d.cats.map(c=>[c.name,String(c.n),...c.bands.map(String)])});
+  if(d.regs.length){doc.addPage();title('Regulatory obligations');font('normal',10,INK);let y=30;
+    d.regs.forEach(t=>{const lines=doc.splitTextToSize('•  '+t,W-2*M);if(y+lines.length*5>H-22){doc.addPage();title('Regulatory obligations (continued)');y=30;}doc.text(lines,M,y);y+=lines.length*5+2;});
+    font('italic',8,FAINT);doc.text('Indicative — confirm applicability with counsel.',M,y+4);}
+  const n=doc.getNumberOfPages();for(let i=2;i<=n;i++){doc.setPage(i);font('normal',8,FAINT);doc.text(`${d.org} · Cyber risk posture · ${d.dateLong}`,M,H-8);doc.text(`${i-1} / ${n-1}`,W-M,H-8,{align:'right'});}
+  await deliver(`cyber-risk-posture-${d.date}.pdf`,doc.output('blob'));
+}
+
+/* ---- 10-K Item 1C disclosure draft (Inline XBRL) ---- */
+const CYD={
+  processes:'cyd:CybersecurityRiskManagementProcessesForAssessingIdentifyingAndManagingThreatsTextBlock',
+  integrated:'cyd:CybersecurityRiskManagementProcessesIntegratedFlag',
+  thirdParty:'cyd:CybersecurityRiskManagementThirdPartyEngagedFlag',
+  oversight:'cyd:CybersecurityRiskThirdPartyOversightAndIdentificationProcessesFlag',
+  material:'cyd:CybersecurityRiskMateriallyAffectedOrReasonablyLikelyToMateriallyAffectRegistrantFlag',
+  materialText:'cyd:CybersecurityRiskMateriallyAffectedOrReasonablyLikelyToMateriallyAffectRegistrantTextBlock',
+  board:'cyd:CybersecurityRiskBoardOfDirectorsOversightTextBlock',
+  committee:'cyd:CybersecurityRiskBoardCommitteeOrSubcommitteeResponsibleForOversightTextBlock',
+  informBoard:'cyd:CybersecurityRiskProcessForInformingBoardCommitteeOrSubcommitteeResponsibleForOversightTextBlock',
+  mgmtRole:'cyd:CybersecurityRiskRoleOfManagementTextBlock',
+  positions:'cyd:CybersecurityRiskManagementPositionsOrCommitteesResponsibleFlag',
+  positionsText:'cyd:CybersecurityRiskManagementPositionsOrCommitteesResponsibleTextBlock',
+  expertise:'cyd:CybersecurityRiskManagementExpertiseOfManagementResponsibleTextBlock',
+  informMgmt:'cyd:CybersecurityRiskProcessForInformingManagementOrCommitteesResponsibleTextBlock',
+  reportToBoard:'cyd:CybersecurityRiskManagementPositionsOrCommitteesResponsibleReportToBoardFlag'
+};
+const DISCLOSURE_FIELDS=['registrant','cik','fyEnd','processes','integrated','thirdParty','oversight','material','materialText','board','committee','informBoard','mgmtRole','positions','positionsText','expertise','informMgmt','reportToBoard'];
+function disclosureDefaults(){
+  const d=reportData(), name=d.org;
+  const thirdN=d.all.filter(r=>r.cat==='Third-party & supply chain').length;
+  const y=new Date().getFullYear();
+  return {registrant:name,cik:'',fyEnd:`${y}-12-31`,
+    processes:`${name} maintains a cybersecurity risk management program designed to identify, assess and manage material risks from cybersecurity threats to its information systems and the data they hold. Risks are recorded in an enterprise cybersecurity risk register, which currently holds ${d.all.length} risks across ${d.cats.length} categories. Each risk is assessed on an inherent basis (likelihood and impact before controls) and a residual basis (after the controls in place), using a five-level likelihood scale and impact dimensions relevant to the ${d.sector} sector, including ${d.dims.slice(0,4).map(s=>s.toLowerCase()).join(', ')}. A risk owner is assigned to each risk, treatment plans are tracked to completion, and residual ratings are reviewed [quarterly] by [the Chief Information Security Officer]. The program is aligned to the NIST Cybersecurity Framework 2.0 and ISO/IEC 27001:2022.\n\n[Describe the engagement of assessors, consultants, auditors or other third parties — for example penetration testing, framework assessments and incident-response retainers.]\n\n[Describe how risks from third-party service providers are identified and overseen — for example due diligence before onboarding, contractual security requirements and periodic reassessment. The register currently tracks ${thirdN} third-party and supply-chain risk${thirdN===1?'':'s'}.]`,
+    integrated:true,thirdParty:true,oversight:true,material:false,
+    materialText:`As of the date of this report, ${name} is not aware of any risks from cybersecurity threats, including as a result of any previous cybersecurity incidents, that have materially affected or are reasonably likely to materially affect the Company, including its business strategy, results of operations or financial condition. [Revise if any incident or risk is reasonably likely to be material, and describe its nature and effect.]`,
+    board:`The Board of Directors oversees the Company's management of risks from cybersecurity threats as part of its oversight of enterprise risk. [Describe the Board's role, the frequency of briefings and any board-level cybersecurity expertise.]`,
+    committee:`The [Audit Committee] of the Board has primary responsibility for oversight of risks from cybersecurity threats.`,
+    informBoard:`The [Audit Committee] receives [quarterly] reports from the Chief Information Security Officer covering the cybersecurity risk register, changes in the residual risk profile — currently ${d.kpi.crit} critical and ${d.kpi.high} high residual risk${d.kpi.high===1?'':'s'} — progress of treatment plans, significant incidents and emerging threats. Material incidents are escalated to the Committee chair [within 24 hours] under the Company's incident response plan.`,
+    mgmtRole:`Management is responsible for the day-to-day assessment and management of material risks from cybersecurity threats. The Chief Information Security Officer leads the program and chairs a [Cybersecurity Risk Committee] that includes [the Chief Information Officer, General Counsel, Chief Risk Officer and Chief Financial Officer].`,
+    positions:true,
+    positionsText:`The Chief Information Security Officer is responsible for assessing and managing material risks from cybersecurity threats, supported by the [Cybersecurity Risk Committee].`,
+    expertise:`[Name], Chief Information Security Officer, has [N] years of experience in information security, including [prior roles], and holds [CISSP / CISM] certification. [Add other responsible persons and their relevant expertise.]`,
+    informMgmt:`The Chief Information Security Officer is informed of and monitors the prevention, detection, mitigation and remediation of cybersecurity incidents through the security operations function, the incident response plan and the risk register review cycle. Risks are re-scored when incidents, assessments or control changes alter their likelihood or impact.`,
+    reportToBoard:true};
+}
+function disclosure(){return Object.assign(disclosureDefaults(),S.disclosure||{});}
+function readDisclosure(){const f=$('#xbrlForm');if(!f)return disclosure();const o={};DISCLOSURE_FIELDS.forEach(k=>{const el=f.elements[k];if(!el)return;o[k]=el.type==='checkbox'?el.checked:el.value;});return o;}
+function paras(t){return String(t||'').split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean).map(p=>'<p>'+esc(p).replace(/\n/g,'<br/>')+'</p>').join('\n');}
+function fyStart(end){const dt=new Date(end+'T00:00:00Z');if(isNaN(dt))return '';dt.setUTCFullYear(dt.getUTCFullYear()-1);dt.setUTCDate(dt.getUTCDate()+1);return dt.toISOString().slice(0,10);}
+function buildIxbrl(x){
+  const cik=(x.cik||'').replace(/\D/g,'').padStart(10,'0'), end=x.fyEnd||'', start=fyStart(end), fy=end.slice(0,4), name=x.registrant||'Registrant';
+  const flag=(k,v)=>`    <ix:nonNumeric name="${CYD[k]}" contextRef="c-1" format="ixt:fixed-${v?'true':'false'}">${v?'true':'false'}</ix:nonNumeric>`;
+  const block=(k,text)=>`<ix:nonNumeric name="${CYD[k]}" contextRef="c-1" escape="true">\n${paras(text)}\n</ix:nonNumeric>`;
+  return `<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2020-02-12" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dei="http://xbrl.sec.gov/dei/2024" xmlns:cyd="http://xbrl.sec.gov/cyd/2024" xml:lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>${esc(name)} — Form 10-K — Item 1C. Cybersecurity (DRAFT)</title>
+<style type="text/css">body{font-family:'Times New Roman',serif;font-size:10pt;line-height:1.4;max-width:7.5in;margin:1in auto;color:#000}h1{font-size:12pt;text-transform:uppercase}h2{font-size:10pt;font-style:italic}.draft{border:1px solid #999;padding:6pt;font-size:8pt;color:#555;margin-bottom:12pt}</style>
+</head>
+<body>
+<div style="display:none">
+<ix:header>
+  <ix:hidden>
+    <ix:nonNumeric name="dei:DocumentType" contextRef="c-1">10-K</ix:nonNumeric>
+    <ix:nonNumeric name="dei:EntityRegistrantName" contextRef="c-1">${esc(name)}</ix:nonNumeric>
+    <ix:nonNumeric name="dei:EntityCentralIndexKey" contextRef="c-1">${cik}</ix:nonNumeric>
+    <ix:nonNumeric name="dei:DocumentPeriodEndDate" contextRef="c-1">${end}</ix:nonNumeric>
+    <ix:nonNumeric name="dei:DocumentFiscalYearFocus" contextRef="c-1">${fy}</ix:nonNumeric>
+${flag('integrated',x.integrated)}
+${flag('thirdParty',x.thirdParty)}
+${flag('oversight',x.oversight)}
+${flag('material',x.material)}
+${flag('positions',x.positions)}
+${flag('reportToBoard',x.reportToBoard)}
+  </ix:hidden>
+  <ix:references>
+    <link:schemaRef xlink:type="simple" xlink:href="https://xbrl.sec.gov/dei/2024/dei-2024.xsd"/>
+    <link:schemaRef xlink:type="simple" xlink:href="https://xbrl.sec.gov/cyd/2024/cyd-2024.xsd"/>
+  </ix:references>
+  <ix:resources>
+    <xbrli:context id="c-1">
+      <xbrli:entity><xbrli:identifier scheme="http://www.sec.gov/CIK">${cik}</xbrli:identifier></xbrli:entity>
+      <xbrli:period><xbrli:startDate>${start}</xbrli:startDate><xbrli:endDate>${end}</xbrli:endDate></xbrli:period>
+    </xbrli:context>
+  </ix:resources>
+</ix:header>
+</div>
+<div class="draft">DRAFT prepared with Argus Watch on ${new Date().toISOString().slice(0,10)} for review by counsel and the filing agent. Bracketed text must be completed or removed before filing. Remove this notice.</div>
+<h1>Item 1C. Cybersecurity</h1>
+<h2>Risk management and strategy</h2>
+${block('processes',x.processes)}
+${block('materialText',x.materialText)}
+<h2>Governance</h2>
+${block('board',x.board)}
+${block('committee',x.committee)}
+${block('informBoard',x.informBoard)}
+${block('mgmtRole',x.mgmtRole)}
+${block('positionsText',x.positionsText)}
+${block('expertise',x.expertise)}
+${block('informMgmt',x.informMgmt)}
+</body>
+</html>
+`;
+}
+function previewDisclosure(){
+  const x=readDisclosure(); const dlg=$('#dlg');
+  const hi=t=>paras(t).replace(/\[([^\]]+)\]/g,'<mark>[$1]</mark>');
+  const yn=v=>v?'Yes':'No';
+  dlg.innerHTML=`<div class="dlg-head"><h2 style="flex:1">Item 1C. Cybersecurity — draft preview</h2><button type="button" class="btn sm" data-act="close">Close</button></div>
+  <div class="dlg-body ixprev">
+    <p class="small muted">${esc(x.registrant||'Registrant')} · CIK ${esc(x.cik||'—')} · fiscal year ${esc(fyStart(x.fyEnd)||'—')} to ${esc(x.fyEnd||'—')}. <mark>Highlighted brackets</mark> are placeholders to complete.</p>
+    <h3>Risk management and strategy</h3>${hi(x.processes)}
+    <p class="small muted">Tagged flags — integrated into overall risk management: <b>${yn(x.integrated)}</b> · third parties engaged: <b>${yn(x.thirdParty)}</b> · third-party provider oversight: <b>${yn(x.oversight)}</b></p>
+    ${hi(x.materialText)}<p class="small muted">Tagged flag — materially affected or reasonably likely: <b>${yn(x.material)}</b></p>
+    <h3>Governance</h3>${hi(x.board)}${hi(x.committee)}${hi(x.informBoard)}${hi(x.mgmtRole)}${hi(x.positionsText)}${hi(x.expertise)}${hi(x.informMgmt)}
+    <p class="small muted">Tagged flags — positions or committees responsible: <b>${yn(x.positions)}</b> · they report to the board: <b>${yn(x.reportToBoard)}</b></p>
+  </div>`;
+  dlg.showModal();
+}
+
+/* ---- Reports view ---- */
+function vReports(){
+  const d=reportData(), x=disclosure();
+  const T=(k,label,rows)=>`<div class="field" style="grid-column:1/-1"><label>${label}</label><textarea name="${k}" rows="${rows||4}">${esc(x[k])}</textarea></div>`;
+  const C=(k,label)=>`<label class="checkrow"><input type="checkbox" name="${k}" ${x[k]?'checked':''}> ${label}</label>`;
+  return `
+  <div class="page-head"><div><h2>Reports</h2><p class="muted">Extract the current posture for a board pack, or draft the Item 1C cybersecurity disclosure for a Form 10-K. Both are built from the live register at the moment you click.</p></div></div>
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head"><h3>Dashboard &amp; heat map extract</h3><span class="small muted">${d.org} · ${d.dateLong}</span></div>
+      <div class="grid g2" style="align-items:start">
+        <div class="stack">
+          <p class="small muted">Cover, summary KPIs, inherent vs residual by band, status counts, both 5 × 5 heat maps, the ten highest residual risks, open risks by category, and the regulatory obligations list.</p>
+          <div class="row"><button class="btn primary" data-act="rep-pptx">PowerPoint (.pptx)</button><button class="btn" data-act="rep-docx">Word (.docx)</button><button class="btn" data-act="rep-pdf">PDF (.pdf)</button></div>
+          <p class="small muted">The document library for each format loads on first use (0.3–0.8 MB). The file is offered through the viewer's save prompt.</p>
+        </div>
+        <div class="scale">
+          <span class="k">Open risks</span><span>${d.kpi.open} (${d.kpi.crit} critical, ${d.kpi.high} high residual)</span>
+          <span class="k">Closed</span><span>${d.kpi.closed}</span>
+          <span class="k">Categories</span><span>${d.cats.length}</span>
+          <span class="k">Obligations</span><span>${d.regs.length}</span>
+          <span class="k">Reduction</span><span>${d.kpi.avgRed}% average from controls</span>
+        </div>
+      </div>
+    </div>
+    <form id="xbrlForm" class="panel stack">
+      <div class="panel-head"><h3>Form 10-K · Item 1C cybersecurity disclosure draft (Inline XBRL)</h3><span class="small muted">Regulation S-K Item 106 · CYD 2024 taxonomy</span></div>
+      <p class="small muted">Pre-drafted from the register and profile. Edit the narrative, set the flags that will be tagged, then preview or download. Bracketed text is a placeholder for you to complete. <b>This is a starting draft</b> — the filing agent will attach your company's extension taxonomy and validate the file, and counsel should review every statement.</p>
+      <div class="grid g3">
+        <div class="field"><label>Registrant name</label><input name="registrant" value="${esc(x.registrant)}"></div>
+        <div class="field"><label>Central Index Key (CIK)</label><input name="cik" inputmode="numeric" placeholder="10 digits" value="${esc(x.cik)}"></div>
+        <div class="field"><label>Fiscal year end</label><input type="date" name="fyEnd" value="${esc(x.fyEnd)}"><span class="hint">Period context runs one year to this date.</span></div>
+      </div>
+      <fieldset><legend>Risk management and strategy — Item 106(b)</legend>
+        <div class="grid g2">
+          ${T('processes','Processes for assessing, identifying and managing material risks from cybersecurity threats',9)}
+          <div class="stack" style="grid-column:1/-1;gap:6px">${C('integrated','Processes are integrated into the overall risk management system')}${C('thirdParty','Assessors, consultants, auditors or other third parties are engaged')}${C('oversight','Processes exist to oversee and identify risks from third-party service providers')}</div>
+          ${T('materialText','Whether risks from cybersecurity threats have materially affected or are reasonably likely to materially affect the registrant',4)}
+          <div style="grid-column:1/-1">${C('material','Risks from cybersecurity threats have materially affected, or are reasonably likely to materially affect, the registrant')}</div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Governance — Item 106(c)</legend>
+        <div class="grid g2">
+          ${T('board','Board of Directors oversight of risks from cybersecurity threats',3)}
+          ${T('committee','Board committee or subcommittee responsible for oversight',2)}
+          ${T('informBoard','Process by which the board or committee is informed about such risks',4)}
+          ${T('mgmtRole','Role of management in assessing and managing material risks',3)}
+          ${T('positionsText','Management positions or committees responsible, and their relevant expertise',3)}
+          ${T('expertise','Expertise of the persons responsible',3)}
+          ${T('informMgmt','Processes by which those persons are informed about and monitor incidents',4)}
+          <div class="stack" style="grid-column:1/-1;gap:6px">${C('positions','Management positions or committees are responsible for assessing and managing these risks')}${C('reportToBoard','Those positions or committees report to the board or a committee')}</div>
+        </div>
+      </fieldset>
+      <div class="row"><button type="submit" class="btn">Save draft for the team</button><button type="button" class="btn" data-act="xbrl-preview">Preview</button><button type="button" class="btn primary" data-act="xbrl-download">Download Inline XBRL (.html)</button><span class="spacer"></span><button type="button" class="btn sm" data-act="xbrl-reset">Reset to generated text</button></div>
+      <p class="small muted">Rename the file to <span class="mono">.htm</span> for EDGAR. The document references the standard <span class="mono">dei-2024</span> and <span class="mono">cyd-2024</span> schemas directly and tags the six Item 106 flags plus nine text blocks with a single fiscal-year context; validate it with the EDGAR Renderer or Arelle before use.</p>
+    </form>
+  </div>`;
+}
+
+/* =====================================================================
    Events
    ===================================================================== */
 let toastT; function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
@@ -969,6 +1337,12 @@ document.addEventListener('click',async e=>{
   else if(a==='clearcell'){S.cell=null;render();}
   else if(a==='import')$('#csvFile').click();
   else if(a==='export')exportCSV();
+  else if(a==='rep-pptx')runExport(act,exportPptx);
+  else if(a==='rep-docx')runExport(act,exportDocx);
+  else if(a==='rep-pdf')runExport(act,exportPdf);
+  else if(a==='xbrl-preview')previewDisclosure();
+  else if(a==='xbrl-download'){const x=readDisclosure();await deliver(`item-1c-cybersecurity-${(x.fyEnd||'draft').slice(0,4)}-ixbrl.html`,buildIxbrl(x));}
+  else if(a==='xbrl-reset'){if(confirm('Replace the draft text with freshly generated text from the register?')){S.disclosure=null;const f=$('#xbrlForm');if(f)f.remove();render();}}
   else if(a==='copy'){try{await navigator.clipboard.writeText($('#copybox').value);toast('Copied');}catch(err){$('#copybox').select();toast('Select all and copy');}}
   else if(a==='delete'){const id=$('#dlg').dataset.id;if(confirm(`Delete ${id}? This cannot be undone.`)){await store.deleteRisk(id);$('#dlg').close();toast(`${id} deleted`);}}
   else if(a==='clear-sample'){if(confirm('Remove all sample risks and the sample organization profile?')){for(const r of [...S.risks])await store.deleteRisk(r.id);await store.saveProfile(Object.assign({},DEFAULT_PROFILE));S.view='org';render();toast('Sample data cleared');}}
@@ -991,6 +1365,7 @@ function renderTableOnly(){const wrap=$('.tablewrap');if(!wrap)return;const d=do
 function updateCountryCount(){const n=document.querySelectorAll('input[name=c]:checked').length;const el=$('#cCount');if(el)el.textContent=`${n} countr${n===1?'y':'ies'}`;}
 document.addEventListener('submit',async e=>{
   if(e.target.id==='riskForm'){e.preventDefault();const r=readEditor();if(!r.title){toast('Give the risk a title');return;}await store.saveRisk(r);$('#dlg').close();toast(`${r.id} saved`);}
+  if(e.target.id==='xbrlForm'){e.preventDefault();await store.saveDisclosure(Object.assign(readDisclosure(),{updatedAt:new Date().toISOString()}));toast('Disclosure draft saved');}
   if(e.target.id==='orgForm'){e.preventDefault();const f=e.target;
     const p={name:f.name.value.trim(),sector:f.sector.value,revenue:f.revenue.value,headcount:f.headcount.value,listed:f.listed.checked,countries:[...f.querySelectorAll('input[name=c]:checked')].map(i=>i.value),updatedAt:new Date().toISOString()};
     await store.saveProfile(p);toast('Profile saved');S.view='dashboard';render();window.scrollTo(0,0);}

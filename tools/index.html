@@ -4,12 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tools · Satya Salyankar</title>
-<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude.">
+<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js"></script>
+<style>
+  /* ---- featured tool ---- */
+  .feature{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;margin-top:8px}
+  .feature .mark{width:52px;height:52px;border-radius:13px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:22px;margin-bottom:16px}
+  .feature h2{font-size:clamp(26px,3.2vw,34px);margin:0 0 4px}
+  .feature .tag-line{font-family:var(--mono);font-size:14px;color:var(--accent);margin:0 0 16px}
+  .feature .lede{font-size:17px;color:var(--ink-2);margin-bottom:22px}
+  .feature .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .feature .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-left:auto}
+  .caps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .caps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+  .caps .ic{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:17px}
+  .caps b{display:block;font-family:var(--display);font-weight:600;font-size:15.5px}
+  .caps span{font-size:14px;color:var(--ink-2);line-height:1.45}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:20px 0 0;font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .flow em{font-style:normal;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--ink-2)}
+  .flow i{font-style:normal;color:var(--line-strong)}
+  @media (max-width:820px){.feature{grid-template-columns:1fr;padding:24px}}
+
+  .more h2{margin-bottom:16px}
+</style>
 </head>
 <body>
 
@@ -32,73 +53,77 @@
     <div class="eyebrow">Cybersecurity tools</div>
     <h1>Tools</h1>
     <p>
-      Small, single-purpose security tools I built in conversation with Claude. Each one is a
-      single HTML file that runs entirely in your browser — no accounts, no server, nothing
-      leaves your machine. Open one, use it, close the tab.
+      Security tools I build in conversation with Claude. Each one is a single HTML file that runs
+      entirely in your browser — no accounts, no server, nothing leaves your machine.
     </p>
   </div>
 
-  <section class="section wrap">
-    <!--
-      ================================================================
-      HOW TO ADD A TOOL
-      1. Create a folder:  tools/<tool-slug>/   and save the tool as  index.html  inside it.
-      2. Copy one of the <article class="card tool"> blocks below and edit
-         the title, description, tags, date and links.
-      ================================================================
-    -->
-    <div class="grid">
-
-      <article class="card tool">
-        <div class="icon">⛨</div>
-        <h3><a href="argus-risk-register/">Argus Risk Register</a></h3>
-        <p>
-          A lightweight cyber risk register. Capture risks, score likelihood and impact, track
-          owners and treatment plans, map controls and regulations, and get a heat-map view of
-          where the exposure is. Export to CSV; data stays in your browser.
+  <!-- ===================== FEATURED: ARGUS WATCH ===================== -->
+  <section class="wrap" aria-labelledby="argus-h">
+    <div class="feature">
+      <div>
+        <div class="mark">A</div>
+        <h2 id="argus-h">Argus Watch</h2>
+        <p class="tag-line">Cyber risk management, every eye open.</p>
+        <p class="lede">
+          A cyber risk register that thinks like a CISO's office: describe the organization, build the
+          register against sector-specific impact and likelihood drivers, see the exposure on 5×5 heat
+          maps, and generate what leadership actually asks for — a board pack, and a draft of the
+          Form 10-K Item 1C cybersecurity disclosure.
         </p>
-        <div class="tags">
-          <span class="tag">risk management</span>
-          <span class="tag">GRC</span>
-          <span class="tag">browser-only</span>
+        <div class="row">
+          <a class="btn primary" href="argus-risk-register/">Open Argus Watch</a>
+          <span class="meta">v2 · Sep 2026 · single HTML file</span>
         </div>
-        <div class="card-foot">
-          <span class="meta">v1 · Sep 2026</span>
-          <span class="status live">live</span>
+        <div class="flow" aria-label="Workflow">
+          <em>Organization profile</em><i>→</i><em>Risk register</em><i>→</i><em>Heat map</em><i>→</i><em>Controls &amp; regulations</em><i>→</i><em>Reports</em>
         </div>
-      </article>
+      </div>
 
-      <!-- Example of a not-yet-published tool. Delete or repurpose. -->
+      <ul class="caps">
+        <li><span class="ic">◎</span><div><b>Sector-aware scoring</b><span>Sector, revenue, headcount, and footprint set the impact dimensions, likelihood drivers, and regulatory obligations before you score a single risk.</span></div></li>
+        <li><span class="ic">▦</span><div><b>Register, heat maps, treatment</b><span>Inherent vs residual on 5×5 heat maps, risk templates per sector, owners, treatment plans, due dates, and overdue tracking.</span></div></li>
+        <li><span class="ic">⛨</span><div><b>Controls &amp; regulations</b><span>Map risks to controls and to the regulations that apply to your footprint; see coverage and gaps.</span></div></li>
+        <li><span class="ic">▤</span><div><b>Board pack export</b><span>One click to PowerPoint, Word, or PDF: KPIs, both heat maps, top-ten residual risks, open risks by category, and obligations — built from the live register.</span></div></li>
+        <li><span class="ic">§</span><div><b>SEC Item 1C draft</b><span>Drafts the Form 10-K cybersecurity disclosure (governance, risk management and strategy) and downloads it as Inline XBRL.</span></div></li>
+        <li><span class="ic">⌂</span><div><b>Private by design</b><span>Everything stays in your browser's local storage. Export and import as CSV to move or back up.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== MORE TOOLS =====================
+       To add a tool: save it as tools/<slug>/index.html, then copy a card below.
+       When a second real tool exists, delete the placeholder card. -->
+  <section class="section wrap more" aria-labelledby="more-h">
+    <h2 id="more-h">More tools</h2>
+    <div class="grid">
       <article class="card tool">
         <div class="icon">✓</div>
-        <h3><a href="#" aria-disabled="true">Next tool goes here</a></h3>
+        <h3><a href="#" aria-disabled="true">Next tool</a></h3>
         <p>
           <span class="todo">Placeholder.</span> Build a tool with Claude, drop the HTML file into
           <code>tools/&lt;name&gt;/index.html</code>, copy this card and point the link at it.
         </p>
-        <div class="tags">
-          <span class="tag">idea</span>
-        </div>
+        <div class="tags"><span class="tag">idea</span></div>
         <div class="card-foot">
           <span class="meta">—</span>
           <span class="status wip">in progress</span>
         </div>
       </article>
-
     </div>
   </section>
 
   <section class="section wrap prose">
     <h2>How these are built</h2>
     <p>
-      Each tool starts as a description of a problem I keep running into at work. I work through
-      the design with Claude — what the tool should and shouldn't do, what the data model is, how
-      it should feel to use — and it produces a self-contained page. I test it, push back on the
-      rough edges, and publish it here when it's genuinely useful.
+      Each tool starts as a problem I keep running into with clients. I work through the design
+      with Claude — what the tool should and shouldn't do, what the data model is, how it should
+      feel to use — and it produces a self-contained page. I test it against real scenarios, push
+      back on the rough edges, and publish it here when it's genuinely useful.
     </p>
     <p>
-      Because they're single files with no backend, you can also save any tool to your own machine
-      and run it offline. If you find a bug or want a feature, <a href="../home/#elsewhere">get in touch</a>.
+      Because they're single files with no backend, you can save any tool to your own machine and
+      run it offline. If you find a bug or want a feature, <a href="../home/#elsewhere">get in touch</a>.
     </p>
   </section>
 </main>
