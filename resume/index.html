@@ -12,10 +12,11 @@
 <script src="../assets/site.js"></script>
 <style>
   /* ---- header ---- */
-  .r-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding:32px 0 8px}
-  .r-head .title{display:flex;flex-wrap:wrap;gap:8px;font-family:var(--display);font-size:clamp(15px,1.6vw,18px);font-weight:600;line-height:1.2;color:var(--ink);max-width:60ch;margin:0 0 16px}
-  .r-head .title span{padding:7px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line-strong)}
-  .r-head .title span:first-child{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .r-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;padding:32px 0 8px}
+  .r-head .title{font-family:var(--display);font-size:clamp(34px,4.5vw,46px);font-weight:700;line-height:1.1;margin:0 0 10px}
+  .r-head .focus{font-family:var(--display);font-size:clamp(16px,1.8vw,20px);font-weight:600;color:var(--ink-2);line-height:1.5;max-width:62ch;margin:0 0 14px}
+  .r-head .focus span{display:inline-block;white-space:nowrap}
+  .r-head .focus span:not(:last-child)::after{content:"·";color:var(--accent);margin:0 .55em;font-weight:700}
   .r-head .where{font-family:var(--mono);font-size:18px;color:var(--ink-2)}
   .r-head .where b{font-weight:500;color:var(--accent)}
   .r-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
@@ -94,7 +95,8 @@
 
     <div class="r-head">
       <div>
-        <h1 class="title"><span>Cybersecurity Leader</span><span>Cyber Risk Assessments &amp; Assurance</span><span>Design, Build, Activate &amp; Operate Cyber Programs</span><span>Cyber Go-To-Market</span><span>Origination &amp; Sales</span></h1>
+        <h1 class="title">Cybersecurity Leader</h1>
+        <p class="focus"><span>Cyber Risk Assessments &amp; Assurance</span><span>Design, Build, Activate &amp; Operate Cyber Programs</span><span>Cyber Go-To-Market</span><span>Origination &amp; Sales</span></p>
         <div class="where"><b>Denver, CO</b> · 14 years · EY, PwC</div>
       </div>
       <div class="r-actions">
@@ -107,7 +109,7 @@
 
     <div class="stats" aria-label="Highlights">
       <div class="stat"><b>$10M+</b><span>closed engagements, every fiscal year</span></div>
-      <div class="stat"><b>$500K → $10M</b><span>new logo grown to a top account in two years</span></div>
+      <div class="stat"><b>$250K → $10M</b><span>new logo grown to a top account in two years</span></div>
       <div class="stat"><b>34</b><span>countries in one NIST CSF assessment</span></div>
       <div class="stat"><b>1M+</b><span>connected assets under product security governance</span></div>
       <div class="stat"><b>0 → 3+</b><span>CMMI maturity, enterprise program</span></div>
@@ -159,10 +161,10 @@
       </div>
 
       <div class="panel" data-key="sell" hidden>
-        <div class="lens-copy"><p>Carried a $5M–$10M annual sales goal at EY and closed more than $10M every year. Opened a new healthcare logo at $500K and grew it to a $10M account in two years.</p></div>
+        <div class="lens-copy"><p>Carried a $5M–$10M annual sales goal at EY and closed more than $10M every year. Opened a new healthcare logo at $250K and grew it to a $10M account in two years.</p></div>
         <ul class="proof">
           <li>$5M–$10M annual goal as pursuit leader; $10M+ closed every fiscal year.</li>
-          <li>New healthcare logo: $500K assessment → $10M account in year two, by converting findings into a funded multi-workstream program.</li>
+          <li>New healthcare logo: $250K assessment → $10M account in year two, by converting findings into a funded multi-workstream program.</li>
           <li>Full cycle with CISOs and their leadership — identify, qualify, shape, price, close — consistently across sectors.</li>
           <li>Expanded accounts by translating assessment findings into follow-on programs and multi-year roadmaps.</li>
         </ul>
@@ -191,7 +193,7 @@
             <ul>
               <li>Carried a $5M–$10M annual sales goal as pursuit leader and exceeded $10M in closed cybersecurity engagements every fiscal year.</li>
               <li>Owned pursuits end to end — opportunity identification, qualification, proposal development, pricing, and staffing models — presenting each deal to EY Americas Deal Governance leadership for approval prior to closing.</li>
-              <li>Originated a new healthcare brand for the practice: entered on a $500K security assessment and converted it into a $10M account in year two by translating findings into a funded multi-workstream cybersecurity transformation.</li>
+              <li>Originated a new healthcare brand for the practice: entered on a $250K security assessment and converted it into a $10M account in year two by translating findings into a funded multi-workstream cybersecurity transformation.</li>
               <li>Ran the full cycle with CISOs and their leadership teams — identifying and qualifying opportunities, shaping and pricing solutions, and closing consistently across multiple industry sectors.</li>
             </ul>
 
