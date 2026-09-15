@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Resume · Satya Salyankar</title>
-<meta name="description" content="Satyajit (Satya) Salyankar, CISSP — cybersecurity leader: running cyber programs, go-to-market, and originating and selling work.">
+<meta name="description" content="Satya Salyankar, CISSP — cybersecurity leader: running cyber programs, go-to-market, and originating and selling work.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -12,10 +12,10 @@
 <script src="../assets/site.js"></script>
 <style>
   /* ---- header ---- */
-  .r-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding:28px 0 8px}
-  .r-head h1{margin-bottom:4px;font-size:clamp(30px,4vw,42px)}
-  .r-head .title{font-size:18px;color:var(--ink-2);max-width:60ch}
-  .r-head .where{font-family:var(--mono);font-size:13px;color:var(--ink-3);margin-top:8px}
+  .r-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;padding:32px 0 8px}
+  .r-head .title{font-family:var(--display);font-size:clamp(24px,3vw,32px);font-weight:600;line-height:1.2;color:var(--ink);max-width:30ch;margin:0 0 14px;text-wrap:balance}
+  .r-head .where{font-family:var(--mono);font-size:18px;color:var(--ink-2)}
+  .r-head .where b{font-weight:500;color:var(--accent)}
   .r-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
   @media (max-width:720px){.r-head{grid-template-columns:1fr}.r-actions{justify-content:flex-start}}
 
@@ -25,34 +25,33 @@
   .stat b{display:block;font-family:var(--display);font-size:22px;white-space:nowrap;font-weight:700;line-height:1.1;color:var(--accent)}
   .stat span{font-size:13px;color:var(--ink-2)}
 
-  /* ---- lens switcher ---- */
-  .lenses{margin:40px 0 8px}
-  .lens-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-  .lens-btn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:8px 16px;font-weight:500;cursor:pointer;font-size:14.5px}
-  .lens-btn:hover{border-color:var(--ink-3);color:var(--ink)}
-  .lens-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-  .lens-copy{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:14px 18px;color:var(--ink);max-width:80ch}
-  .lens-copy p{margin:0}
-  .lens-copy[hidden]{display:none}
+  /* ---- switchers (shared by lens + journey) ---- */
+  .switch{margin:44px 0 8px}
+  .switch-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .sw{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:8px 16px;font-weight:500;cursor:pointer;font-size:14.5px}
+  .sw:hover{border-color:var(--ink-3);color:var(--ink)}
+  .sw[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .sw small{font-family:var(--mono);font-weight:400;opacity:.75;margin-left:6px;font-size:12px}
+  .panel[hidden]{display:none}
 
-  /* ---- experience ---- */
-  .org{margin-top:36px;padding-top:18px;border-top:2px solid var(--line-strong)}
-  .org-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
-  .org-head h2{font-size:22px;margin:0}
+  /* ---- lens panels ---- */
+  .lens-copy{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:14px 18px;color:var(--ink);max-width:80ch;font-size:17px}
+  .lens-copy p{margin:0}
+  .proof{margin:16px 0 0;padding-left:0;list-style:none;max-width:80ch}
+  .proof li{position:relative;padding-left:20px;margin:0 0 8px;color:var(--ink-2)}
+  .proof li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+
+  /* ---- journey panels ---- */
+  .org-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline;margin-bottom:6px}
+  .org-head h3{font-size:22px;margin:0}
   .org-head .loc{font-family:var(--mono);font-size:13px;color:var(--ink-3)}
-  .role{display:grid;grid-template-columns:160px 1fr;gap:6px 24px;padding:18px 0 6px;border-top:1px solid var(--line)}
-  .role:first-of-type{border-top:0}
+  .role{display:grid;grid-template-columns:160px 1fr;gap:6px 24px;padding:18px 0 8px;border-top:1px solid var(--line)}
   .role .when{font-family:var(--mono);font-size:13px;color:var(--ink-3);padding-top:4px}
-  .role h3{margin:0 0 10px;font-size:18px}
+  .role h4{margin:0 0 10px;font-size:18px;font-family:var(--display);font-weight:600}
+  .role h5{margin:14px 0 6px;font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
   .role ul{margin:0;padding-left:0;list-style:none}
   .role li{position:relative;padding-left:18px;margin:0 0 10px;color:var(--ink-2);line-height:1.5}
   .role li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--line-strong)}
-  .role li.on::before{background:var(--accent)}
-  .role li.off{display:none}
-  .role .none{color:var(--ink-3);font-style:italic;font-size:14px;margin:0}
-  .role .none[hidden]{display:none}
-  .lens-tags{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle}
-  .lens-tags i{font-style:normal;font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:999px;background:var(--surface-2);color:var(--ink-3);border:1px solid var(--line)}
   @media (max-width:600px){.role{grid-template-columns:1fr}}
 
   /* ---- competencies ---- */
@@ -61,12 +60,12 @@
   .comp h3{font-size:15px;margin:0 0 8px}
   .comp p{margin:0;font-size:14px;color:var(--ink-2);line-height:1.55}
 
-  /* ---- print ---- */
+  /* ---- print: everything, no controls ---- */
   @media print{
-    .site-header,.site-footer,.r-actions,.lens-bar,.lens-tags{display:none!important}
+    .site-header,.site-footer,.r-actions,.switch-bar{display:none!important}
+    .panel[hidden]{display:block}
     body{background:#fff;color:#000;font-size:11.5px}
     main{padding:0}
-    .role li.off{display:list-item}
     .stat b{color:#000}
     a{color:inherit;text-decoration:none}
   }
@@ -93,10 +92,8 @@
 
     <div class="r-head">
       <div>
-        <div class="eyebrow">Resume</div>
-        <h1>Satyajit (Satya) Salyankar, CISSP</h1>
-        <p class="title">Cybersecurity leader — I run cyber programs for CISOs, build and take security offerings to market, and originate and sell the work.</p>
-        <div class="where">Denver, CO · 14 years · EY, PwC</div>
+        <h1 class="title">I run cyber programs for CISOs, take security offerings to market, and originate and sell the work.</h1>
+        <div class="where"><b>Denver, CO</b> · 14 years · EY, PwC</div>
       </div>
       <div class="r-actions">
         <a class="btn" href="https://www.linkedin.com/in/satyajit-salyankar" rel="me">LinkedIn</a>
@@ -115,102 +112,174 @@
       <div class="stat"><b>10+</b><span>direct reports; 5+ promoted</span></div>
     </div>
 
-    <section class="lenses" aria-labelledby="lens-h">
+    <!-- ===================== LENS ===================== -->
+    <section class="switch" aria-labelledby="lens-h" data-switch="lens">
       <div class="eyebrow" id="lens-h">Read this resume through one lens</div>
-      <div class="lens-bar" role="group" aria-label="Filter experience">
-        <button class="lens-btn" type="button" data-lens="all" aria-pressed="true">Everything</button>
-        <button class="lens-btn" type="button" data-lens="program" aria-pressed="false">Running cyber programs</button>
-        <button class="lens-btn" type="button" data-lens="gtm" aria-pressed="false">Go-to-market</button>
-        <button class="lens-btn" type="button" data-lens="sell" aria-pressed="false">Originating &amp; selling</button>
+      <div class="switch-bar" role="group" aria-label="Choose a lens">
+        <button class="sw" type="button" data-key="all" aria-pressed="true">Everything</button>
+        <button class="sw" type="button" data-key="program" aria-pressed="false">Running cyber programs</button>
+        <button class="sw" type="button" data-key="gtm" aria-pressed="false">Go-to-market</button>
+        <button class="sw" type="button" data-key="sell" aria-pressed="false">Originating &amp; selling</button>
       </div>
 
-      <div class="lens-copy" data-for="all">
-        <p>Cybersecurity consulting and go-to-market leader with 14 years selling and delivering security strategy, risk, and compliance programs to CISOs and C-suite executives at Fortune 500 and global enterprises. Delivery credibility built in highly regulated, examiner-facing markets — healthcare, pharmaceuticals, automotive, consumer products, and energy — spanning NIST CSF/RMF programs, connected products, third-party risk, SEC cyber disclosure readiness, and remediation of a material NERC CIP finding carrying $1M+ per-violation, per-day exposure.</p>
+      <div class="panel" data-key="all">
+        <div class="lens-copy"><p>Fourteen years in cybersecurity consulting at EY and PwC. I build and run the security programs CISOs depend on, turn what works into offerings, and sell the work — mostly in regulated industries: healthcare, pharma, automotive, consumer products, and energy.</p></div>
+        <ul class="proof">
+          <li>Exceeded $10M in closed cybersecurity engagements every fiscal year as an EY pursuit leader.</li>
+          <li>Directed a $10M+, 10-workstream transformation securing a connected-product portfolio worth $24B+ in services revenue.</li>
+          <li>Closed a material NERC CIP finding carrying $1M+ per-violation, per-day exposure.</li>
+          <li>Ran a NIST CSF assessment across 34 countries and turned it into a board-approved roadmap.</li>
+          <li>Recently led an AI governance readiness assessment against the NIST AI RMF.</li>
+        </ul>
       </div>
-      <div class="lens-copy" data-for="program" hidden>
-        <p>Cybersecurity program and risk management leader with 13+ years building and running the GRC, product security governance, third-party risk, and compliance functions that CISOs operate. Led $10M+ multi-year cyber transformation programs across multiple sectors; ran risk assessments and delivered roadmaps for organizations operating across 30+ countries; operationalized NIST RMF-based risk management from control design through executive reporting — including remediation of a material NERC CIP finding. Recently executed an AI governance readiness assessment aligned to the NIST AI RMF.</p>
+
+      <div class="panel" data-key="program" hidden>
+        <div class="lens-copy"><p>I build and run the functions a CISO operates — GRC, product security governance, third-party risk, compliance — from control design through board reporting.</p></div>
+        <ul class="proof">
+          <li>$10M+ multi-year transformation: 10 workstreams, 20+ professionals, cybersecurity embedded into connected-product design, development, and operations.</li>
+          <li>Product security governance for 1M+ connected assets — ISO 21434 / SAE J3061 controls, ServiceNow cataloging and GRC, testing, executive reporting.</li>
+          <li>Healthcare cyber transformation: 10 in-flight initiatives across GRC, data protection, cloud, medical OT, TPRM, IAM, and PMO.</li>
+          <li>NIST RMF risk program ($2M+) that remediated a material NERC CIP finding and returned the client to compliance.</li>
+          <li>Took an enterprise security program from 0 to 3+ CMMI maturity; set up the operating cadence of an Office of the CISO.</li>
+          <li>SEC cyber disclosure readiness across a holding company and seven portfolio companies; NIST AI RMF readiness assessment.</li>
+        </ul>
       </div>
-      <div class="lens-copy" data-for="gtm" hidden>
-        <p>Builds security offerings with clients and turns them into repeatable plays. Co-developed a connected product security program offering alongside a client and packaged it for the wider sector; owns pursuits end to end — qualification, solution shaping, proposal, pricing, staffing models, and deal governance — and shapes multi-year strategy with CISOs, CIOs, and CFOs so that what's sold is what gets delivered.</p>
+
+      <div class="panel" data-key="gtm" hidden>
+        <div class="lens-copy"><p>I turn client work into repeatable offerings and own the pursuit from qualification to signed deal — solution, proposal, pricing, staffing, and deal governance.</p></div>
+        <ul class="proof">
+          <li>Co-developed a connected-product security offering with one client, then packaged and positioned it for others in the sector.</li>
+          <li>Own pursuits end to end and presented each deal to EY Americas Deal Governance for approval before closing.</li>
+          <li>Shaped and priced solutions with CISOs and their teams across multiple sectors.</li>
+          <li>Led CISO / CIO / CFO / strategy workshops at a $6.2B CPG company to turn business drivers into a funded 3-year cyber strategy.</li>
+          <li>Built business cases that unlocked funding for next-generation connected-vehicle security across 34 countries.</li>
+        </ul>
       </div>
-      <div class="lens-copy" data-for="sell" hidden>
-        <p>Carried a $5M–$10M annual sales goal as pursuit leader at EY and exceeded $10M in closed cybersecurity engagements every fiscal year. Originated a new healthcare logo on a $250K assessment and converted it into a $10M account in year two by translating findings into a funded, multi-workstream transformation. Runs the full cycle with CISOs and their leadership teams — identify, qualify, shape, price, close — consistently across sectors.</p>
+
+      <div class="panel" data-key="sell" hidden>
+        <div class="lens-copy"><p>Carried a $5M–$10M annual sales goal at EY and closed more than $10M every year. Opened a new healthcare logo at $250K and grew it to a $10M account in two years.</p></div>
+        <ul class="proof">
+          <li>$5M–$10M annual goal as pursuit leader; $10M+ closed every fiscal year.</li>
+          <li>New healthcare logo: $250K assessment → $10M account in year two, by converting findings into a funded multi-workstream program.</li>
+          <li>Full cycle with CISOs and their leadership — identify, qualify, shape, price, close — consistently across sectors.</li>
+          <li>Expanded accounts by translating assessment findings into follow-on programs and multi-year roadmaps.</li>
+        </ul>
       </div>
     </section>
 
-    <!-- ===================== EXPERIENCE =====================
-         Each bullet carries data-lens="program|gtm|sell" (space-separated for more than one).
-         The lens buttons above filter on these. -->
-    <section aria-labelledby="exp-h">
-      <div class="org">
-        <div class="org-head"><h2 id="exp-h">EY (Ernst &amp; Young LLP)</h2><span class="loc">Denver, CO · Chicago, IL</span></div>
+    <!-- ===================== PROFESSIONAL JOURNEY ===================== -->
+    <section class="switch" aria-labelledby="journey-h" data-switch="journey">
+      <div class="eyebrow" id="journey-h">Professional journey</div>
+      <div class="switch-bar" role="group" aria-label="Choose an employer">
+        <button class="sw" type="button" data-key="ey" aria-pressed="true">EY <small>2015 – 2026</small></button>
+        <button class="sw" type="button" data-key="pwc" aria-pressed="false">PwC <small>2012 – 2015</small></button>
+        <button class="sw" type="button" data-key="accenture" aria-pressed="false">Accenture <small>2009 – 2010</small></button>
+      </div>
+
+      <!-- ---------- EY ---------- -->
+      <div class="panel" data-key="ey">
+        <div class="org-head"><h3>EY (Ernst &amp; Young LLP)</h3><span class="loc">Denver, CO · Chicago, IL · Cybersecurity Strategy, Risk &amp; Program Transformation</span></div>
 
         <div class="role">
           <div class="when">Aug 2022 — Feb 2026</div>
           <div>
-            <h3>Senior Manager — Cybersecurity Risk &amp; Program Management</h3>
+            <h4>Senior Manager — Cybersecurity Risk &amp; Program Management</h4>
+
+            <h5>Business development &amp; origination</h5>
             <ul>
-              <li data-lens="sell">Carried a $5M–$10M annual sales goal as pursuit leader and exceeded $10M in closed cybersecurity engagements every fiscal year.</li>
-              <li data-lens="sell gtm">Owned pursuits end to end — opportunity identification, qualification, proposal development, pricing, and staffing models — presenting each deal to EY Americas Deal Governance leadership for approval prior to closing.</li>
-              <li data-lens="sell">Originated a new healthcare brand for the practice: entered on a $250K security assessment and converted it into a $10M account in year two by translating assessment findings into a funded multi-workstream cybersecurity program transformation.</li>
-              <li data-lens="sell gtm">Ran the full cycle with CISOs and their leadership teams — identifying and qualifying opportunities, shaping and pricing solutions, and closing consistently across multiple industry sectors.</li>
-              <li data-lens="gtm">Co-developed a new connected product security program offering alongside a client, then packaged and positioned it for other clients in the same sector — turning a single engagement into a repeatable go-to-market play.</li>
-              <li data-lens="program gtm">Embedded within a newly formed CISO organization at a $6.2B publicly traded CPG leader; led executive workshops with the CISO, CIO, CFO, and corporate strategy to align business drivers and constraints into a targeted 3-year cybersecurity program strategy and roadmap.</li>
-              <li data-lens="program">Directed a $10M+ multi-year transformation across 10 workstreams and 20+ professionals, embedding cybersecurity into connected product design, development, and operations — enabling the secure rollout of a portfolio generating $24B+ in services revenue.</li>
-              <li data-lens="program">Developed a product security governance program driving secure lifecycle management for 1M+ connected assets globally — deploying ISO 21434 and SAE J3061-aligned control frameworks, ServiceNow-based product cataloging and GRC, product security testing, and executive reporting.</li>
-              <li data-lens="program">Planned and executed an AI governance readiness assessment aligned to the NIST AI Risk Management Framework — evaluating AI use-case inventory, model risk, third-party AI exposure, and governance structures, and delivering the prioritized roadmap to close gaps.</li>
-              <li data-lens="program">Led an SEC cybersecurity disclosure readiness assessment across a publicly traded media and entertainment holding company and seven portfolio companies — evaluating incident materiality determination, escalation, and disclosure processes under the SEC's cybersecurity rules; designed the strategy standardizing 10-K and 8-K disclosures.</li>
-              <li data-lens="program">Delivered a board-ready multi-year cybersecurity roadmap for automotive operations by managing a NIST CSF assessment coordinated across thirty-four countries spanning Europe, Asia, the Middle East, and the Americas, with business cases supporting the secure rollout of next-generation connected vehicles.</li>
-              <li data-lens="program">Directed a 6-member global team with 10+ SMEs on a cybersecurity maturity assessment for a leading healthcare organization across IT, medical OT, and supply chain, presenting to the C-suite to secure funding; ran the resulting healthcare cyber transformation with 10 in-flight initiatives and 20+ globally dispersed professionals across GRC, data protection, cloud security, medical OT, third-party risk, IAM, and cyber PMO.</li>
-              <li data-lens="program">Guided an enterprise security program from a 0 to a 3+ CMMI maturity rating over multiple years, protecting a global portfolio of consumer brands; recognized by the CISO in a LinkedIn recommendation for sustained program leadership.</li>
-              <li data-lens="program">Established the operating cadence for the Office of the CISO — operating models, steering committee structure, governance workshops, reporting touchpoints — and drove board and audit committee reporting for CISOs across multiple sectors, managing OPEX/CAPEX forecasting, resource planning, and sourcing models for $5M+ program budgets.</li>
-              <li data-lens="program">Held performance oversight for 10+ direct reports globally; advanced 5+ direct reports through promotions by tracking KPI progress and developing and presenting their business cases to leadership.</li>
+              <li>Carried a $5M–$10M annual sales goal as pursuit leader and exceeded $10M in closed cybersecurity engagements every fiscal year.</li>
+              <li>Owned pursuits end to end — opportunity identification, qualification, proposal development, pricing, and staffing models — presenting each deal to EY Americas Deal Governance leadership for approval prior to closing.</li>
+              <li>Originated a new healthcare brand for the practice: entered on a $250K security assessment and converted it into a $10M account in year two by translating findings into a funded multi-workstream cybersecurity transformation.</li>
+              <li>Ran the full cycle with CISOs and their leadership teams — identifying and qualifying opportunities, shaping and pricing solutions, and closing consistently across multiple industry sectors.</li>
             </ul>
-            <p class="none" hidden>Nothing in this role for the selected lens.</p>
+
+            <h5>Solutions &amp; offerings</h5>
+            <ul>
+              <li>Co-developed a new connected product security program offering alongside a client, then packaged and positioned it for other clients in the same sector — turning a single engagement into a repeatable go-to-market play.</li>
+              <li>Embedded within a newly formed CISO organization at a $6.2B publicly traded CPG leader; led executive workshops with the CISO, CIO, CFO, and corporate strategy to align business drivers and constraints into a 3-year cybersecurity strategy and roadmap.</li>
+              <li>Planned and executed an AI governance readiness assessment aligned to the NIST AI Risk Management Framework — AI use-case inventory, model risk, third-party AI exposure, and governance structures — and delivered the prioritized roadmap to close gaps.</li>
+            </ul>
+
+            <h5>Delivery in regulated markets</h5>
+            <ul>
+              <li>Directed a $10M+ multi-year transformation across 10 workstreams and 20+ professionals, embedding cybersecurity into connected product design, development, and operations — enabling the secure rollout of a portfolio generating $24B+ in services revenue.</li>
+              <li>Developed a product security governance program for 1M+ connected assets globally — ISO 21434 and SAE J3061-aligned control frameworks, ServiceNow-based product cataloging and GRC, product security testing, and executive reporting.</li>
+              <li>Delivered a board-ready multi-year cybersecurity roadmap for automotive operations by managing a NIST CSF assessment across thirty-four countries in Europe, Asia, the Middle East, and the Americas, with business cases supporting next-generation connected vehicles.</li>
+              <li>Directed a 6-member global team with 10+ SMEs on a cybersecurity maturity assessment for a leading healthcare organization across IT, medical OT, and supply chain, presenting to the C-suite to secure funding; then ran the transformation — 10 in-flight initiatives, 20+ professionals across GRC, data protection, cloud security, medical OT, third-party risk, IAM, and cyber PMO.</li>
+              <li>Led an SEC cybersecurity disclosure readiness assessment across a publicly traded media and entertainment holding company and seven portfolio companies — materiality determination, escalation, and disclosure processes — and designed the approach standardizing 10-K and 8-K disclosures.</li>
+              <li>Guided an enterprise security program from 0 to a 3+ CMMI maturity rating over multiple years, protecting a global portfolio of consumer brands; recognized by the CISO in a LinkedIn recommendation for sustained program leadership.</li>
+            </ul>
+
+            <h5>Executive &amp; team leadership</h5>
+            <ul>
+              <li>Established the operating cadence for a client Office of the CISO — operating models, steering committee structure, governance workshops, and reporting touchpoints.</li>
+              <li>Drove board, audit committee, and executive steering committee reporting for CISOs across multiple sectors, translating technical risk into funding and prioritization decisions; managed OPEX/CAPEX forecasting, resource planning, and sourcing models for $5M+ program budgets.</li>
+              <li>Held performance oversight for 10+ direct reports globally; advanced 5+ through promotions by tracking KPI progress and presenting their cases to leadership.</li>
+            </ul>
           </div>
         </div>
 
         <div class="role">
           <div class="when">Oct 2018 — Aug 2022</div>
           <div>
-            <h3>Manager — Cybersecurity Risk, Controls &amp; Compliance</h3>
+            <h4>Manager — Cybersecurity Risk, Controls &amp; Compliance</h4>
             <ul>
-              <li data-lens="program">Owned remediation of a material NERC CIP finding with up to $1M per violation, per day in regulatory exposure; built and operationalized a NIST RMF-based cyber risk program ($2M+ scope) and enterprise risk oversight function that returned the organization to compliance.</li>
-              <li data-lens="program">Designed and activated third-party risk management programs, cyber risk operating models, cybersecurity policies, and metrics/reporting frameworks; advanced client programs from initial to defined maturity over 2–3 years through risk-prioritized roadmaps tailored to sector and threat profile.</li>
-              <li data-lens="program">Partnered with Archer GRC developers to deploy enterprise-wide risk tracking and built executive dashboards and persona-based reporting that converted cyber risk metrics into leadership decision inputs rather than compliance status.</li>
+              <li>Led a $2M+ program to remediate a material NERC CIP audit finding carrying regulatory exposure of $1M+ per violation, per day; operationalized a NIST RMF-based cyber risk program and stood up enterprise risk oversight that closed the finding and eliminated ongoing penalty risk.</li>
+              <li>Partnered with Archer GRC developers to design, pilot, and deploy cyber risk management capability enabling enterprise-wide risk tracking, measurement, and remediation.</li>
+              <li>Designed and activated third-party risk management programs, cyber risk operating models, cybersecurity policies, and metrics/reporting frameworks.</li>
+              <li>Built executive dashboards and persona-based reporting that converted cyber risk metrics into leadership decision inputs rather than compliance status.</li>
+              <li>Advanced client cyber programs from initial to defined maturity over 2–3 years through risk-prioritized roadmaps tailored to sector, threat profile, and business context.</li>
             </ul>
-            <p class="none" hidden>Nothing in this role for the selected lens.</p>
           </div>
         </div>
 
         <div class="role">
           <div class="when">Jul 2015 — Sep 2018</div>
           <div>
-            <h3>Senior Consultant — Cybersecurity Risk &amp; Audit</h3>
+            <h4>Senior Consultant — Cybersecurity Risk &amp; Audit</h4>
             <ul>
-              <li data-lens="program">Executed cybersecurity program and controls assessments against NIST CSF, NIST RMF, and ISO standards, producing risk-prioritized findings and remediation roadmaps; facilitated workshops with cyber leadership, internal audit, engineering, and business stakeholders to define target-state capability.</li>
-              <li data-lens="program">Authored cybersecurity policies, standards, and control documentation and drove activation across enterprise operating models.</li>
+              <li>Executed cybersecurity program and controls assessments against NIST CSF, NIST RMF, and ISO standards, producing risk-prioritized findings and remediation roadmaps.</li>
+              <li>Facilitated workshops with cyber leadership, internal audit, engineering, and business stakeholders to evaluate program maturity and define target-state capability.</li>
+              <li>Authored cybersecurity policies, standards, and control documentation, and drove activation across client operating models.</li>
+              <li>Built cyber metrics and reporting dashboards to track program maturity against target state and developed business cases supporting multi-year investment decisions.</li>
             </ul>
-            <p class="none" hidden>Nothing in this role for the selected lens.</p>
           </div>
         </div>
       </div>
 
-      <div class="org">
-        <div class="org-head"><h2>PwC (PricewaterhouseCoopers LLP)</h2><span class="loc">Indianapolis, IN</span></div>
+      <!-- ---------- PwC ---------- -->
+      <div class="panel" data-key="pwc" hidden>
+        <div class="org-head"><h3>PwC (PricewaterhouseCoopers LLP)</h3><span class="loc">Indianapolis, IN · IT Risk Assurance</span></div>
         <div class="role">
           <div class="when">Jul 2012 — Jul 2015</div>
           <div>
-            <h3>Experienced Associate — IT Risk Assurance</h3>
+            <h4>Experienced Associate — IT Risk Assurance</h4>
             <ul>
-              <li data-lens="program">Led IT general controls (ITGC) and process control assessments delivering SOX and SSAE 16 compliance outcomes for Fortune 500 clients, owning audit readiness and control remediation.</li>
+              <li>Led IT general controls (ITGC) and process control assessments delivering SOX and SSAE 16 compliance outcomes for Fortune 500 clients, owning audit readiness and control remediation.</li>
+              <li>Led SAP security audits identifying excessive access, redundant permissions, and segregation-of-duties conflicts across employees and contractors, and implemented remediation to strengthen access governance.</li>
+              <li>Established governance and IT risk frameworks for a Fortune 500 pharmaceutical client — threat and vulnerability assessments, threat management policy, asset risk oversight, and exception tracking.</li>
             </ul>
-            <p class="none" hidden>Nothing in this role for the selected lens.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- Accenture ---------- -->
+      <div class="panel" data-key="accenture" hidden>
+        <div class="org-head"><h3>Accenture</h3><span class="loc">Mumbai, India</span></div>
+        <div class="role">
+          <div class="when">Dec 2009 — Jul 2010</div>
+          <div>
+            <h4>Associate Software Engineer — SAP Basis Security Administration</h4>
+            <ul>
+              <li>SAP BASIS security administrator for a global mining and resources company — user provisioning, role and authorization design, and security administration across production SAP environments.</li>
+              <li>Administered access controls and segregation-of-duties enforcement in live, audited enterprise systems.</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ===================== COMPETENCIES ===================== -->
     <section class="section" aria-labelledby="comp-h">
       <h2 id="comp-h">Core competencies</h2>
       <div class="comp">
@@ -223,15 +292,16 @@
       </div>
     </section>
 
+    <!-- ===================== EDUCATION ===================== -->
     <section class="section" aria-labelledby="edu-h">
       <h2 id="edu-h">Education &amp; certifications</h2>
       <div class="role">
         <div class="when">2010 — 2012</div>
-        <div><h3>Master of Science, Information Systems</h3><p class="muted" style="margin:0">Kelley School of Business, Indiana University Bloomington</p></div>
+        <div><h4>Master of Science, Information Systems</h4><p class="muted" style="margin:0">Kelley School of Business, Indiana University Bloomington</p></div>
       </div>
       <div class="role">
         <div class="when">2005 — 2009</div>
-        <div><h3>Bachelor of Engineering, Information Technology</h3><p class="muted" style="margin:0">University of Mumbai</p></div>
+        <div><h4>Bachelor of Engineering, Information Technology</h4><p class="muted" style="margin:0">University of Mumbai</p></div>
       </div>
       <div class="role">
         <div class="when">Certifications</div>
@@ -239,6 +309,7 @@
           <span class="tag">CISSP</span>
           <span class="tag">Microsoft Certified: Azure AI Fundamentals</span>
           <span class="tag">AWS Certified Cloud Practitioner</span>
+          <span class="tag">AIGP — AI Governance Professional (in progress)</span>
         </div>
       </div>
     </section>
@@ -255,29 +326,24 @@
 <script>
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-/* Lens filter: show bullets tagged with the chosen lens; remember the choice in the URL hash. */
+/* Generic switcher: each section[data-switch] has buttons (data-key) and panels (data-key).
+   Lens choice is mirrored into the URL hash so a view can be linked directly (…/resume/#sell). */
 (function () {
-  var btns = document.querySelectorAll('.lens-btn');
-  var items = document.querySelectorAll('.role li[data-lens]');
-  var copies = document.querySelectorAll('.lens-copy');
-  function apply(lens) {
-    btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lens === lens)); });
-    copies.forEach(function (c) { c.hidden = c.dataset.for !== lens; });
-    items.forEach(function (li) {
-      var has = lens === 'all' || li.dataset.lens.split(' ').indexOf(lens) !== -1;
-      li.classList.toggle('off', !has);
-      li.classList.toggle('on', lens !== 'all' && has);
-    });
-    document.querySelectorAll('.role').forEach(function (r) {
-      var list = r.querySelector('ul'); var note = r.querySelector('.none');
-      if (!list || !note) return;
-      note.hidden = !!list.querySelector('li:not(.off)');
-    });
-    if (history.replaceState) history.replaceState(null, '', lens === 'all' ? location.pathname : '#' + lens);
-  }
-  btns.forEach(function (b) { b.addEventListener('click', function () { apply(b.dataset.lens); }); });
-  var start = location.hash.replace('#', '');
-  apply(['program', 'gtm', 'sell'].indexOf(start) !== -1 ? start : 'all');
+  document.querySelectorAll('[data-switch]').forEach(function (sec) {
+    var name = sec.dataset.switch;
+    var btns = sec.querySelectorAll('.sw');
+    var panels = sec.querySelectorAll('.panel');
+    function apply(key) {
+      btns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.key === key)); });
+      panels.forEach(function (p) { p.hidden = p.dataset.key !== key; });
+      if (name === 'lens' && history.replaceState) history.replaceState(null, '', key === 'all' ? location.pathname : '#' + key);
+    }
+    btns.forEach(function (b) { b.addEventListener('click', function () { apply(b.dataset.key); }); });
+    if (name === 'lens') {
+      var start = location.hash.replace('#', '');
+      if (['program', 'gtm', 'sell'].indexOf(start) !== -1) apply(start);
+    }
+  });
 })();
 </script>
 </body>
