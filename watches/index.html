@@ -42,6 +42,18 @@
   .wpanel .info .blurb p{margin:0 0 .8em}
   .wpanel .close{margin-top:14px}
 
+  /* ---- writing ---- */
+  .writing{margin-top:56px}
+  .post{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .18s,box-shadow .18s,border-color .18s}
+  .post:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+  .post img{width:100%;height:100%;min-height:220px;object-fit:cover;object-position:50% 60%;display:block}
+  .post .body{padding:24px 26px;display:flex;flex-direction:column;justify-content:center}
+  .post h3{font-size:clamp(22px,2.6vw,28px);margin:0 0 6px}
+  .post p{margin:0 0 12px;color:var(--ink-2);line-height:1.5}
+  .post .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .post .read{margin-top:auto;padding-top:10px;color:var(--accent);font-weight:500}
+  @media (max-width:640px){.post{grid-template-columns:1fr}.post img{aspect-ratio:16/9;min-height:0}}
+
   /* ---- lightbox ---- */
   .lb{position:fixed;inset:0;background:rgba(8,10,14,.92);display:none;place-items:center;z-index:50;padding:24px;cursor:zoom-out}
   .lb.on{display:grid}
@@ -80,6 +92,20 @@
 
   <section class="wrap" aria-label="Watches">
     <div class="watches" id="grid"></div>
+  </section>
+
+  <!-- ===================== WRITING ===================== -->
+  <section class="wrap writing" aria-labelledby="writing-h">
+    <div class="eyebrow" id="writing-h">Writing</div>
+    <a class="post" href="myths-of-watch-collecting/">
+      <img src="photos/omega-speedmaster/3.jpg" alt="" loading="lazy">
+      <div class="body">
+        <h3>Ten Myths of Watch Collecting</h3>
+        <p>Watches are an investment. People notice your wrist. Rolex or bust. Everything the forums told you, corrected by someone who fell for all of it.</p>
+        <span class="meta">16 Sep 2026 · 5 min read</span>
+        <span class="read">Read the article →</span>
+      </div>
+    </a>
   </section>
 </main>
 
