@@ -1,4 +1,4 @@
-/* Theme toggle: follows the OS by default, remembers a manual choice in localStorage.
+/* Theme toggle: dark by default, remembers a manual choice in localStorage.
    Also highlights the current section in the nav. */
 (function () {
   var root = document.documentElement;
@@ -11,7 +11,7 @@
   function current() {
     var t = root.getAttribute('data-theme');
     if (t) return t;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'dark'; // site default
   }
   function paint(btn) {
     var dark = current() === 'dark';
