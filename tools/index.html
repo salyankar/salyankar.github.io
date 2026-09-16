@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tools · Satya Salyankar</title>
-<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting.">
+<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting, and Cyber Risk Atlas, a world map of cybersecurity regulations, recent breaches and supply-chain risk by sector.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -29,7 +29,6 @@
   .flow i{font-style:normal;color:var(--line-strong)}
   @media (max-width:820px){.feature{grid-template-columns:1fr;padding:24px}}
 
-  .more h2{margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -91,27 +90,40 @@
     </div>
   </section>
 
-  <!-- ===================== MORE TOOLS =====================
-       To add a tool: save it as tools/<slug>/index.html, then copy a card below.
-       When a second real tool exists, delete the placeholder card. -->
-  <section class="section wrap more" aria-labelledby="more-h">
-    <h2 id="more-h">More tools</h2>
-    <div class="grid">
-      <article class="card tool">
-        <div class="icon">✓</div>
-        <h3><a href="#" aria-disabled="true">Next tool</a></h3>
-        <p>
-          <span class="todo">Placeholder.</span> Build a tool with Claude, drop the HTML file into
-          <code>tools/&lt;name&gt;/index.html</code>, copy this card and point the link at it.
+  <!-- ===================== FEATURED: CYBER RISK ATLAS ===================== -->
+  <section class="wrap" aria-labelledby="atlas-h">
+    <div class="feature">
+      <div>
+        <div class="mark">◍</div>
+        <h2 id="atlas-h">Cyber Risk Atlas</h2>
+        <p class="tag-line">Regulations, breaches and supply-chain risk on one map.</p>
+        <p class="lede">
+          A world map for the questions a security leader gets asked in the first week: which
+          cybersecurity regulations apply where we operate, what has been breached in our sector
+          lately, and which supply-chain shocks — wars, oil, disease, export controls — are heading
+          our way. Pick your sector and countries; the map, the counts and the lists follow.
         </p>
-        <div class="tags"><span class="tag">idea</span></div>
-        <div class="card-foot">
-          <span class="meta">—</span>
-          <span class="status wip">in progress</span>
+        <div class="row">
+          <a class="btn primary" href="cyber-risk-atlas/" target="_blank" rel="noopener">Open Cyber Risk Atlas ↗</a>
+          <span class="meta">v1 · Sep 2026 · single HTML file</span>
         </div>
-      </article>
+        <div class="flow" aria-label="Workflow">
+          <em>Sector</em><i>→</i><em>Countries of operation</em><i>→</i><em>Map</em><i>→</i><em>Hover a dot</em><i>→</i><em>Obligations &amp; exposure</em>
+        </div>
+      </div>
+
+      <ul class="caps">
+        <li><span class="ic" style="color:#2a78d6;background:rgba(42,120,214,.14)">●</span><div><b>Regulations in blue</b><span>Ninety-plus instruments across sixty-six countries — GDPR, NIS2, DORA, CRA, HIPAA, SEC, NYDFS, CIRCIA, China's CSL/PIPL, India's DPDP, SOCI and more — each with authority, effective date, reporting deadline and key obligations.</span></div></li>
+        <li><span class="ic" style="color:#e34948;background:rgba(227,73,72,.14)">●</span><div><b>Breaches in red</b><span>Disclosed breaches from the last 60 days, one dot each. The newer the breach, the redder the dot; older ones fade to grey. Window it to 7, 14, 30 or 60 days.</span></div></li>
+        <li><span class="ic" style="color:#eb6834;background:rgba(235,104,52,.16)">●</span><div><b>Supply chain in orange</b><span>Structural risks by driver — conflict, energy, disease, trade, materials, logistics, climate, cyber — sized by severity, with impacts and mitigations.</span></div></li>
+        <li><span class="ic">◎</span><div><b>Hover to expand</b><span>Every dot opens a tooltip and a detail pane; click to pin it. Click a country on the map to add it to your filter.</span></div></li>
+        <li><span class="ic">▤</span><div><b>Table view too</b><span>Everything in scope is also listed — regulations by country, breaches by recency, supply risks by severity — so nothing depends on colour alone.</span></div></li>
+        <li><span class="ic">⌂</span><div><b>Private by design</b><span>No accounts and no server. The breach layer ships with sample data and a one-function adapter for wiring in a live disclosure feed.</span></div></li>
+      </ul>
     </div>
   </section>
+
+
 
   <section class="section wrap prose">
     <h2>How these are built</h2>
