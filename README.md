@@ -11,8 +11,8 @@ tools/index.html            Tool gallery
 tools/<tool>/index.html     One folder per tool (single self-contained HTML file)
 travel/index.html           Trip list
 travel/<trip>/index.html    One folder per trip, photos in travel/<trip>/photos/
-watches/index.html          Time: tile grid, expands in place (edit the WATCHES list in the file)
-watches/photos/<slug>/      1.jpg, 2.jpg … per watch (1.jpg is the tile)
+watches/index.html          Time: list of articles
+watches/<slug>/index.html   One folder per article; photos live in watches/photos/
 assets/landing.jpg          Landing photo (replace to change it; keep ~2400px wide)
 assets/site.css             Shared styles (colors, fonts, layout)
 assets/site.js              Theme toggle + current-nav highlight
@@ -39,9 +39,9 @@ Text marked with a yellow `TODO` box on the live site is placeholder — search 
    phone originals are 5–10 MB each and will make the repo and the page slow.
 3. Edit `index.html` in that folder; in `travel/index.html` copy a card and link it.
 
-**A new watch**
-1. Make `watches/photos/<slug>/` and drop in photos named `1.jpg`, `2.jpg`, … (resize to ~1600px first).
-2. In `watches/index.html`, add an entry to the `WATCHES` list near the bottom (slug, photo count, name, subtitle, blurb).
+**A new watch article**
+1. Copy `watches/myths-of-watch-collecting/` to `watches/<slug>/` and edit `index.html`.
+2. In `watches/index.html`, copy the `<a class="post">` card and point it at the new folder.
 
 Once you're happy with the travel format, delete the `travel/sample-*` folder and its card.
 
