@@ -16,7 +16,7 @@ const args = process.argv.slice(2);
 const arg = (k, d) => { const i = args.indexOf(k); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const WINDOW_DAYS = Number(arg('--days', 60));
 const OUT = resolve(arg('--out', resolve(dirname(fileURLToPath(import.meta.url)), '../data/breaches.json')));
-const UA = 'ArgusAtlas/1.0 (+https://salyankar.github.io/tools/argus-atlas/; satyajitsalyankar@gmail.com)';
+const UA = 'Satya Salyankar satyajitsalyankar@gmail.com';
 
 const now = new Date();
 const since = new Date(now.getTime() - WINDOW_DAYS * 864e5);
@@ -27,7 +27,7 @@ async function getJSON(url, tries = 3) {
   for (let i = 1; i <= tries; i++) {
     try {
       const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'application/json' } });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      if (!r.ok) throw new Error(`HTTP ${r.status} ${(await r.text()).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 160)}`);
       return await r.json();
     } catch (e) {
       if (i === tries) throw new Error(`${url} → ${e.message}`);
@@ -133,7 +133,7 @@ async function fetchRansomwareLive() {
       const group = clean(v.group || 'unknown group');
       const key = `${victim.toLowerCase()}|${group.toLowerCase()}`;
       if (seen.has(key)) continue;
-      const desc = cut(clean(v.description).replace(/^N\/A$/i, ''), 220);
+      const desc = cut(clean(v.description).replace(/^N\/A$/i, ''), 160);
       seen.set(key, {
         id: `rl-${hash(key)}`,
         source: 'rl', kind: 'claim',
