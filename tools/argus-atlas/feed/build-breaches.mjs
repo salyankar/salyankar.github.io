@@ -4,6 +4,7 @@
 //
 // Sources
 //   sec : SEC EDGAR full-text search — Form 8-K filings with Item 1.05 (material cybersecurity incidents)
+//   hhs : HHS OCR breach portal — HIPAA breaches affecting 500+ individuals, as reported by covered entities
 //   rl  : ransomware.live — victims posted on ransomware leak sites (claims, not confirmed disclosures)
 //
 // Usage: node tools/argus-atlas/feed/build-breaches.mjs [--days 60] [--out path]
@@ -151,10 +152,79 @@ async function fetchRansomwareLive() {
   return [...seen.values()];
 }
 
+// ---- HHS OCR breach portal: HIPAA breaches affecting 500+ individuals -----
+// The portal is a JavaServer Faces app with no API. Three requests reproduce what a browser does:
+// load the front page (session cookie + ViewState), post back the "View HIPAA Breach Reports" link,
+// then post back the table's "Export as CSV" link. The CSV lists every case under investigation.
+async function fetchHHS() {
+  const BASE = 'https://ocrportal.hhs.gov';
+  let cookies = '';
+  const remember = r => {
+    const set = typeof r.headers.getSetCookie === 'function' ? r.headers.getSetCookie() : [];
+    for (const c of set) { const kv = c.split(';')[0], k = kv.split('=')[0]; cookies = cookies.split('; ').filter(x => x && !x.startsWith(k + '=')).concat([kv]).join('; '); }
+  };
+  const call = async (url, init = {}) => {
+    let r = await fetch(url, { ...init, redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ArgusAtlas/1.0; +https://salyankar.github.io/tools/argus-atlas/)', Cookie: cookies, ...(init.headers || {}) } });
+    remember(r);
+    for (let i = 0; i < 4 && [301, 302, 303].includes(r.status); i++) {
+      r = await fetch(new URL(r.headers.get('location'), BASE), { redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ArgusAtlas/1.0)', Cookie: cookies } });
+      remember(r);
+    }
+    if (!r.ok) throw new Error(`HTTP ${r.status} ${url}`);
+    return r;
+  };
+  const viewState = html => (html.match(/name="javax\.faces\.ViewState"[^>]*value="([^"]+)"/) || [])[1];
+  const postback = (vs, id) => { const fd = new FormData(); fd.append('ocrForm', 'ocrForm'); fd.append('javax.faces.ViewState', vs); fd.append(id, id); return fd; };
+
+  let r = await call(`${BASE}/ocr/breach/breach_report.jsf`);
+  let html = await r.text();
+  const linkId = (html.match(/\{'(ocrForm:j_idt\d+)':'[^']+'\},''\);return false"[^>]*>(?:\s|<[^>]*>)*View HIPAA Breach Reports/) || [])[1];
+  if (!viewState(html) || !linkId) throw new Error('front page layout changed');
+  r = await call(`${BASE}/ocr/breach/breach_frontpage.jsf`, { method: 'POST', body: postback(viewState(html), linkId) });
+  html = await r.text();
+  const csvId = (html.match(/\{'(ocrForm:j_idt\d+)':'[^']+'\},''\)[^>]*>\s*<img[^>]*title="Export as CSV"/) || [])[1];
+  if (!viewState(html) || !csvId) throw new Error('report page layout changed');
+  r = await call(`${BASE}/ocr/breach/breach_report_hip.jsf`, { method: 'POST', body: postback(viewState(html), csvId) });
+  const csv = await r.text();
+
+  // RFC 4180 parser: quoted fields may contain commas, quotes and newlines.
+  const rows = []; let row = [], field = '', q = false;
+  for (let i = 0; i < csv.length; i++) {
+    const c = csv[i];
+    if (q) { if (c === '"') { if (csv[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && csv[i + 1] === '\n') i++; row.push(field); field = ''; if (row.some(x => x !== '')) rows.push(row); row = []; }
+    else field += c;
+  }
+  if (field || row.length) { row.push(field); rows.push(row); }
+  if (rows.length < 2 || rows[0].length < 8) throw new Error('unexpected CSV shape');
+  // Columns: Name, State, Covered Entity Type, Individuals Affected, Submission Date, Type of Breach, Location, BA Present, Web Description
+  const out = [];
+  for (const cols of rows.slice(1)) {
+    const [name, state, entType, affected, submitted, breachType, location, ba, desc] = cols.map(x => clean(x));
+    const m = submitted.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if (!m) continue;
+    const date = new Date(`${m[3]}-${m[1]}-${m[2]}T00:00:00Z`); if (!inWindow(date)) continue;
+    const n = Number(String(affected).replace(/,/g, '')) || 0;
+    out.push({
+      id: `hhs-${hash(`${name}|${submitted}|${affected}`)}`,
+      source: 'hhs', kind: 'disclosure',
+      date: iso(date), country: 'US', sector: SEC_TORS.HLT,
+      org: name,
+      type: [breachType, location].filter(Boolean).join(' — '),
+      records: n ? `${n.toLocaleString('en-US')} individuals affected` : '',
+      status: 'Reported to HHS OCR; under investigation' + (/^yes$/i.test(ba) ? '; business associate involved' : ''),
+      detail: [[state, entType].filter(Boolean).join(' · '), desc ? cut(desc, 160) : ''].filter(Boolean).join(' · '),
+      url: 'https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf',
+    });
+  }
+  return out;
+}
+
 // ---- main -------------------------------------------------------------------
 const sources = [];
 let breaches = [];
-for (const [id, name, fn] of [['sec', 'SEC EDGAR 8-K Item 1.05', fetchSEC], ['rl', 'ransomware.live leak-site claims', fetchRansomwareLive]]) {
+for (const [id, name, fn] of [['sec', 'SEC EDGAR 8-K Item 1.05', fetchSEC], ['hhs', 'HHS OCR breach portal (HIPAA, 500+ individuals)', fetchHHS], ['rl', 'ransomware.live leak-site claims', fetchRansomwareLive]]) {
   try {
     const rows = await fn();
     breaches.push(...rows);
