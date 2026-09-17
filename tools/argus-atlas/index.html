@@ -49,6 +49,8 @@ button,select,input{font:inherit;color:inherit}
 .asof{font:12px/1.3 var(--font-mono);color:var(--muted);text-align:right}
 .asof strong{color:var(--ink);font-weight:500}
 .sample-flag{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 8px;border-radius:4px;background:var(--supply-soft);color:var(--ink);font:500 11px/1.3 var(--font-body);letter-spacing:.02em;text-transform:uppercase}
+.sample-flag[data-mode="live"]{background:var(--reg-soft)}
+.more{font:500 10px var(--font-mono);fill:var(--muted);text-anchor:middle;pointer-events:none;dominant-baseline:central}
 
 /* ---- filters ---- */
 .filters{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
@@ -199,7 +201,7 @@ select.ctl{appearance:auto;padding-right:6px}
     </div>
     <div class="asof">
       <div>Data as of <strong id="asof"></strong> · breach window ≤ 60 days</div>
-      <div class="sample-flag">Breach feed shows sample data — see notes</div>
+      <div class="sample-flag" id="feed-flag">Breach feed shows sample data — see notes</div>
     </div>
   </header>
 
@@ -267,7 +269,7 @@ select.ctl{appearance:auto;padding-right:6px}
 
   <footer class="notes">
     <div><strong>Regulations</strong> — compiled from primary sources (EU Official Journal, national gazettes, regulator guidance) as of the data date. EU-wide instruments are counted for every member state; reporting deadlines are summarised and should be checked against the instrument text.</div>
-    <div><strong>Breaches</strong> — the entries shown are <strong>anonymised sample records</strong> generated to demonstrate the recency colouring. Replace the <code>BREACHES</code> array or wire <code>loadBreaches()</code> to a live source (HHS OCR portal, SEC EDGAR 8-K Item 1.05, ICO/OAIC registers, leak-site trackers or a threat-intel API).</div>
+    <div id="note-breaches"><strong>Breaches</strong> — the entries shown are <strong>anonymised sample records</strong> generated to demonstrate the recency colouring. Replace the <code>BREACHES</code> array or wire <code>loadBreaches()</code> to a live source (HHS OCR portal, SEC EDGAR 8-K Item 1.05, ICO/OAIC registers, leak-site trackers or a threat-intel API).</div>
     <div><strong>Supply chain</strong> — structural and ongoing risks summarised as of the data date, with severity on a 1–5 scale. Treat as a starting point for your own risk register, not as live intelligence.</div>
   </footer>
 </div>
@@ -358,6 +360,54 @@ const COUNTRIES = {
   NZ:{name:'New Zealand',atlas:'New Zealand',lat:-41.5,lon:172.8,region:'Asia-Pacific'},
   KZ:{name:'Kazakhstan',atlas:'Kazakhstan',lat:48.0,lon:67.0,region:'Asia-Pacific'},
   MM:{name:'Myanmar',atlas:'Myanmar',lat:19.5,lon:96.5,region:'Asia-Pacific'},
+  UY:{name:'Uruguay',atlas:'Uruguay',lat:-32.5,lon:-55.8,region:'Latin America'},
+  EC:{name:'Ecuador',atlas:'Ecuador',lat:-1.8,lon:-78.2,region:'Latin America'},
+  VE:{name:'Venezuela',atlas:'Venezuela',lat:6.4,lon:-66.6,region:'Latin America'},
+  BO:{name:'Bolivia',atlas:'Bolivia',lat:-16.3,lon:-63.6,region:'Latin America'},
+  PY:{name:'Paraguay',atlas:'Paraguay',lat:-23.4,lon:-58.4,region:'Latin America'},
+  GT:{name:'Guatemala',atlas:'Guatemala',lat:15.8,lon:-90.2,region:'Latin America'},
+  HN:{name:'Honduras',atlas:'Honduras',lat:15.2,lon:-86.2,region:'Latin America'},
+  CR:{name:'Costa Rica',atlas:'Costa Rica',lat:9.7,lon:-84.0,region:'Latin America'},
+  DO:{name:'Dominican Republic',atlas:'Dominican Rep.',lat:18.7,lon:-70.2,region:'Latin America'},
+  JM:{name:'Jamaica',atlas:'Jamaica',lat:18.1,lon:-77.3,region:'Latin America'},
+  TT:{name:'Trinidad and Tobago',atlas:'Trinidad and Tobago',lat:10.7,lon:-61.2,region:'Latin America'},
+  RS:{name:'Serbia',atlas:'Serbia',lat:44.0,lon:21.0,region:'Europe'},
+  BA:{name:'Bosnia and Herzegovina',atlas:'Bosnia and Herz.',lat:43.9,lon:17.7,region:'Europe'},
+  MK:{name:'North Macedonia',atlas:'Macedonia',lat:41.6,lon:21.7,region:'Europe'},
+  AL:{name:'Albania',atlas:'Albania',lat:41.2,lon:20.2,region:'Europe'},
+  MD:{name:'Moldova',atlas:'Moldova',lat:47.4,lon:28.4,region:'Europe'},
+  GE:{name:'Georgia',atlas:'Georgia',lat:42.3,lon:43.4,region:'Europe'},
+  AM:{name:'Armenia',atlas:'Armenia',lat:40.1,lon:45.0,region:'Europe'},
+  AZ:{name:'Azerbaijan',atlas:'Azerbaijan',lat:40.4,lon:47.6,region:'Europe'},
+  JO:{name:'Jordan',atlas:'Jordan',lat:31.3,lon:36.5,region:'Middle East'},
+  LB:{name:'Lebanon',atlas:'Lebanon',lat:33.9,lon:35.9,region:'Middle East'},
+  KW:{name:'Kuwait',atlas:'Kuwait',lat:29.3,lon:47.6,region:'Middle East'},
+  IQ:{name:'Iraq',atlas:'Iraq',lat:33.2,lon:43.7,region:'Middle East'},
+  TN:{name:'Tunisia',atlas:'Tunisia',lat:34.0,lon:9.5,region:'Africa'},
+  DZ:{name:'Algeria',atlas:'Algeria',lat:28.0,lon:2.6,region:'Africa'},
+  ET:{name:'Ethiopia',atlas:'Ethiopia',lat:9.1,lon:39.6,region:'Africa'},
+  TZ:{name:'Tanzania',atlas:'Tanzania',lat:-6.4,lon:34.9,region:'Africa'},
+  UG:{name:'Uganda',atlas:'Uganda',lat:1.4,lon:32.3,region:'Africa'},
+  ZM:{name:'Zambia',atlas:'Zambia',lat:-13.1,lon:27.8,region:'Africa'},
+  ZW:{name:'Zimbabwe',atlas:'Zimbabwe',lat:-19.0,lon:29.2,region:'Africa'},
+  MZ:{name:'Mozambique',atlas:'Mozambique',lat:-18.7,lon:35.5,region:'Africa'},
+  AO:{name:'Angola',atlas:'Angola',lat:-11.2,lon:17.9,region:'Africa'},
+  CM:{name:'Cameroon',atlas:'Cameroon',lat:5.7,lon:12.4,region:'Africa'},
+  CI:{name:"Côte d'Ivoire",atlas:"Côte d'Ivoire",lat:7.5,lon:-5.5,region:'Africa'},
+  SN:{name:'Senegal',atlas:'Senegal',lat:14.5,lon:-14.5,region:'Africa'},
+  GA:{name:'Gabon',atlas:'Gabon',lat:-0.8,lon:11.6,region:'Africa'},
+  RW:{name:'Rwanda',atlas:'Rwanda',lat:-2.0,lon:29.9,region:'Africa'},
+  BW:{name:'Botswana',atlas:'Botswana',lat:-22.3,lon:24.7,region:'Africa'},
+  NA:{name:'Namibia',atlas:'Namibia',lat:-22.6,lon:17.1,region:'Africa'},
+  NP:{name:'Nepal',atlas:'Nepal',lat:28.4,lon:84.1,region:'Asia-Pacific'},
+  KH:{name:'Cambodia',atlas:'Cambodia',lat:12.6,lon:105.0,region:'Asia-Pacific'},
+  LA:{name:'Laos',atlas:'Laos',lat:19.9,lon:102.5,region:'Asia-Pacific'},
+  MN:{name:'Mongolia',atlas:'Mongolia',lat:46.9,lon:103.8,region:'Asia-Pacific'},
+  UZ:{name:'Uzbekistan',atlas:'Uzbekistan',lat:41.4,lon:64.6,region:'Asia-Pacific'},
+  BN:{name:'Brunei',atlas:'Brunei',lat:4.5,lon:114.7,region:'Asia-Pacific'},
+  PG:{name:'Papua New Guinea',atlas:'Papua New Guinea',lat:-6.3,lon:144.0,region:'Asia-Pacific'},
+  FJ:{name:'Fiji',atlas:'Fiji',lat:-17.7,lon:178.0,region:'Asia-Pacific'},
+  AF:{name:'Afghanistan',atlas:'Afghanistan',lat:33.9,lon:67.7,region:'Asia-Pacific'},
 };
 const EU27 = Object.keys(COUNTRIES).filter(c => COUNTRIES[c].eu);
 const EEA  = EU27.concat(Object.keys(COUNTRIES).filter(c => COUNTRIES[c].eea));
@@ -640,10 +690,48 @@ function expandCountries(c){
 REGULATIONS.forEach(r => { r.codes = expandCountries(r.countries); r.regional = r.countries === 'EU' || r.countries === 'EEA'; });
 const REG_BY_ID = Object.fromEntries(REGULATIONS.map(r => [r.id, r]));
 const asOf = new Date(DATA_AS_OF + 'T00:00:00');
-// Adapter: swap this for a fetch() to a live feed returning the same shape.
-function loadBreaches(){ return BREACHES.map(b => ({...b, date: new Date(asOf.getTime() - b.daysAgo * 864e5)})); }
-const breaches = loadBreaches();
 SUPPLY.forEach(s => { s.codes = s.affects === 'global' ? null : expandCountries(s.affects); });
+
+// ---- breach feed -----------------------------------------------------
+// Live mode reads data/breaches.json (built every six hours by .github/workflows/argus-atlas-feed.yml
+// from SEC EDGAR 8-K Item 1.05 filings and ransomware.live). Anywhere that file can't be fetched
+// (the Claude artifact sandbox, a local file://), the page falls back to the bundled sample records.
+let breaches = [], feed = {mode:'sample', generated:null, sources:[]};
+const cname = code => (COUNTRIES[code] && COUNTRIES[code].name) || code || 'Location unknown';
+function fromSample(){ return BREACHES.map(b => ({...b, date: new Date(asOf.getTime() - b.daysAgo * 864e5), source:'sample', kind:'sample', url:'', detail:''})); }
+function fromLive(json){
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return (json.breaches || []).map(b => {
+    const date = new Date(b.date + 'T00:00:00'); const daysAgo = Math.max(0, Math.round((today - date) / 864e5));
+    return {id:b.id, source:b.source, kind:b.kind, date, daysAgo, country:b.country || '', sector:b.sector || 'Other', org:b.org, type:b.type, records:b.records || '', vector:'', status:b.status || '', detail:b.detail || '', url:b.url || '', group:b.group || '', regs:null};
+  }).filter(b => b.daysAgo <= 60);
+}
+async function loadBreaches(){
+  try {
+    const r = await fetch('data/breaches.json', {cache:'no-cache'}); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const json = await r.json(); const rows = fromLive(json); if (!rows.length) throw new Error('empty feed');
+    feed = {mode:'live', generated:new Date(json.generated), sources:json.sources || []}; return rows;
+  } catch (e) { feed = {mode:'sample', generated:null, sources:[]}; return fromSample(); }
+}
+// Reporting regimes a breach likely triggers: sample records carry them; live records derive them from country + sector.
+function regsFor(b){
+  if (Array.isArray(b.regs)) return b.regs;
+  if (!b.country) return [];
+  const list = REGULATIONS.filter(r => r.codes.includes(b.country) && (r.sectors === 'all' || r.sectors.includes(b.sector)));
+  list.sort((x, y) => (x.sectors === 'all') - (y.sectors === 'all')); return list.slice(0, 4).map(r => r.id);
+}
+const SOURCE_LABEL = {sec:'SEC EDGAR · Form 8-K Item 1.05', rl:'ransomware.live · leak-site claim', sample:'Sample record'};
+function renderFeedFlag(){
+  const f = $('#feed-flag'), n = $('#note-breaches');
+  if (feed.mode === 'live') {
+    const ago = Math.max(0, Math.round((Date.now() - feed.generated.getTime()) / 36e5));
+    const src = feed.sources.map(s => `${s.id === 'sec' ? 'SEC 8-K' : s.id === 'rl' ? 'ransomware.live' : s.id} ${s.ok ? s.count.toLocaleString() : 'unavailable'}`).join(' · ');
+    f.textContent = `Live feed · updated ${ago === 0 ? 'under an hour' : ago + ' h'} ago · ${src}`; f.dataset.mode = 'live';
+    n.replaceChildren(el('strong', null, 'Breaches'), el('span', null, ' — live from two public sources, refreshed every six hours by a GitHub Action: SEC EDGAR (Form 8-K Item 1.05 material-incident disclosures by US public companies) and ransomware.live (victims posted on ransomware leak sites — these are claims by criminal groups, not confirmed incidents, and are labelled as such). Sector is derived from SIC codes and leak-site tags; country from the filing or the leak-site record. Records without a recognised country appear in the list but not on the map.'));
+  } else {
+    f.textContent = 'Breach feed shows sample data — see notes'; f.dataset.mode = 'sample';
+  }
+}
 
 // ---- state -----------------------------------------------------------
 const state = { sector: '', countries: new Set(), window: 60, layers: {reg:true, br:true, sc:true}, pinned: null, tab: 'reg', hover: null };
@@ -694,7 +782,7 @@ function fit(){
 }
 
 // ---- dot model -------------------------------------------------------
-let dots = [];
+let dots = [], brAll = []; const MAX_PER_COUNTRY = 14;
 function computeDots(){
   dots = [];
   const regs = state.layers.reg ? visibleRegs() : [], brs = state.layers.br ? visibleBreaches() : [], scs = state.layers.sc ? visibleSupply() : [];
@@ -704,13 +792,21 @@ function computeDots(){
     const c = COUNTRIES[code], p = projection([c.lon, c.lat]); if (!p) return;
     dots.push({kind:'reg', id:'reg-' + code, code, items, px:p[0], py:p[1], dx:-9, dy:-3, r: Math.min(12, 4.5 + 1.6 * Math.sqrt(items.length))});
   });
-  const brIdx = {};
+  // Breaches: one dot each, newest first, in a spiral around the country centroid. Past MAX_PER_COUNTRY
+  // the rest stay in the list and a "+N" label marks the cluster, so a busy month doesn't bury the map.
+  const brIdx = {}, overflow = {}; brAll = [];
   brs.slice().sort((a, b) => a.daysAgo - b.daysAgo).forEach(b => {
+    const entry = {kind:'br', id:'br-' + b.id, code:b.country, item:b, fill: recency(b.daysAgo), drawn:false}; brAll.push(entry);
     const c = COUNTRIES[b.country]; if (!c) return; const p = projection([c.lon, c.lat]);
     const i = brIdx[b.country] = (brIdx[b.country] || 0) + 1; const n = i - 1;
+    if (n >= MAX_PER_COUNTRY) { overflow[b.country] = (overflow[b.country] || 0) + 1; return; }
     const ang = n * 2.39996, rad = n === 0 ? 0 : 7 + 3.2 * Math.sqrt(n);
-    dots.push({kind:'br', id:'br-' + b.id, code:b.country, item:b, px:p[0], py:p[1], dx: 9 + rad * Math.cos(ang), dy: -2 + rad * Math.sin(ang), r: b.daysAgo <= 7 ? 6 : b.daysAgo <= 30 ? 5 : 4.3, fill: recency(b.daysAgo)});
+    Object.assign(entry, {drawn:true, px:p[0], py:p[1], dx: 9 + rad * Math.cos(ang), dy: -2 + rad * Math.sin(ang), r: b.daysAgo <= 7 ? 6 : b.daysAgo <= 30 ? 5 : 4.3});
+    dots.push(entry);
   });
+  const more = Object.entries(overflow).map(([code, n]) => { const c = COUNTRIES[code], p = projection([c.lon, c.lat]); return {code, n, px:p[0], py:p[1], dx:9, dy:-(7 + 3.2 * Math.sqrt(MAX_PER_COUNTRY)) - 8}; });
+  const ml = gDots.selectAll('text.more').data(more, d => d.code); ml.exit().remove();
+  ml.enter().append('text').attr('class', 'more').merge(ml).text(d => '+' + d.n.toLocaleString());
   scs.forEach(s => { const p = projection([s.lon, s.lat]); if (!p) return; dots.push({kind:'sc', id:'sc-' + s.id, item:s, px:p[0], py:p[1], dx:0, dy:9, r: 4.5 + s.severity * 1.3}); });
 
   const sel = gDots.selectAll('g.dotg').data(dots, d => d.id);
@@ -739,12 +835,13 @@ function positionDots(){
     g.select('circle.hit').attr('cx', x).attr('cy', y).attr('r', Math.max(d.r + 6, 12) / k);
     g.select('text.dot-label').attr('x', x).attr('y', y).attr('font-size', (d.r >= 7 ? 9 : 0) / k);
   });
+  gDots.selectAll('text.more').attr('x', d => d.px + d.dx / k).attr('y', d => d.py + d.dy / k).attr('font-size', 10 / k);
 }
 function highlight(d){ gDots.selectAll('circle.dot').classed('hi', x => d && x.id === d.id); document.querySelectorAll('.item').forEach(n => n.classList.toggle('active', !!d && n.dataset.id === d.id)); }
 function pin(d){ state.pinned = d; renderDetail(d); highlight(d); if (d) { const n = document.querySelector(`.item[data-id="${d.id}"]`); if (n && n.scrollIntoView) n.scrollIntoView({block:'nearest'}); } }
 svg.on('click', () => { if (state.pinned) pin(null); });
 
-function ariaLabel(d){ if (d.kind === 'reg') return `${d.items.length} regulations, ${COUNTRIES[d.code].name}`; if (d.kind === 'br') return `Breach: ${d.item.org}, ${COUNTRIES[d.code].name}, ${d.item.daysAgo} days ago`; return `Supply-chain risk: ${d.item.title}`; }
+function ariaLabel(d){ if (d.kind === 'reg') return `${d.items.length} regulations, ${COUNTRIES[d.code].name}`; if (d.kind === 'br') return `Breach: ${d.item.org}, ${cname(d.code)}, ${d.item.daysAgo} days ago`; return `Supply-chain risk: ${d.item.title}`; }
 
 // ---- tooltip ---------------------------------------------------------
 const tip = $('#tip');
@@ -756,8 +853,9 @@ function showDotTip(ev, d){
     tipHead('var(--reg)', `${COUNTRIES[d.code].name} — ${d.items.length} regulation${d.items.length > 1 ? 's' : ''}`, state.sector || 'All sectors');
     const ul = el('ul'); d.items.slice(0, 6).forEach(r => ul.append(el('li', null, r.name.split(' — ')[0]))); if (d.items.length > 6) ul.append(el('li', 'more', `+${d.items.length - 6} more — click to pin`)); tip.append(ul);
   } else if (d.kind === 'br') {
-    const b = d.item; tipHead(d.fill, b.org, `${COUNTRIES[b.country].name} · ${b.sector} · ${b.daysAgo === 0 ? 'today' : b.daysAgo + ' d ago'}`);
-    const ul = el('ul'); ul.append(el('li', null, `${b.type} — ${b.records}`)); ul.append(el('li', null, b.status)); tip.append(ul);
+    const b = d.item; tipHead(d.fill, b.org, `${cname(b.country)} · ${b.sector} · ${b.daysAgo === 0 ? 'today' : b.daysAgo + ' d ago'}`);
+    const ul = el('ul'); ul.append(el('li', null, b.records ? `${b.type} — ${b.records}` : b.type)); ul.append(el('li', null, b.status)); tip.append(ul);
+    if (b.kind === 'claim') tip.append(el('div', 'more', 'leak-site claim — unverified'));
   } else {
     const s = d.item; tipHead('var(--supply)', s.title, `${s.origin} · ${s.driver} · severity ${s.severity}/5`);
     tip.append(el('div', null, s.summary));
@@ -767,7 +865,7 @@ function showDotTip(ev, d){
 function showCountryTip(ev, d){
   const code = atlasToCode[d.properties.name]; const name = code ? COUNTRIES[code].name : d.properties.name;
   const nr = code ? (dots.find(x => x.kind === 'reg' && x.code === code) || {items:[]}).items.length : 0;
-  const nb = code ? dots.filter(x => x.kind === 'br' && x.code === code).length : 0;
+  const nb = code ? brAll.filter(x => x.code === code).length : 0;
   const ns = code ? dots.filter(x => x.kind === 'sc' && (x.item.codes === null || x.item.codes.includes(code))).length : 0;
   tipHead(code && state.countries.has(code) ? 'var(--reg)' : 'var(--muted)', name, code ? `${nr} regulations · ${nb} breaches · ${ns} supply risks affecting` : 'not tracked');
   if (code) tip.append(el('div', 'more', state.countries.has(code) ? 'click to remove from filter' : 'click to filter to this country'));
@@ -793,10 +891,15 @@ function renderDetail(d){
     detail.append(el('h2', null, `${d.items.length} instrument${d.items.length > 1 ? 's' : ''} apply to ${state.sector || 'all sectors'}`));
     d.items.slice().sort((a, b) => (a.regional === b.regional ? 0 : a.regional ? 1 : -1)).forEach((r, i) => detail.append(regBlock(r, i === 0)));
   } else if (d.kind === 'br') {
-    const b = d.item; detail.append(eyebrow(d.fill, 'Breach · ' + (b.daysAgo === 0 ? 'today' : b.daysAgo + ' days ago')));
+    const b = d.item; detail.append(eyebrow(d.fill, (b.kind === 'claim' ? 'Leak-site claim' : b.kind === 'disclosure' ? 'Disclosed breach' : 'Breach') + ' · ' + (b.daysAgo === 0 ? 'today' : b.daysAgo + ' days ago')));
     detail.append(el('h2', null, b.org));
-    detail.append(dl([['country', COUNTRIES[b.country].name], ['sector', b.sector], ['disclosed', b.date.toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'})], ['type', b.type], ['impact', b.records], ['vector', b.vector], ['status', b.status]]));
-    if (b.regs && b.regs.length) { detail.append(el('p', null, 'Reporting regimes likely triggered:')); const ul = el('ul'); b.regs.forEach(id => { const r = REG_BY_ID[id]; if (r) ul.append(el('li', null, `${r.name.split(' — ')[0]} — ${r.reporting}`)); }); detail.append(ul); }
+    let srcNode = null;
+    if (b.url) { srcNode = el('span'); const a = el('a', null, SOURCE_LABEL[b.source] || b.source); a.href = b.url; a.target = '_blank'; a.rel = 'noopener'; srcNode.append(a, el('span', null, ' ↗')); }
+    else if (b.source) srcNode = SOURCE_LABEL[b.source] || b.source;
+    detail.append(dl([['country', cname(b.country)], ['sector', b.sector], [b.kind === 'claim' ? 'posted' : 'disclosed', b.date.toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'})], ['type', b.type], ['impact', b.records], ['vector', b.vector], ['status', b.status], ['notes', b.detail], ['source', srcNode]]));
+    if (b.kind === 'claim') detail.append(el('p', 'empty', 'A leak-site listing is an allegation by a criminal group. Treat it as an early signal, not a confirmed incident, until the organisation or a regulator discloses it.'));
+    const regs = regsFor(b);
+    if (regs.length) { detail.append(el('p', null, b.kind === 'sample' ? 'Reporting regimes likely triggered:' : `Reporting regimes that would apply to a ${b.sector === 'Other' ? '' : b.sector + ' '}organisation in ${cname(b.country)}:`)); const ul = el('ul'); regs.forEach(id => { const r = REG_BY_ID[id]; if (r) ul.append(el('li', null, `${r.name.split(' — ')[0]} — ${r.reporting}`)); }); detail.append(ul); }
   } else {
     const s = d.item; detail.append(eyebrow('var(--supply)', 'Supply chain · ' + s.driver));
     detail.append(el('h2', null, s.title));
@@ -819,9 +922,11 @@ function renderList(){
     if (!regDots.length) list.append(el('div', 'none', state.layers.reg ? 'No regulations match the current filter.' : 'Regulations layer is switched off.'));
     regDots.forEach(d => add(d.id, 'var(--reg)', COUNTRIES[d.code].name, d.items.slice(0, 3).map(r => r.name.split(' — ')[0].split(' (')[0]).join(' · ') + (d.items.length > 3 ? ` · +${d.items.length - 3}` : ''), d.items.length + ' regs', d));
   } else if (state.tab === 'br') {
-    const brDots = dots.filter(d => d.kind === 'br').sort((a, b) => a.item.daysAgo - b.item.daysAgo);
-    if (!brDots.length) list.append(el('div', 'none', state.layers.br ? 'No disclosed breaches match the current filter and window.' : 'Breaches layer is switched off.'));
-    brDots.forEach(d => add(d.id, d.fill, d.item.org, `${COUNTRIES[d.code].name} · ${d.item.sector} · ${d.item.type}`, d.item.daysAgo === 0 ? 'today' : d.item.daysAgo + ' d ago', d));
+    // brAll holds every breach in scope, including those past the per-country dot cap and those with no mappable country.
+    const rows = brAll.slice().sort((a, b) => a.item.daysAgo - b.item.daysAgo);
+    if (!rows.length) list.append(el('div', 'none', state.layers.br ? 'No disclosed breaches match the current filter and window.' : 'Breaches layer is switched off.'));
+    rows.slice(0, 400).forEach(d => add(d.id, d.fill, d.item.org, `${cname(d.code)} · ${d.item.sector} · ${d.item.kind === 'claim' ? 'leak-site claim · ' + (d.item.group || '') : d.item.type}${d.drawn ? '' : ' · not on map'}`, d.item.daysAgo === 0 ? 'today' : d.item.daysAgo + ' d ago', d));
+    if (rows.length > 400) list.append(el('div', 'none', `Showing the 400 most recent of ${rows.length.toLocaleString()} — narrow the window, sector or countries to see the rest.`));
   } else {
     const scDots = dots.filter(d => d.kind === 'sc').sort((a, b) => b.item.severity - a.item.severity);
     if (!scDots.length) list.append(el('div', 'none', state.layers.sc ? 'No supply-chain risks match the current filter.' : 'Supply-chain layer is switched off.'));
@@ -838,7 +943,7 @@ function renderStats(){
   $('#st-br').textContent = brs.length; $('#st-br-s').textContent = brs.length ? `${brs.filter(b => b.daysAgo <= 7).length} in the last 7 days · ${new Set(brs.map(b => b.country)).size} countries` : 'none in window';
   $('#st-sc').textContent = scs.length; $('#st-sc-s').textContent = scs.length ? `${scs.filter(s => s.severity >= 4).length} rated severity 4+ · top: ${scs.slice().sort((a, b) => b.severity - a.severity)[0].driver}` : 'none in scope';
   const last = brs.slice().sort((a, b) => a.daysAgo - b.daysAgo)[0];
-  $('#st-last').textContent = last ? (last.daysAgo === 0 ? 'today' : last.daysAgo + ' d ago') : '–'; $('#st-last-s').textContent = last ? `${last.org} · ${COUNTRIES[last.country].name}` : '';
+  $('#st-last').textContent = last ? (last.daysAgo === 0 ? 'today' : last.daysAgo + ' d ago') : '–'; $('#st-last-s').textContent = last ? `${last.org} · ${cname(last.country)}` : '';
   $('#n-reg').textContent = state.layers.reg ? new Set(regs.flatMap(r => r.codes.filter(c => COUNTRIES[c] && (!state.countries.size || state.countries.has(c))))).size : 0;
   $('#n-br').textContent = state.layers.br ? brs.length : 0; $('#n-sc').textContent = state.layers.sc ? scs.length : 0;
   $('#ramp-max').textContent = state.window + ' d ago';
@@ -846,7 +951,7 @@ function renderStats(){
 
 // ---- filter controls -------------------------------------------------
 const sectorSel = $('#sector');
-sectorSel.append(new Option('All sectors', '')); SECTORS.forEach(s => sectorSel.append(new Option(s, s)));
+sectorSel.append(new Option('All sectors', '')); SECTORS.forEach(s => sectorSel.append(new Option(s, s))); sectorSel.append(new Option('Other / unclassified', 'Other'));
 sectorSel.value = state.sector; sectorSel.onchange = () => { state.sector = sectorSel.value; onFilterChange(); };
 
 const winBtns = document.querySelectorAll('#window button');
@@ -896,6 +1001,6 @@ $('#asof').textContent = fmtDate(DATA_AS_OF);
 const ro = new ResizeObserver(() => { fit(); }); ro.observe($('#mapcard'));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { buildRecency(); computeDots(); positionDots(); renderList(); });
 new MutationObserver(() => { buildRecency(); computeDots(); positionDots(); renderList(); }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
-render();
+loadBreaches().then(rows => { breaches = rows; renderFeedFlag(); render(); });
 })();
 </script>

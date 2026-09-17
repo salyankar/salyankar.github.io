@@ -1,0 +1,42 @@
+name: Argus Atlas breach feed
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # every six hours (UTC)
+  workflow_dispatch:
+  push:
+    paths:
+      - "tools/argus-atlas/feed/**"
+      - ".github/workflows/argus-atlas-feed.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: argus-atlas-feed
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build breaches.json from public sources
+        run: node tools/argus-atlas/feed/build-breaches.mjs --days 60
+
+      - name: Commit if changed
+        run: |
+          git config user.name "argus-atlas-feed"
+          git config user.email "actions@users.noreply.github.com"
+          git add tools/argus-atlas/data/breaches.json
+          if git diff --cached --quiet; then
+            echo "Feed unchanged."
+          else
+            git commit -m "Argus Atlas: refresh breach feed ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git push
+          fi
