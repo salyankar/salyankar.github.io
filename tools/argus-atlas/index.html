@@ -699,13 +699,13 @@ SUPPLY.forEach(s => { s.codes = s.affects === 'global' ? null : expandCountries(
 let breaches = [], feed = {mode:'sample', generated:null, sources:[]};
 const cname = code => (COUNTRIES[code] && COUNTRIES[code].name) || code || 'Location unknown';
 function fromSample(){ return BREACHES.map(b => ({...b, date: new Date(asOf.getTime() - b.daysAgo * 864e5), source:'sample', kind:'sample', url:'', detail:''})); }
-function fromLive(json){
+function liveRow(b){
   const today = new Date(); today.setHours(0, 0, 0, 0);
-  return (json.breaches || []).map(b => {
-    const date = new Date(b.date + 'T00:00:00'); const daysAgo = Math.max(0, Math.round((today - date) / 864e5));
-    return {id:b.id, source:b.source, kind:b.kind, date, daysAgo, country:b.country || '', sector:b.sector || 'Other', org:b.org, type:b.type, records:b.records || '', vector:'', status:b.status || '', detail:b.detail || '', url:b.url || '', group:b.group || '', regs:null};
-  }).filter(b => b.daysAgo <= 60);
+  const date = new Date(b.date + 'T00:00:00'); const daysAgo = Math.max(0, Math.round((today - date) / 864e5));
+  return {id:b.id, source:b.source, kind:b.kind, date, daysAgo, country:b.country || '', sector:b.sector || 'Other', org:b.org, type:b.type, records:b.records || '', vector:'', status:b.status || '', detail:b.detail || '', url:b.url || '', group:b.group || '', regs:null};
 }
+const fromLive = json => (json.breaches || []).map(liveRow).filter(b => b.daysAgo <= 60);
+
 async function loadBreaches(){
   try {
     const r = await fetch('data/breaches.json', {cache:'no-cache'}); if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -725,7 +725,7 @@ function renderFeedFlag(){
   const f = $('#feed-flag'), n = $('#note-breaches');
   if (feed.mode === 'live') {
     const ago = Math.max(0, Math.round((Date.now() - feed.generated.getTime()) / 36e5));
-    const src = feed.sources.map(s => `${s.id === 'sec' ? 'SEC 8-K' : s.id === 'rl' ? 'ransomware.live' : s.id} ${s.ok ? s.count.toLocaleString() : 'unavailable'}`).join(' · ');
+    const src = feed.sources.slice().sort((a, b) => (a.id === 'sec' ? -1 : 1) - (b.id === 'sec' ? -1 : 1)).map(s => `${s.id === 'sec' ? 'SEC 8-K' : s.id === 'rl' ? 'ransomware.live' : s.id} ${s.ok ? s.count.toLocaleString() : 'unavailable'}`).join(' · ');
     f.textContent = `Live feed · updated ${ago === 0 ? 'under an hour' : ago + ' h'} ago · ${src}`; f.dataset.mode = 'live';
     n.replaceChildren(el('strong', null, 'Breaches'), el('span', null, ' — live from two public sources, refreshed every six hours by a GitHub Action: SEC EDGAR (Form 8-K Item 1.05 material-incident disclosures by US public companies) and ransomware.live (victims posted on ransomware leak sites — these are claims by criminal groups, not confirmed incidents, and are labelled as such). Sector is derived from SIC codes and leak-site tags; country from the filing or the leak-site record. Records without a recognised country appear in the list but not on the map.'));
   } else {
