@@ -5,12 +5,10 @@ Hosted on GitHub Pages.
 
 ```
 index.html                  Landing page (full-screen photo + Enter)
-home/index.html             Hub page: hello + Resume / Tools / Travel / Time tiles
+home/index.html             Hub page: hello + Resume / Tools / Time tiles
 resume/index.html           Resume
 tools/index.html            Tool gallery
 tools/<tool>/index.html     One folder per tool (single self-contained HTML file)
-travel/index.html           Trip list
-travel/<trip>/index.html    One folder per trip, photos in travel/<trip>/photos/
 watches/index.html          Time: list of articles
 watches/<slug>/index.html   One folder per article; photos live in watches/photos/
 assets/landing.jpg          Landing photo (replace to change it; keep ~2400px wide)
@@ -33,17 +31,11 @@ Text marked with a yellow `TODO` box on the live site is placeholder — search 
 2. In `tools/index.html`, copy an existing `<article class="card tool">` block, edit the
    title/description/tags/date and point the link at `<tool-slug>/`.
 
-**A new trip**
-1. Copy `travel/sample-kyoto/` to `travel/<trip-slug>/`.
-2. Put photos in `travel/<trip-slug>/photos/`. Resize JPGs to ~2000 px on the long edge first —
-   phone originals are 5–10 MB each and will make the repo and the page slow.
-3. Edit `index.html` in that folder; in `travel/index.html` copy a card and link it.
 
 **A new watch article**
 1. Copy `watches/myths-of-watch-collecting/` to `watches/<slug>/` and edit `index.html`.
 2. In `watches/index.html`, copy the `<a class="post">` card and point it at the new folder.
 
-Once you're happy with the travel format, delete the `travel/sample-*` folder and its card.
 
 ## Publishing (first time)
 

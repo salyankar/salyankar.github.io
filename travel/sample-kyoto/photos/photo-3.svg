@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Photo 3 placeholder">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5E6E3A"/><stop offset="1" stop-color="#C7D39A"/></linearGradient></defs>
-  <rect width="1600" height="900" fill="url(#g)"/>
-  <circle cx="1240" cy="220" r="90" fill="#fff" fill-opacity=".35"/>
-  <path d="M0 700 L300 520 L520 640 L800 430 L1050 600 L1300 470 L1600 620 L1600 900 L0 900 Z" fill="#000" fill-opacity=".18"/>
-  <text x="80" y="820" font-family="IBM Plex Mono, Menlo, monospace" font-size="40" fill="#fff" fill-opacity=".85">Photo 3 — replace with your photo</text>
-</svg>

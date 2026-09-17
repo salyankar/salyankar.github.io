@@ -25,7 +25,7 @@
 <script>
   // Point "Home" at the site root even when hosted under /repo-name/ on GitHub Pages.
   var seg = location.pathname.split('/')[1];
-  if (seg && !/\.html$/.test(seg) && ['tools','travel','watches','assets'].indexOf(seg) === -1) document.getElementById('home').href = '/' + seg + '/';
+  if (seg && !/\.html$/.test(seg) && ['tools','watches','resume','home','assets'].indexOf(seg) === -1) document.getElementById('home').href = '/' + seg + '/';
 </script>
 </body>
 </html>
