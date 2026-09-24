@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tools · Satya Salyankar</title>
-<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting, and Argus Atlas, a world map of cybersecurity regulations, recent breaches and supply-chain risk by sector.">
+<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting; Argus Atlas, a world map of cybersecurity regulations, recent breaches and supply-chain risk by sector; and Argus Gate, a third-party risk management tool for vendor intake, risk tiering, due diligence and re-assessment.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -118,6 +118,40 @@
         <li><span class="ic">◎</span><div><b>Hover to expand</b><span>Every dot opens a tooltip and a detail pane; click to pin it. Click a country on the map to add it to your filter.</span></div></li>
         <li><span class="ic">▤</span><div><b>Table view too</b><span>Everything in scope is also listed — regulations by country, breaches by recency, supply risks by severity — so nothing depends on colour alone.</span></div></li>
         <li><span class="ic">⌂</span><div><b>Private by design</b><span>No accounts and no tracking. The page reads one JSON file that a scheduled GitHub Action rebuilds from public sources; nothing you filter or click leaves your browser.</span></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURED: ARGUS GATE ===================== -->
+  <section class="wrap" aria-labelledby="gate-h">
+    <div class="feature">
+      <div>
+        <div class="mark">◫</div>
+        <h2 id="gate-h">Argus Gate</h2>
+        <p class="tag-line">Every eye on your vendors.</p>
+        <p class="lede">
+          Third-party risk management from intake to re-assessment. Capture a new vendor, score its
+          inherent risk, and send it through a due-diligence questionnaire sized to that risk —
+          with Procurement, Legal, Compliance, Cybersecurity and both architecture teams signing off
+          their own sections. Then keep every vendor on a review cycle, and pull it back in the
+          moment it, or one of its fourth parties, is breached.
+        </p>
+        <div class="row">
+          <a class="btn primary" href="argus-gate/" target="_blank" rel="noopener">Open Argus Gate ↗</a>
+          <span class="meta">v1 · Sep 2026 · single HTML file</span>
+        </div>
+        <div class="flow" aria-label="Workflow">
+          <em>Intake</em><i>→</i><em>Inherent risk</em><i>→</i><em>Tiered questionnaire</em><i>→</i><em>Team sign-offs</em><i>→</i><em>Decision</em><i>→</i><em>Re-assessment</em>
+        </div>
+      </div>
+
+      <ul class="caps">
+        <li><span class="ic">◎</span><div><b>Inherent risk that drives the work</b><span>Nine weighted factors — business impact, data sensitivity, access, fourth-party reliance, AI use, regulatory scope — score each vendor High, Medium or Low. Overrides need a reason code and a confirmed justification, and are logged.</span></div></li>
+        <li><span class="ic">▦</span><div><b>Questionnaires sized to the risk</b><span>High-risk vendors get the full 58-question review: privacy impact assessment, resiliency, AI model risk, data protection, IAM, fourth-party management and more. Low-risk vendors get a nine-question lite review.</span></div></li>
+        <li><span class="ic">⛨</span><div><b>Every team signs its part</b><span>Each section belongs to a team. Gaps become findings with severity and due dates the moment a section is signed off.</span></div></li>
+        <li><span class="ic">▤</span><div><b>Inventory and dashboard</b><span>Search the inventory by vendor or service. The dashboard shows the risk picture, open issues and who holds each open assessment — click any figure to drill in.</span></div></li>
+        <li><span class="ic">◷</span><div><b>Alerts that bring vendors back</b><span>Annual re-assessment for High risk, every two years for Medium and Low; out-of-band reviews when a vendor or its fourth party has an incident; stalled assessments and overdue remediation.</span></div></li>
+        <li><span class="ic">⌂</span><div><b>Private by design</b><span>Loads with twenty fictional sample vendors. Everything you add is saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
       </ul>
     </div>
   </section>

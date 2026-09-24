@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Argus Gate — third-party risk management: vendor intake, inherent risk tiering, tiered due-diligence questionnaires, vendor inventory, risk dashboard and re-assessment alerts.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>html,body{margin:0}[hidden]{display:none!important}</style>
+<title>Argus Gate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@87.5,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F2; --surface:#FFFFFF; --surface-2:#EDF0EC; --ink:#18211E; --muted:#5B6863; --faint:#8A958F; --line:#D9DFDA; --line-2:#C6CEC8;
+  --accent:#2E4A9E; --accent-ink:#FFFFFF; --accent-soft:#E4E9F6;
+  --high:#B42318; --high-soft:#FBE8E6; --med:#9A5A06; --med-soft:#FCEFD8; --low:#2A7A4B; --low-soft:#E2F1E7; --info:#35659A; --info-soft:#E3EDF7;
+  --shadow:0 1px 2px rgba(24,33,30,.06),0 4px 16px rgba(24,33,30,.05);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0F1412; --surface:#161C1A; --surface-2:#1C2421; --ink:#E4EAE7; --muted:#9AA7A1; --faint:#6F7C76; --line:#2A3430; --line-2:#3A4641;
+  --accent:#96AAF2; --accent-ink:#0F1412; --accent-soft:#222B44;
+  --high:#F08A7F; --high-soft:#3A1E1B; --med:#E4B366; --med-soft:#352914; --low:#7FC99C; --low-soft:#17301F; --info:#8DB6E0; --info-soft:#1B2A3A;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1412; --surface:#161C1A; --surface-2:#1C2421; --ink:#E4EAE7; --muted:#9AA7A1; --faint:#6F7C76; --line:#2A3430; --line-2:#3A4641;
+  --accent:#96AAF2; --accent-ink:#0F1412; --accent-soft:#222B44;
+  --high:#F08A7F; --high-soft:#3A1E1B; --med:#E4B366; --med-soft:#352914; --low:#7FC99C; --low-soft:#17301F; --info:#8DB6E0; --info-soft:#1B2A3A;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font:14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:87.5%;margin:0;text-wrap:balance;letter-spacing:-.005em}
+h1{font-size:30px;font-weight:700;line-height:1.1}
+h2{font-size:18px;font-weight:650}
+h3{font-size:15px;font-weight:650}
+p{margin:0}
+a{color:var(--accent)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-size:12.5px}
+.muted{color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font:600 11px/1.2 var(--body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+
+/* shell */
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;display:flex;flex-direction:column;gap:20px;padding:22px 16px;border-right:1px solid var(--line);background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.brand-mark{width:30px;height:30px;border-radius:7px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
+.brand b{font:750 17px/1 var(--display);font-stretch:87.5%;display:block}
+.brand small{font-size:11px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;border-radius:7px;background:none;cursor:pointer;text-align:left;color:var(--muted);font-weight:500}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--accent-soft);color:var(--ink)}
+.nav button svg{flex:none;width:17px;height:17px}
+.nav .count{margin-left:auto;font:600 11px/1 var(--mono);padding:3px 6px;border-radius:9px;background:var(--high);color:var(--surface)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px;font-size:12px}
+.side-foot label{color:var(--muted)}
+.side-foot input{width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg)}
+.mode{font-size:11.5px;color:var(--muted);line-height:1.4}
+.mode b{color:var(--ink)}
+main{padding-inline:36px;padding-block:28px 64px;min-width:0;max-width:1320px;width:100%}
+
+/* generic */
+.page-h{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.page-h .lede{color:var(--muted);max-width:62ch;margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px;min-width:0}
+.card-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.card-h .sub{font-size:12.5px;color:var(--muted)}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:7px;border:1px solid var(--line-2);background:var(--surface);cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--high);border-color:var(--high)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:none;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+.link{background:none;border:0;padding:0;color:var(--accent);cursor:pointer;font-weight:500;text-align:left}
+.link:hover{text-decoration:underline}
+
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:5px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--surface-2);color:var(--muted)}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.nodot::before{display:none}
+.t-High,.s-High,.s-Critical{background:var(--high-soft);color:var(--high)}
+.t-Medium,.s-Medium{background:var(--med-soft);color:var(--med)}
+.t-Low,.s-Low{background:var(--low-soft);color:var(--low)}
+.st-assess{background:var(--info-soft);color:var(--info)}
+.st-Remediation{background:var(--med-soft);color:var(--med)}
+.st-Onboarded{background:var(--low-soft);color:var(--low)}
+.st-Rejected{background:var(--high-soft);color:var(--high)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border:1px solid var(--line);border-radius:14px;font-size:12px;background:var(--surface);white-space:nowrap}
+button.chip{cursor:pointer}
+button.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+
+/* forms */
+.form-sec{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;padding-block:22px;border-top:1px solid var(--line)}
+.form-sec:first-of-type{border-top:0;padding-top:4px}
+.form-sec > div:first-child p{color:var(--muted);font-size:12.5px;margin-top:4px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f.wide{grid-column:1/-1}
+.f label,.flabel{font-size:12.5px;font-weight:600}
+.f .req{color:var(--high)}
+.f .hint{font-size:12px;color:var(--muted)}
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],input[type=search],input[type=url],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--surface);min-width:0}
+textarea{resize:vertical;min-height:70px}
+input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--high);background:var(--high-soft)}
+.check{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13.5px}
+.check input{margin-top:3px;accent-color:var(--accent)}
+.form-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;padding-top:20px;border-top:1px solid var(--line);margin-top:6px}
+.errbox{padding:10px 12px;border-radius:7px;background:var(--high-soft);color:var(--high);font-size:13px}
+.note{padding:10px 12px;border-radius:7px;background:var(--info-soft);color:var(--ink);font-size:13px;border-left:3px solid var(--info)}
+.note.warn{background:var(--med-soft);border-left-color:var(--med)}
+.note.bad{background:var(--high-soft);border-left-color:var(--high)}
+
+/* home */
+.options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:26px}
+.opt{display:flex;flex-direction:column;gap:10px;text-align:left;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;min-height:188px;transition:border-color .15s,transform .15s}
+.opt:hover{border-color:var(--accent);transform:translateY(-1px)}
+.opt .ico{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.opt .ico svg{width:19px;height:19px}
+.opt h2{font-size:18px}
+.opt p{color:var(--muted);font-size:13px}
+.opt .meta{margin-top:auto;font:500 12.5px/1.3 var(--mono);color:var(--ink);padding-top:10px;border-top:1px dashed var(--line)}
+.opt.alert .ico{background:var(--high-soft);color:var(--high)}
+.opt.alert .meta b{color:var(--high)}
+
+/* lists */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font:600 11px/1.2 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+th button{all:unset;cursor:pointer}
+th button:focus-visible{outline:2px solid var(--accent)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb,var(--accent-soft) 45%,transparent)}
+.vname{font-weight:600;color:var(--ink);background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.vname:hover{color:var(--accent);text-decoration:underline}
+.sub-id{display:block;font:400 11.5px var(--mono);color:var(--faint)}
+.late{color:var(--high);font-weight:600}
+.soon{color:var(--med);font-weight:600}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;align-items:center}
+.toolbar .search{flex:1 1 280px;position:relative}
+.toolbar .search input{padding-left:32px}
+.toolbar .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+.toolbar select{width:auto;flex:0 1 auto}
+.sevdots{display:inline-flex;gap:3px;vertical-align:middle}
+.sevdots i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.sevdots .H{background:var(--high)}.sevdots .M{background:var(--med)}.sevdots .L{background:var(--low)}
+
+/* vendor */
+.vhead{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.vhead h1{font-size:28px}
+.vhead .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-bottom:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.step{display:flex;gap:10px;align-items:center;padding:12px 14px;border-right:1px solid var(--line);min-width:0}
+.step:last-child{border-right:0}
+.step .dot{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--mono);border:1.5px solid var(--line-2);color:var(--muted)}
+.step.done .dot{background:var(--low);border-color:var(--low);color:var(--surface)}
+.step.now .dot{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.step b{display:block;font-size:13px}
+.step span{display:block;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.tabs button{padding:9px 14px;border:0;background:none;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button .count{font:500 11px var(--mono);color:var(--faint);margin-left:4px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px 20px}
+.kv div{min-width:0}
+.kv dt{font-size:11.5px;color:var(--muted);letter-spacing:.03em}
+.kv dd{margin:2px 0 0;font-weight:500;overflow-wrap:anywhere}
+
+/* IRA */
+.ira{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.factor{padding:16px 0;border-top:1px solid var(--line)}
+.factor:first-child{border-top:0;padding-top:0}
+.factor h3{font-size:14.5px;font-family:var(--body);font-weight:600;font-stretch:100%}
+.factor .hint{font-size:12.5px;color:var(--muted);margin-top:2px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:10px}
+.opt-r{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;cursor:pointer;font-size:13px;background:var(--surface)}
+.opt-r:hover{border-color:var(--line-2)}
+.opt-r:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt-r input{margin-top:3px;accent-color:var(--accent)}
+.opt-r .pts{margin-left:auto;font:500 11px var(--mono);color:var(--faint)}
+.scorebox{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.gauge{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--low-soft) 0 30%,var(--med-soft) 30% 55%,var(--high-soft) 55% 100%);margin:16px 0 6px;border:1px solid var(--line)}
+.gauge i{position:absolute;top:-5px;width:3px;height:20px;border-radius:2px;background:var(--ink);transform:translateX(-1px);transition:left .25s}
+.gauge-l{display:flex;justify-content:space-between;font:400 11px var(--mono);color:var(--muted);position:relative;height:14px}
+.gauge-l span{position:absolute;transform:translateX(-50%)}
+.bigtier{font:750 34px/1 var(--display);font-stretch:87.5%}
+.bigtier.High{color:var(--high)}.bigtier.Medium{color:var(--med)}.bigtier.Low{color:var(--low)}
+.drv{display:grid;grid-template-columns:minmax(0,1fr) 70px 34px;gap:8px;align-items:center;font-size:12.5px;padding:4px 0}
+.bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.override{border:1px dashed var(--line-2);border-radius:10px;padding:14px 16px;margin-top:18px}
+
+/* questionnaire */
+.qwrap{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;align-items:start}
+.secnav{display:flex;flex-direction:column;gap:4px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+.secnav button{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:start;padding:9px 10px;border:1px solid transparent;border-radius:8px;background:none;text-align:left;cursor:pointer}
+.secnav button:hover{background:var(--surface)}
+.secnav button[aria-current="true"]{background:var(--surface);border-color:var(--line)}
+.secnav .sn-t{font-weight:600;font-size:13px;line-height:1.3}
+.secnav .sn-m{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+.secnav .sn-p{font:500 11px var(--mono);color:var(--muted);padding-top:2px}
+.sico{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line-2);margin-top:1px}
+.sico.ip{border-color:var(--info);background:conic-gradient(var(--info) 0 50%,transparent 50%)}
+.sico.ok{border-color:var(--low);background:var(--low);position:relative}
+.sico.ok::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.qitem{display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;padding:14px 0;border-top:1px solid var(--line)}
+.qitem:first-of-type{border-top:0}
+.qid{font:500 12px var(--mono);color:var(--faint);padding-top:2px}
+.qtext{font-weight:500}
+.qctl{grid-column:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:7px;overflow:hidden}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{display:block;padding:5px 11px;font-size:12.5px;font-weight:500;border-right:1px solid var(--line-2)}
+.seg label:last-child span{border-right:0}
+.seg input:focus-visible + span{outline:2px solid var(--accent);outline-offset:-2px}
+.seg input:checked + span{background:var(--ink);color:var(--surface)}
+.seg .o-No input:checked + span{background:var(--high);color:#fff}
+.seg .o-Partial input:checked + span{background:var(--med);color:#fff}
+.seg .o-Yes input:checked + span{background:var(--low);color:#fff}
+.seg input:disabled + span{cursor:not-allowed;opacity:.7}
+.qnote{flex:1 1 240px}
+.qnote input{padding:5px 9px;font-size:12.5px}
+.gapflag{grid-column:2;font-size:12px;color:var(--high);margin-top:4px}
+.w3{font:600 10px var(--mono);letter-spacing:.05em;color:var(--accent);border:1px solid var(--accent);border-radius:3px;padding:0 4px;margin-left:6px;vertical-align:1px}
+.progress{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;display:flex}
+.progress i{display:block;height:100%}
+.progress .ok{background:var(--low)}.progress .ip{background:var(--info)}
+
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-align:left;cursor:pointer;min-width:0}
+.kpi:hover{border-color:var(--accent)}
+.kpi .v{font:700 30px/1.05 var(--display);font-stretch:87.5%;font-variant-numeric:tabular-nums;margin:6px 0 2px}
+.kpi .d{font-size:12px;color:var(--muted)}
+.kpi.bad .v{color:var(--high)}
+.stackbar{display:flex;height:34px;border-radius:7px;overflow:hidden;gap:2px}
+.stackbar button{border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font:600 13px var(--mono);min-width:28px;color:#fff}
+.stackbar button:hover{filter:brightness(1.1)}
+.sb-High{background:var(--high)}.sb-Medium{background:var(--med)}.sb-Low{background:var(--low)}.sb-none{background:var(--line-2);color:var(--ink)!important}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px}
+.legend button{display:flex;gap:7px;align-items:center;border:0;background:none;padding:0;cursor:pointer;font-size:13px;color:var(--ink)}
+.legend button:hover{color:var(--accent)}
+.legend i{width:10px;height:10px;border-radius:2px}
+.matrix{display:grid;grid-template-columns:90px repeat(4,minmax(0,1fr));gap:4px;margin-top:18px;font-size:12px}
+.matrix .h{color:var(--muted);font-weight:600;padding:4px 2px;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.matrix .rl{display:flex;align-items:center;font-weight:600}
+.matrix button{border:0;border-radius:6px;padding:10px 4px;cursor:pointer;font:600 15px var(--mono);color:var(--ink)}
+.matrix button:hover{outline:2px solid var(--accent)}
+.matrix button.z{color:var(--faint);font-weight:400}
+.hbars{display:flex;flex-direction:column;gap:8px}
+.hb{display:grid;grid-template-columns:150px minmax(0,1fr) 36px;gap:10px;align-items:center;border:0;background:none;padding:2px 0;cursor:pointer;text-align:left;font-size:13px;color:var(--ink)}
+.hb:hover .hb-l{color:var(--accent)}
+.hb-track{height:18px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.hb-track i{display:block;height:100%;border-radius:4px}
+.hb .n{font:600 13px var(--mono);text-align:right}
+.teamrow{display:grid;grid-template-columns:170px 44px minmax(0,1fr);gap:12px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.teamrow:first-child{border-top:0}
+.teamrow .n{font:700 20px/1 var(--display);font-stretch:87.5%}
+.teamrow .n.z{color:var(--faint);font-weight:500}
+
+/* alerts */
+.afilters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.afilters button{padding:6px 12px;border-radius:16px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13px}
+.afilters button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.afilters button .c{font:500 11px var(--mono);opacity:.75;margin-left:4px}
+.alerts{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.al{display:grid;grid-template-columns:4px 150px minmax(0,1fr) auto;gap:0 16px;align-items:center;border-top:1px solid var(--line);padding-right:16px}
+.al:first-child{border-top:0}
+.al .stripe{align-self:stretch}
+.al.sev-High .stripe,.al.sev-Critical .stripe{background:var(--high)}
+.al.sev-Medium .stripe{background:var(--med)}
+.al.sev-Low .stripe{background:var(--info)}
+.al .ty{padding:14px 0;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.al .ty small{display:block;font:400 12px var(--mono);letter-spacing:0;text-transform:none;color:var(--faint);margin-top:3px}
+.al .body{padding:14px 0;min-width:0}
+.al .body b{display:block}
+.al .body p{color:var(--muted);font-size:13px}
+.al .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;padding:10px 0}
+.al.dim{opacity:.62}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+
+/* modal/toast */
+.modal-bg{position:fixed;inset:0;background:rgba(10,14,12,.5);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border-radius:12px;max-width:560px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:22px 24px;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--line)}
+.modal h2{font-size:21px;margin-bottom:6px}
+.modal .acts{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font-size:13.5px;z-index:60;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
+.banner{padding:9px 14px;border-radius:8px;background:var(--med-soft);color:var(--ink);font-size:13px;margin-bottom:18px;border:1px solid color-mix(in srgb,var(--med) 30%,transparent)}
+.loading{padding:60px 0;color:var(--muted)}
+
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .options{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ira{grid-template-columns:minmax(0,1fr)}
+  .scorebox{position:static}
+}
+@media (max-width:900px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;border-right:0;border-bottom:1px solid var(--line)}
+  .brand small,.side-foot{display:none}
+  .nav{flex-direction:row;flex-wrap:wrap;gap:2px}
+  .nav button{padding:6px 9px;width:auto}
+  .nav button .lbl-long{display:none}
+  main{padding-inline:16px;padding-block:20px 56px}
+  .g2,.g3,.form-sec,.qwrap{grid-template-columns:minmax(0,1fr)}
+  .form-sec{gap:10px}
+  .secnav{position:static}
+  .stepper{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step:nth-child(2){border-right:0}
+  .step:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .al{grid-template-columns:4px minmax(0,1fr);padding-right:14px}
+  .al .ty{padding-bottom:0}
+  .al .body{grid-column:2;padding-top:4px}
+  .al .acts{grid-column:2;justify-content:flex-start;padding-top:0}
+  .al .ty{grid-column:2}
+  .al .stripe{grid-row:1/span 3}
+}
+@media (max-width:560px){
+  h1{font-size:24px}
+  .options,.kpis{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fields{grid-template-columns:minmax(0,1fr)}
+  .opt{min-height:0}
+  .hb{grid-template-columns:110px minmax(0,1fr) 30px}
+  .teamrow{grid-template-columns:minmax(0,1fr) 40px}
+  .teamrow .chips{grid-column:1/-1}
+  .matrix{grid-template-columns:64px repeat(4,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14V6h12v8M2 6l6-4 6 4M6 14V9h4v5"/></svg></div>
+      <div><b>Argus Gate</b><small>Third-party risk</small></div>
+    </div>
+    <nav class="nav" id="nav" aria-label="Main"></nav>
+    <div class="side-foot">
+      <div><label for="meName">Your name (for sign-offs)</label><input id="meName" type="text" autocomplete="name"></div>
+      <div class="mode" id="modeNote"></div>
+    </div>
+  </aside>
+  <main id="main"><div class="loading">Loading the vendor register…</div></main>
+</div>
+<div id="modal" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* Argus Gate — domain model: inherent-risk scoring, questionnaire bank,
+   reassessment cadence and the 20-vendor sample generator.
+   Loaded by index.html as a script, and by node to produce seed JSON. */
+(function (g) {
+  'use strict';
+
+  var TODAY = '2026-09-24';
+  var TEAMS = ['Procurement', 'Legal', 'Compliance', 'Cybersecurity', 'IT Architecture', 'Enterprise Architecture'];
+  var TIER_RANK = { Low: 1, Medium: 2, High: 3 };
+  var LETTER = { L: 1, M: 2, H: 3 };
+  // High = annual; Medium/Low = every two years
+  var CADENCE_MONTHS = { High: 12, Medium: 24, Low: 24 };
+
+  var STAGES = ['Intake', 'Inherent Risk', 'Due Diligence', 'Final Review', 'Remediation', 'Onboarded', 'Rejected', 'Offboarded'];
+  var OPEN_STAGES = ['Intake', 'Inherent Risk', 'Due Diligence', 'Final Review'];
+
+  var SERVICE_TYPES = ['AI / ML Services', 'Cloud Infrastructure', 'Data Provider', 'Facilities', 'HR & Payroll', 'IT Services',
+    'Logistics', 'Marketing', 'Payments', 'Print & Mail', 'Professional Services', 'SaaS Application', 'Security Services', 'Staffing', 'Travel', 'Other'];
+
+  /* ---------- Inherent risk assessment ---------- */
+  var DATA_TYPES = [
+    { id: 'none', label: 'No company data', s: 0 },
+    { id: 'internal', label: 'Internal business data', s: 1 },
+    { id: 'confidential', label: 'Confidential / intellectual property', s: 2 },
+    { id: 'employee_pii', label: 'Employee PII', s: 2 },
+    { id: 'customer_pii', label: 'Customer PII', s: 3 },
+    { id: 'phi', label: 'Health information (PHI)', s: 3 },
+    { id: 'pci', label: 'Cardholder data (PCI)', s: 3 },
+    { id: 'financial', label: 'Financial / MNPI', s: 3 },
+    { id: 'credentials', label: 'Credentials & secrets', s: 3 }
+  ];
+  var PERSONAL = ['employee_pii', 'customer_pii', 'phi', 'pci'];
+
+  var IRA_FACTORS = [
+    { id: 'impact', w: 3, label: 'Business impact if the service fails', hint: 'Effect on operations, customers or revenue during an outage',
+      opts: [['Minimal — no noticeable effect', 0], ['Moderate — workaround available', 1], ['Significant — degraded business process', 2], ['Critical — core or customer-facing process stops', 3]] },
+    { id: 'data', w: 3, label: 'Types of data the vendor will process', hint: 'Select every type; the most sensitive one drives the score', multi: true },
+    { id: 'volume', w: 1, label: 'Volume of records', opts: [['None', 0], ['Fewer than 10,000', 1], ['10,000 – 1 million', 2], ['More than 1 million', 3]] },
+    { id: 'access', w: 2, label: 'Access to our systems or network', opts: [['No access', 0], ['Vendor-hosted, no integration', 1], ['API, SFTP or SSO integration', 2], ['Network or privileged access to our environment', 3]] },
+    { id: 'fourth', w: 2, label: 'Reliance on fourth parties / subcontractors', opts: [['None', 0], ['Non-critical subcontractors only', 1], ['Critical subcontractors (e.g. hosting)', 2], ['Extensive or offshore critical subcontracting', 3]] },
+    { id: 'ai', w: 2, label: 'AI / machine-learning use', opts: [['No AI in the service', 0], ['AI in vendor’s internal operations only', 1], ['AI features process our data', 2], ['AI automates decisions or trains on our data', 3]] },
+    { id: 'regulatory', w: 2, label: 'Regulatory scope', hint: 'SOX, GLBA, HIPAA, PCI DSS, DORA, GDPR', opts: [['Not in scope', 0], ['Indirectly supports regulated activity', 2], ['Directly supports regulated activity', 3]] },
+    { id: 'subst', w: 1, label: 'Ease of replacing the vendor', opts: [['Replaceable within 30 days', 0], ['Replaceable in 1 – 6 months', 2], ['Difficult or sole source', 3]] },
+    { id: 'concerns', w: 2, label: 'Known concerns or issues', hint: 'Prior breaches, adverse media, financial distress, audit exceptions', opts: [['None known', 0], ['Minor (e.g. lapsed certification)', 2], ['Significant (prior breach, adverse media, financial distress)', 3]] }
+  ];
+
+  var OVERRIDE_REASONS = [
+    'Compensating contractual controls',
+    'Limited-scope pilot or proof of concept',
+    'Data scope confirmed narrower than assessed',
+    'Regulatory or audit mandate',
+    'Intra-group / affiliate entity',
+    'Concentration risk not captured by scoring',
+    'Executive risk acceptance'
+  ];
+
+  function dataSensitivity(list) {
+    var m = 0;
+    (list || []).forEach(function (id) { DATA_TYPES.forEach(function (d) { if (d.id === id && d.s > m) m = d.s; }); });
+    return m;
+  }
+
+  // a: {impact: idx, data: [ids], volume: idx, ...} -> {pct, tier, drivers[], knockout}
+  function scoreIRA(a) {
+    if (!a) return null;
+    var total = 0, max = 0, drivers = [], complete = true;
+    IRA_FACTORS.forEach(function (f) {
+      var pts;
+      if (f.multi) {
+        if (!a.data || !a.data.length) complete = false;
+        pts = dataSensitivity(a.data);
+      } else {
+        var i = a[f.id];
+        if (i === undefined || i === null || i === '') { complete = false; pts = 0; }
+        else pts = f.opts[i][1];
+      }
+      total += pts * f.w; max += 3 * f.w;
+      drivers.push({ id: f.id, label: f.label, pts: pts * f.w, max: 3 * f.w });
+    });
+    var pct = Math.round(total / max * 100);
+    var ds = dataSensitivity(a.data);
+    var knockout = null;
+    if (a.impact === 3 && ds >= 3) knockout = 'Critical business impact with restricted data';
+    else if (a.concerns === 2 && ds >= 2) knockout = 'Significant known concerns with sensitive data';
+    var tier = knockout || pct >= 55 ? 'High' : pct >= 30 ? 'Medium' : 'Low';
+    drivers.sort(function (x, y) { return y.pts - x.pts; });
+    return { pct: pct, tier: tier, drivers: drivers, knockout: knockout, complete: complete };
+  }
+
+  /* ---------- Due-diligence questionnaire ----------
+     min: lowest tier that receives the question (L = all tiers, M = Medium+High, H = High only)
+     w: control weight 1-3 (drives finding severity); gap: finding title when answered No/Partial */
+  var SECTIONS = [
+    { id: 'procurement', title: 'Commercial & financial', team: 'Procurement', qs: [
+      ['p1', 'L', 2, 'Audited financial statements for the last two years have been provided.', 'Financial statements not provided'],
+      ['p2', 'L', 2, 'Vendor carries cyber-liability insurance of at least $5M.', 'Cyber-liability cover below $5M'],
+      ['p3', 'M', 2, 'Contract defines service levels with service credits.', 'No SLA or service credits in contract'],
+      ['p4', 'L', 3, 'Sanctions, PEP and adverse-media screening completed with no hits.', 'Sanctions / adverse-media screening incomplete'],
+      ['p5', 'H', 2, 'Concentration risk assessed and alternative vendors identified.', 'Concentration risk not assessed']] },
+    { id: 'legal', title: 'Contract & legal terms', team: 'Legal', qs: [
+      ['l1', 'L', 3, 'Confidentiality / NDA terms are executed.', 'Confidentiality terms not executed'],
+      ['l2', 'M', 3, 'A Data Processing Agreement (DPA) is executed.', 'DPA not executed'],
+      ['l3', 'M', 2, 'Contract includes a right-to-audit clause.', 'No right-to-audit clause'],
+      ['l4', 'M', 3, 'Breach notification within 72 hours is contractually required.', 'Breach notification SLA exceeds 72 hours'],
+      ['l5', 'H', 2, 'Subcontractor approval and flow-down clauses are included.', 'No subcontractor flow-down clauses'],
+      ['l6', 'H', 2, 'Termination assistance, data return and destruction terms are defined.', 'Exit / data-return terms undefined']] },
+    { id: 'compliance', title: 'Regulatory compliance', team: 'Compliance', qs: [
+      ['c1', 'L', 3, 'A current SOC 2 Type II report or ISO 27001 certificate was provided.', 'No current SOC 2 Type II / ISO 27001'],
+      ['c2', 'M', 2, 'SOC report exceptions and bridge letter reviewed and acceptable.', 'Unresolved SOC report exceptions'],
+      ['c3', 'M', 3, 'Vendor meets applicable obligations (GLBA, HIPAA, PCI DSS, DORA).', 'Regulatory obligations not evidenced'],
+      ['c4', 'H', 1, 'Vendor provides an annual compliance attestation.', 'No annual compliance attestation']] },
+    { id: 'dataprot', title: 'Data protection', team: 'Cybersecurity', qs: [
+      ['d1', 'L', 3, 'Data is encrypted in transit with TLS 1.2 or higher.', 'Weak or missing encryption in transit'],
+      ['d2', 'L', 3, 'Data is encrypted at rest (AES-256) with managed keys.', 'Data not encrypted at rest'],
+      ['d3', 'M', 2, 'Data-loss-prevention controls are in place.', 'No data-loss-prevention controls'],
+      ['d4', 'M', 2, 'Retention and secure-disposal procedures are documented.', 'Retention / disposal procedure missing'],
+      ['d5', 'H', 1, 'Customer-managed encryption keys (BYOK) are supported.', 'BYOK not supported'],
+      ['d6', 'H', 2, 'Tenant data segregation has been independently validated.', 'Tenant segregation not validated']] },
+    { id: 'iam', title: 'Identity & access management', team: 'Cybersecurity', qs: [
+      ['i1', 'L', 3, 'MFA is enforced for every account that can reach our data.', 'MFA not enforced for all users'],
+      ['i2', 'M', 2, 'SSO / SAML integration with our identity provider is supported.', 'No SSO / SAML support'],
+      ['i3', 'M', 3, 'Privileged access runs through PAM with session recording.', 'Privileged access not managed through PAM'],
+      ['i4', 'M', 2, 'User access reviews are performed at least quarterly.', 'Access reviews not performed quarterly'],
+      ['i5', 'H', 2, 'Leaver access is removed within 24 hours.', 'Leaver deprovisioning exceeds 24 hours']] },
+    { id: 'secops', title: 'Security operations & SDLC', team: 'Cybersecurity', qs: [
+      ['v1', 'M', 2, 'Annual independent penetration test; critical findings remediated.', 'Penetration-test findings unremediated'],
+      ['v2', 'M', 3, 'Critical vulnerabilities are patched within 15 days.', 'Critical patch SLA exceeds 15 days'],
+      ['v3', 'H', 2, 'Security events are monitored 24x7 (SIEM / SOC).', 'No 24x7 security monitoring'],
+      ['v4', 'H', 3, 'Incident-response plan is documented and tested annually.', 'Incident-response plan untested'],
+      ['v5', 'H', 2, 'Secure SDLC with code review and SAST / DAST.', 'Secure SDLC controls incomplete']] },
+    { id: 'resiliency', title: 'Resiliency & continuity', team: 'IT Architecture', qs: [
+      ['r1', 'M', 2, 'Business-continuity plan tested in the last 12 months.', 'Business-continuity plan not tested'],
+      ['r2', 'M', 3, 'Disaster-recovery RTO / RPO meet our requirements.', 'RTO / RPO do not meet requirements'],
+      ['r3', 'H', 2, 'Hosting is geographically redundant with tested failover.', 'No geo-redundant failover'],
+      ['r4', 'H', 2, 'Critical service mapping and a stressed-exit plan exist.', 'No stressed-exit plan']] },
+    { id: 'dpia', title: 'Data privacy impact assessment', team: 'Compliance', when: 'personal', qs: [
+      ['pr1', 'M', 2, 'Lawful basis and purpose are documented for each processing activity.', 'Lawful basis not documented'],
+      ['pr2', 'M', 2, 'Only the minimum personal data fields are shared.', 'Data minimisation not applied'],
+      ['pr3', 'M', 3, 'Cross-border transfers are covered by SCCs or adequacy decisions.', 'Cross-border transfer mechanism missing'],
+      ['pr4', 'M', 2, 'Data-subject rights requests are supported within statutory deadlines.', 'DSAR support not evidenced'],
+      ['pr5', 'H', 2, 'Residual privacy risks accepted by the Privacy Office.', 'Privacy risk acceptance outstanding']] },
+    { id: 'ai', title: 'AI model usage & risk', team: 'Cybersecurity', when: 'ai', qs: [
+      ['a1', 'M', 2, 'Vendor maintains an inventory of AI / ML models used in the service.', 'No AI model inventory'],
+      ['a2', 'M', 3, 'Our data is not used to train vendor or third-party models without consent.', 'Our data may be used for model training'],
+      ['a3', 'M', 2, 'Models are validated and monitored for bias and drift.', 'No model validation or drift monitoring'],
+      ['a4', 'H', 2, 'Humans review automated decisions that affect customers.', 'No human oversight of automated decisions'],
+      ['a5', 'H', 2, 'Generative-AI features have prompt-injection and abuse controls.', 'No prompt-injection / abuse controls'],
+      ['a6', 'H', 1, 'Aligned with NIST AI RMF, ISO 42001 or EU AI Act obligations.', 'AI governance framework not adopted']] },
+    { id: 'fourth', title: 'Fourth-party management', team: 'Cybersecurity', qs: [
+      ['f1', 'M', 2, 'All subcontractors that handle our data are disclosed.', 'Subcontractors not fully disclosed'],
+      ['f2', 'M', 2, 'Vendor performs due diligence on its critical subcontractors.', 'No fourth-party due diligence'],
+      ['f3', 'H', 2, 'Fourth-party locations and data residency are disclosed.', 'Fourth-party data residency unknown'],
+      ['f4', 'H', 2, 'Vendor notifies us of subcontractor changes and incidents.', 'No fourth-party change / incident notice']] },
+    { id: 'itarch', title: 'IT architecture review', team: 'IT Architecture', qs: [
+      ['t1', 'M', 2, 'Integration pattern approved (API gateway, SFTP or SSO).', 'Integration pattern not approved'],
+      ['t2', 'M', 2, 'Network connectivity reviewed; no inbound firewall exceptions.', 'Inbound firewall exception required'],
+      ['t3', 'H', 2, 'Data-flow diagram provided and reviewed.', 'Data-flow diagram missing'],
+      ['t4', 'H', 2, 'Vendor logs integrate with our SIEM.', 'Logs not integrated with SIEM']] },
+    { id: 'entarch', title: 'Enterprise architecture review', team: 'Enterprise Architecture', qs: [
+      ['e1', 'M', 2, 'Aligned with technology standards and target-state architecture.', 'Not aligned to target-state architecture'],
+      ['e2', 'M', 1, 'Does not duplicate an existing approved capability.', 'Duplicates an existing capability'],
+      ['e3', 'H', 2, 'Exit strategy and data portability are documented.', 'Exit strategy / portability undocumented'],
+      ['e4', 'H', 1, 'Vendor technology roadmap and end-of-life risks reviewed.', 'End-of-life risk not reviewed']] }
+  ];
+  SECTIONS.forEach(function (s) {
+    s.qs = s.qs.map(function (q) { return { id: q[0], min: q[1], w: q[2], text: q[3], gap: q[4] }; });
+  });
+  var QINDEX = {};
+  SECTIONS.forEach(function (s) { s.qs.forEach(function (q) { q.section = s.id; QINDEX[q.id] = q; }); });
+
+  var DEPTH = { High: 'Full', Medium: 'Standard', Low: 'Lite' };
+
+  function hasPersonal(ira) { return !!(ira && (ira.data || []).some(function (d) { return PERSONAL.indexOf(d) >= 0; })); }
+
+  // Sections (with filtered questions) that apply to a tier + IRA answers
+  function sectionsFor(tier, ira) {
+    var r = TIER_RANK[tier] || 1, out = [];
+    SECTIONS.forEach(function (s) {
+      if (s.when === 'personal' && r < 3 && !(r === 2 && hasPersonal(ira))) return;
+      if (s.when === 'ai' && r < 3 && !(r === 2 && ira && ira.ai > 0)) return;
+      var qs = s.qs.filter(function (q) { return LETTER[q.min] <= r; });
+      if (qs.length) out.push({ id: s.id, title: s.title, team: s.team, qs: qs });
+    });
+    return out;
+  }
+
+  function isGap(v) { return v === 'No' || v === 'Partial'; }
+  function gapSeverity(q, v) {
+    var lvl = q.w - (v === 'Partial' ? 1 : 0);
+    return lvl >= 3 ? 'High' : lvl === 2 ? 'Medium' : 'Low';
+  }
+
+  /* ---------- dates ---------- */
+  function addMonths(iso, m) {
+    var d = new Date(iso + 'T00:00:00Z');
+    d.setUTCMonth(d.getUTCMonth() + m);
+    return d.toISOString().slice(0, 10);
+  }
+  function addDays(iso, n) {
+    var d = new Date(iso + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  function daysBetween(a, b) {
+    return Math.round((new Date(b + 'T00:00:00Z') - new Date(a + 'T00:00:00Z')) / 864e5);
+  }
+  function nextReview(tier, lastAssessed) {
+    return lastAssessed && tier ? addMonths(lastAssessed, CADENCE_MONTHS[tier]) : null;
+  }
+
+  /* ---------- sample data (fictional companies) ---------- */
+  var REVIEWERS = { 'Procurement': 'Priya Raman', 'Legal': 'Tom Okafor', 'Compliance': 'Elena Rossi', 'Cybersecurity': 'Sam Carter', 'IT Architecture': 'Wei Zhang', 'Enterprise Architecture': 'Grace Liu' };
+
+  // ira order: impact, data, volume, access, fourth, ai, regulatory, subst, concerns
+  var SPECS = [
+    { name: 'Northwind Payroll Services', type: 'HR & Payroll', services: 'End-to-end payroll processing and tax filing for 4,200 employees', value: 1250000, start: '2023-03-01', term: 36,
+      owner: 'Dana Whitfield', dept: 'Human Resources', contact: ['Marcus Lee', 'Client Success Director', 'marcus.lee@northwind-payroll.example', '+1 312 555 0141'], hq: 'Chicago, US', loc: 'US (Ohio, Oregon)',
+      ira: [3, ['employee_pii', 'financial'], 2, 2, 2, 0, 2, 2, 0], fp: ['Stratus Compute', 'Ember Identity'], stage: 'Onboarded', assessed: '2026-02-10', created: '2023-01-09',
+      gaps: [['i3', 'Partial', 'In remediation', '2026-11-30'], ['r3', 'No', 'Closed', '2026-05-15']] },
+    { name: 'Bluepeak Cloud Hosting', type: 'Cloud Infrastructure', services: 'Managed IaaS hosting for the customer portal and data warehouse', value: 2400000, start: '2022-07-01', term: 60,
+      owner: 'Ravi Menon', dept: 'Technology', contact: ['Hannah Cole', 'Enterprise Account Manager', 'h.cole@bluepeak.example', '+1 206 555 0199'], hq: 'Seattle, US', loc: 'US (Virginia, Oregon)',
+      ira: [3, ['customer_pii', 'confidential'], 3, 3, 1, 0, 2, 2, 0], fp: ['Driftwood Data Centers', 'Parallax CDN'], stage: 'Onboarded', assessed: '2026-05-18', created: '2022-04-20',
+      gaps: [['d5', 'Partial', 'Risk accepted', '2026-08-31'], ['v1', 'Partial', 'Closed', '2026-07-31']] },
+    { name: 'Clearline CRM', type: 'SaaS Application', services: 'Customer relationship management platform for sales and service teams', value: 860000, start: '2026-06-01', term: 36,
+      owner: 'Olivia Grant', dept: 'Sales Operations', contact: ['Jonah Pierce', 'Customer Success Lead', 'jonah.pierce@clearline.example', '+1 415 555 0112'], hq: 'San Francisco, US', loc: 'US, EU (Frankfurt)',
+      ira: [2, ['customer_pii'], 3, 2, 2, 2, 1, 1, 1], fp: ['Stratus Compute', 'Kestrel Email Relay', 'Tessera LLM API'], stage: 'Remediation', assessed: '2026-08-20', created: '2026-04-06',
+      gaps: [['a2', 'No', 'Open', '2026-10-15'], ['i4', 'Partial', 'In remediation', '2026-11-01'], ['f3', 'No', 'Open', '2026-11-15'], ['pr3', 'Partial', 'Open', '2026-10-30']],
+      decision: 'Approved with conditions' },
+    { name: 'Meridian Legal Partners', type: 'Professional Services', services: 'External litigation and employment counsel', value: 540000, start: '2024-01-15', term: 36,
+      owner: 'Karen Holt', dept: 'Legal', contact: ['Alan Brooks', 'Managing Partner', 'abrooks@meridian-legal.example', '+1 212 555 0170'], hq: 'New York, US', loc: 'US (New York)',
+      ira: [2, ['confidential', 'employee_pii'], 1, 1, 0, 0, 1, 1, 0], fp: [], stage: 'Onboarded', assessed: '2025-06-12', created: '2023-11-02',
+      gaps: [['i2', 'No', 'Risk accepted', '2025-09-30']] },
+    { name: 'Tallis Analytics AI', type: 'AI / ML Services', services: 'Churn-prediction and next-best-offer models on customer data', value: 720000, start: '2026-10-01', term: 24,
+      owner: 'Olivia Grant', dept: 'Marketing Analytics', contact: ['Imani Shaw', 'Head of Partnerships', 'imani@tallis-ai.example', '+44 20 5550 0133'], hq: 'London, UK', loc: 'UK, US (Virginia)',
+      ira: [2, ['customer_pii', 'financial'], 3, 2, 2, 3, 2, 1, 1], fp: ['Tessera LLM API', 'Stratus Compute'], stage: 'Due Diligence', created: '2026-08-04', qStart: '2026-08-11',
+      signed: ['procurement', 'legal', 'compliance'], progress: ['dataprot', 'iam', 'ai', 'dpia'] },
+    { name: 'Harbor Print & Mail', type: 'Print & Mail', services: 'Monthly customer statement printing and mailing', value: 310000, start: '2021-09-01', term: 60,
+      owner: 'Luis Ortega', dept: 'Customer Operations', contact: ['Betty Nguyen', 'Operations Manager', 'bnguyen@harborprint.example', '+1 617 555 0104'], hq: 'Boston, US', loc: 'US (Massachusetts)',
+      ira: [2, ['customer_pii'], 3, 2, 1, 0, 1, 0, 0], fp: ['Parallax CDN'], stage: 'Onboarded', assessed: '2025-03-20', created: '2021-06-14',
+      gaps: [['d3', 'Partial', 'Closed', '2025-06-30']] },
+    { name: 'Quanta Helpdesk', type: 'IT Services', services: '24x7 outsourced IT service desk and end-user support', value: 980000, start: '2024-04-01', term: 36,
+      owner: 'Ravi Menon', dept: 'Technology', contact: ['Peter Walsh', 'Service Delivery Manager', 'pwalsh@quanta-hd.example', '+1 469 555 0158'], hq: 'Dallas, US', loc: 'US, Philippines',
+      ira: [2, ['employee_pii', 'credentials'], 2, 3, 3, 1, 1, 1, 0], fp: ['Juniper Offshore Support', 'Ember Identity'], stage: 'Onboarded', assessed: '2026-04-02', created: '2024-01-22',
+      gaps: [['i3', 'No', 'In remediation', '2026-09-01'], ['f2', 'Partial', 'Open', '2026-12-31']] },
+    { name: 'Greenleaf Facilities', type: 'Facilities', services: 'Office cleaning and facilities maintenance across three sites', value: 185000, start: '2025-01-01', term: 36,
+      owner: 'Mike Duran', dept: 'Workplace Services', contact: ['Rosa Alvarez', 'Account Supervisor', 'rosa@greenleaf-fm.example', '+1 312 555 0187'], hq: 'Chicago, US', loc: 'n/a',
+      ira: [1, ['none'], 0, 0, 1, 0, 0, 0, 0], fp: [], stage: 'Onboarded', assessed: '2025-01-10', created: '2024-11-18', gaps: [] },
+    { name: 'Solace Benefits Admin', type: 'HR & Payroll', services: 'Health and retirement benefits enrolment administration', value: 640000, start: '2022-01-01', term: 60,
+      owner: 'Dana Whitfield', dept: 'Human Resources', contact: ['Grace Kim', 'Relationship Manager', 'gkim@solace-benefits.example', '+1 860 555 0126'], hq: 'Hartford, US', loc: 'US (Connecticut)',
+      ira: [2, ['employee_pii', 'phi'], 2, 2, 2, 0, 2, 2, 0], fp: ['Stratus Compute'], stage: 'Onboarded', assessed: '2025-08-15', created: '2021-10-04',
+      gaps: [['pr3', 'Partial', 'Closed', '2025-11-30'], ['v3', 'Partial', 'Closed', '2025-12-15']] },
+    { name: 'Vantage Marketing Co', type: 'Marketing', services: 'Email campaign execution and audience segmentation', value: 275000, start: '2026-10-15', term: 12,
+      owner: 'Olivia Grant', dept: 'Marketing', contact: ['Leo Martins', 'Account Director', 'leo@vantage-mkt.example', '+1 646 555 0163'], hq: 'New York, US', loc: 'US, Canada',
+      ira: [1, ['customer_pii'], 3, 1, 2, 1, 1, 0, 0], fp: ['Kestrel Email Relay', 'Stratus Compute'], stage: 'Due Diligence', created: '2026-07-28', qStart: '2026-08-05',
+      signed: ['procurement'], progress: ['legal', 'dataprot'] },
+    { name: 'Ironclad Backup', type: 'Cloud Infrastructure', services: 'Immutable backup and disaster-recovery-as-a-service', value: 450000, start: '2023-11-01', term: 36,
+      owner: 'Ravi Menon', dept: 'Technology', contact: ['Nora Fields', 'Technical Account Manager', 'nfields@ironclad.example', '+1 512 555 0149'], hq: 'Austin, US', loc: 'US (Texas, Virginia)',
+      ira: [3, ['customer_pii', 'confidential'], 3, 2, 1, 0, 2, 2, 0], fp: ['Driftwood Data Centers'], stage: 'Onboarded', assessed: '2025-10-20', created: '2023-08-15',
+      gaps: [['r2', 'Partial', 'Closed', '2026-01-31']] },
+    { name: 'Pinecrest Staffing', type: 'Staffing', services: 'Contingent IT and operations contractors', value: 1100000, start: '2023-06-01', term: 36,
+      owner: 'Dana Whitfield', dept: 'Human Resources', contact: ['Sofia Reyes', 'Client Partner', 'sreyes@pinecrest.example', '+1 303 555 0177'], hq: 'Denver, US', loc: 'US',
+      ira: [1, ['employee_pii'], 1, 2, 1, 0, 0, 0, 1], fp: [], stage: 'Onboarded', assessed: '2024-12-01', created: '2023-03-30',
+      gaps: [['i4', 'Partial', 'In remediation', '2026-10-31']] },
+    { name: 'Orbit Travel Desk', type: 'Travel', services: 'Corporate travel booking and expense feed', value: 95000, start: '2024-11-01', term: 36,
+      owner: 'Mike Duran', dept: 'Finance', contact: ['Chris Doyle', 'Account Manager', 'cdoyle@orbit-travel.example', '+1 404 555 0110'], hq: 'Atlanta, US', loc: 'US',
+      ira: [0, ['employee_pii'], 1, 1, 1, 0, 0, 0, 0], fp: ['Stratus Compute'], stage: 'Onboarded', assessed: '2024-11-05', created: '2024-09-12', gaps: [] },
+    { name: 'Keystone Pay Gateway', type: 'Payments', services: 'Card payment gateway and tokenisation for e-commerce', value: 1750000, start: '2023-02-01', term: 48,
+      owner: 'Priya Desai', dept: 'Digital Channels', contact: ['Evan Morris', 'Partner Success Manager', 'emorris@keystonepay.example', '+1 646 555 0192'], hq: 'Charlotte, US', loc: 'US (North Carolina, Ohio)',
+      ira: [3, ['pci', 'customer_pii'], 3, 2, 2, 1, 2, 2, 0], fp: ['Parallax CDN', 'Stratus Compute'], stage: 'Onboarded', assessed: '2026-01-22', created: '2022-10-03',
+      gaps: [['v2', 'Partial', 'Closed', '2026-04-30'], ['f4', 'Partial', 'In remediation', '2026-12-15']] },
+    { name: 'Lumen Learning LMS', type: 'SaaS Application', services: 'Employee compliance-training platform', value: 120000, start: '2025-04-01', term: 36,
+      owner: 'Dana Whitfield', dept: 'Human Resources', contact: ['Ada Brennan', 'Customer Success Manager', 'ada@lumen-lms.example', '+1 801 555 0135'], hq: 'Salt Lake City, US', loc: 'US',
+      ira: [0, ['employee_pii'], 1, 1, 1, 1, 0, 0, 0], fp: ['Stratus Compute'], stage: 'Onboarded', assessed: '2025-04-10', created: '2025-02-03',
+      gaps: [['i1', 'Partial', 'Closed', '2025-06-30']] },
+    { name: 'Cobalt Security Ops', type: 'Security Services', services: 'Managed detection and response (MDR) with 24x7 SOC', value: 1320000, start: '2025-02-01', term: 36,
+      owner: 'Ravi Menon', dept: 'Information Security', contact: ['Mei Tanaka', 'Engagement Lead', 'mtanaka@cobaltsec.example', '+1 571 555 0108'], hq: 'Reston, US', loc: 'US (Virginia)',
+      ira: [3, ['confidential', 'credentials'], 3, 3, 1, 2, 1, 1, 0], fp: ['Ember Identity', 'Stratus Compute'], stage: 'Onboarded', assessed: '2026-02-28', created: '2024-11-11',
+      gaps: [['a3', 'Partial', 'Open', '2026-11-15']] },
+    { name: 'Fieldstone Couriers', type: 'Logistics', services: 'Secure document courier between branches', value: 60000, start: '2026-10-01', term: 12,
+      owner: 'Luis Ortega', dept: 'Branch Operations', contact: ['Gary Hughes', 'Owner', 'gary@fieldstone-courier.example', '+1 614 555 0166'], hq: 'Columbus, US', loc: 'n/a',
+      ira: null, fp: [], stage: 'Inherent Risk', created: '2026-09-15' },
+    { name: 'Atlas Translation Services', type: 'Professional Services', services: 'Translation of customer correspondence (ES, FR, ZH)', value: 85000, start: '2026-11-01', term: 24,
+      owner: 'Luis Ortega', dept: 'Customer Operations', contact: ['Marie Dubois', 'Business Development', 'marie.dubois@atlas-translate.example', '+33 1 55 50 01 20'], hq: 'Lyon, France', loc: 'EU (France)',
+      ira: null, fp: [], stage: 'Intake', created: '2026-09-09', request: '2026-09-10' },
+    { name: 'Summit Market Data', type: 'Data Provider', services: 'Real-time market and reference data feeds', value: 930000, start: '2026-07-01', term: 36,
+      owner: 'Priya Desai', dept: 'Trading Technology', contact: ['Owen Price', 'Account Executive', 'oprice@summitdata.example', '+1 312 555 0181'], hq: 'Chicago, US', loc: 'US',
+      ira: [2, ['confidential'], 0, 2, 1, 0, 1, 2, 0], fp: ['Parallax CDN'], stage: 'Due Diligence', created: '2026-06-02', qStart: '2026-06-10',
+      signed: ['procurement', 'legal', 'compliance', 'dataprot', 'iam', 'secops', 'resiliency', 'fourth'], progress: ['itarch'] },
+    { name: 'Nova DocSign', type: 'SaaS Application', services: 'Electronic signature for customer agreements', value: 150000, start: '2025-09-01', term: 36,
+      owner: 'Karen Holt', dept: 'Legal', contact: ['Tariq Hassan', 'Customer Success Manager', 'tariq@novadocsign.example', '+1 650 555 0118'], hq: 'Palo Alto, US', loc: 'US, EU (Dublin)',
+      ira: [2, ['customer_pii'], 2, 1, 2, 0, 2, 1, 0], fp: ['Stratus Compute', 'Kestrel Email Relay'], stage: 'Onboarded', assessed: '2025-09-05', created: '2025-07-01',
+      gaps: [['d3', 'Partial', 'Closed', '2025-12-31']],
+      override: ['Medium', 'Data scope confirmed narrower than assessed', 'Only signer name and email are shared; agreement bodies are redacted before upload, so volume of sensitive data is lower than scored.'] }
+  ];
+
+  var INCIDENTS = [
+    { id: 'INC-2026-015', party: 'Harbor Print & Mail', title: 'Ransomware on print-production network; statement runs paused', date: '2026-09-18', severity: 'Critical', source: 'Vendor notification', status: 'Open' },
+    { id: 'INC-2026-014', party: 'Kestrel Email Relay', title: 'Credential-stuffing attack exposed customer mailing lists', date: '2026-09-12', severity: 'High', source: 'Threat-intel feed', status: 'Open' },
+    { id: 'INC-2026-011', party: 'Tessera LLM API', title: 'Prompt logs retained beyond stated retention window', date: '2026-08-30', severity: 'Medium', source: 'Public disclosure', status: 'Open' },
+    { id: 'INC-2026-006', party: 'Ember Identity', title: 'Session-token leak in admin console (patched)', date: '2026-05-14', severity: 'High', source: 'Public disclosure', status: 'Closed' }
+  ];
+
+  function iraFromArr(a) {
+    if (!a) return null;
+    return { impact: a[0], data: a[1], volume: a[2], access: a[3], fourth: a[4], ai: a[5], regulatory: a[6], subst: a[7], concerns: a[8] };
+  }
+
+  function buildVendor(s, i) {
+    var id = 'TP-' + String(i + 1).padStart(4, '0');
+    var v = {
+      id: id, name: s.name, serviceType: s.type, services: s.services, contractValue: s.value,
+      contractStart: s.start, termMonths: s.term, contractEnd: addMonths(s.start, s.term), autoRenew: s.term >= 36,
+      businessOwner: s.owner, department: s.dept,
+      contact: { name: s.contact[0], title: s.contact[1], email: s.contact[2], phone: s.contact[3] },
+      website: 'https://' + s.contact[2].split('@')[1], hq: s.hq, dataLocations: s.loc,
+      description: s.services + '.', paymentTerms: 'Net 45', sample: true,
+      vendorRequest: s.request ? { status: 'Sent', sentAt: s.request, fields: ['Registered legal entity', 'Security certifications', 'Subcontractors', 'Data hosting locations'] } : { status: 'Not requested' },
+      stage: s.stage, reviewType: 'Initial', fourthParties: s.fp.slice(), createdAt: s.created, updatedAt: s.assessed || s.qStart || s.created,
+      ira: null, tier: null, q: null, findings: [], decision: null, lastAssessed: s.assessed || null, nextReview: null, history: []
+    };
+    v.history.push({ at: s.created, by: s.owner, text: 'Intake submitted' });
+    if (s.request) v.history.push({ at: s.request, by: s.owner, text: 'Intake details requested from ' + s.contact[0] });
+    var ira = iraFromArr(s.ira);
+    if (ira) {
+      var sc = scoreIRA(ira);
+      var iraAt = addDays(s.created, 5);
+      v.ira = { answers: ira, pct: sc.pct, computedTier: sc.tier, override: null, by: REVIEWERS.Cybersecurity, at: iraAt, notes: '' };
+      v.tier = sc.tier;
+      if (s.override) {
+        v.ira.override = { tier: s.override[0], reason: s.override[1], justification: s.override[2], by: 'Sam Carter', at: iraAt };
+        v.tier = s.override[0];
+      }
+      v.history.push({ at: iraAt, by: REVIEWERS.Cybersecurity, text: 'Inherent risk scored ' + sc.tier + ' (' + sc.pct + ')' + (s.override ? '; overridden to ' + v.tier : '') });
+      var secs = sectionsFor(v.tier, ira);
+      var qStart = s.qStart || addDays(s.created, 7);
+      var q = { depth: DEPTH[v.tier], tier: v.tier, startedAt: qStart, answers: {}, sections: {} };
+      var gapMap = {};
+      (s.gaps || []).forEach(function (gp) { gapMap[gp[0]] = gp; });
+      var done = s.stage === 'Onboarded' || s.stage === 'Remediation';
+      secs.forEach(function (sec, si) {
+        var st = done || (s.signed || []).indexOf(sec.id) >= 0 ? 'Signed off' : (s.progress || []).indexOf(sec.id) >= 0 ? 'In progress' : 'Not started';
+        var signedAt = done ? addDays(s.assessed, -(secs.length - si)) : addDays(qStart, 4 + si * 3);
+        q.sections[sec.id] = st === 'Signed off' ? { status: st, by: REVIEWERS[sec.team], at: signedAt, comment: '' } : { status: st };
+        sec.qs.forEach(function (qq, qi) {
+          if (st === 'Not started') return;
+          if (st === 'In progress' && qi >= Math.ceil(sec.qs.length / 2)) return;
+          var gp = gapMap[qq.id];
+          q.answers[qq.id] = gp ? { v: gp[1], note: gp[1] === 'No' ? 'Control not in place at time of review.' : 'Partially implemented; evidence incomplete.' } : { v: 'Yes', note: '' };
+        });
+      });
+      v.q = q;
+      (s.gaps || []).forEach(function (gp, gi) {
+        var qq = QINDEX[gp[0]];
+        v.findings.push({ id: id + '-F' + (gi + 1), qid: qq.id, title: qq.gap, severity: gapSeverity(qq, gp[1]), status: gp[2],
+          owner: s.contact[0] + ' (vendor)', due: gp[3], created: s.assessed || qStart, section: qq.section, note: '' });
+      });
+      if (done) {
+        v.decision = { outcome: s.decision || (v.findings.some(function (f) { return f.status !== 'Closed'; }) ? 'Approved with conditions' : 'Approved'), by: REVIEWERS.Cybersecurity, at: s.assessed };
+        v.nextReview = nextReview(v.tier, s.assessed);
+        v.history.push({ at: s.assessed, by: REVIEWERS.Cybersecurity, text: 'Assessment closed — ' + v.decision.outcome });
+      }
+    }
+    return v;
+  }
+
+  function buildSeed() {
+    return { vendors: SPECS.map(buildVendor), incidents: INCIDENTS.map(function (x) { return Object.assign({}, x); }) };
+  }
+
+  var api = {
+    TODAY: TODAY, TEAMS: TEAMS, STAGES: STAGES, OPEN_STAGES: OPEN_STAGES, SERVICE_TYPES: SERVICE_TYPES, CADENCE_MONTHS: CADENCE_MONTHS,
+    DATA_TYPES: DATA_TYPES, IRA_FACTORS: IRA_FACTORS, OVERRIDE_REASONS: OVERRIDE_REASONS, SECTIONS: SECTIONS, QINDEX: QINDEX, DEPTH: DEPTH,
+    scoreIRA: scoreIRA, sectionsFor: sectionsFor, isGap: isGap, gapSeverity: gapSeverity,
+    addMonths: addMonths, addDays: addDays, daysBetween: daysBetween, nextReview: nextReview, buildSeed: buildSeed
+  };
+  g.TPRM = api;
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+(function(){
+'use strict';
+var T = window.TPRM;
+function pad(n){return String(n).padStart(2,'0')}
+var _d = new Date();
+var TODAY = _d.getFullYear()+'-'+pad(_d.getMonth()+1)+'-'+pad(_d.getDate());
+var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var SEV_RANK = {Critical:4, High:3, Medium:2, Low:1};
+var OPEN_F = ['Open','In remediation'];
+var F_STATUSES = ['Open','In remediation','Risk accepted','Closed'];
+var REQUESTABLE = ['Registered legal entity and address','Data hosting locations','Subcontractors / fourth parties','Security certifications (SOC 2, ISO 27001)','Cyber-insurance coverage','Security incident contact','Business-continuity contact'];
+var DASH_TEAMS = ['Business owner','Vendor','Cyber Governance','Procurement','Legal','Compliance','Cybersecurity','IT Architecture','Enterprise Architecture'];
+
+var S = {
+  vendors:{}, incidents:{}, acks:{}, mode:'loading', canWrite:true,
+  view:'home', p:{}, f:{q:'',type:'',tier:'',stage:'',sev:'',team:'',review:''}, sort:{k:'name',dir:1},
+  afilter:'all', showAck:false, draft:null, me:''
+};
+try{ S.me = localStorage.getItem('tprm-me') || '' }catch(e){}
+if(!S.me) S.me = 'Cyber Governance';
+
+/* ---------- helpers ---------- */
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fd(iso){ if(!iso) return '—'; var p=iso.split('-'); return (+p[2])+' '+MON[+p[1]-1]+' '+p[0]; }
+function money(n){ n=+n||0; if(n>=1e6) return '$'+(n/1e6).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'K'; return '$'+n; }
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function days(a,b){return T.daysBetween(a,b)}
+function plural(n,w){return n+' '+w+(n===1?'':'s')}
+function list(){ return Object.keys(S.vendors).map(function(k){return S.vendors[k]}).sort(function(a,b){return a.id<b.id?-1:1}) }
+function openF(v){ return (v.findings||[]).filter(function(f){return OPEN_F.indexOf(f.status)>=0}) }
+function secs(v){ return v.q ? T.sectionsFor(v.q.tier||v.tier, v.ira&&v.ira.answers) : [] }
+function secSt(v,id){ return (v.q&&v.q.sections&&v.q.sections[id]&&v.q.sections[id].status)||'Not started' }
+function isAssessing(v){ return T.OPEN_STAGES.indexOf(v.stage)>=0 }
+function pendingTeams(v){
+  if(v.stage==='Intake') return v.vendorRequest&&v.vendorRequest.status==='Sent' ? ['Vendor'] : ['Business owner'];
+  if(v.stage==='Inherent Risk') return ['Cyber Governance'];
+  if(v.stage==='Final Review') return ['Cyber Governance'];
+  if(v.stage==='Remediation') return ['Vendor'];
+  if(v.stage==='Due Diligence'){
+    var t=[]; secs(v).forEach(function(s){ if(secSt(v,s.id)!=='Signed off' && t.indexOf(s.team)<0) t.push(s.team) }); return t;
+  }
+  return [];
+}
+function qProgress(v){
+  var ss=secs(v), ok=0, ip=0, ans=0, tot=0;
+  ss.forEach(function(s){ var st=secSt(v,s.id); if(st==='Signed off') ok++; else if(st==='In progress') ip++;
+    s.qs.forEach(function(q){ tot++; if(v.q.answers[q.id]&&v.q.answers[q.id].v) ans++; }); });
+  return {secs:ss.length, ok:ok, ip:ip, ans:ans, tot:tot};
+}
+function daysOpen(v){ return days((v.q&&v.stage!=='Intake'&&v.stage!=='Inherent Risk'&&v.q.startedAt)||v.createdAt, TODAY) }
+function reviewState(v){
+  if(!v.nextReview || (v.stage!=='Onboarded' && v.stage!=='Remediation')) return null;
+  var d=days(TODAY, v.nextReview);
+  return {d:d, overdue:d<0, soon:d>=0&&d<=90};
+}
+function stageClass(st){ return T.OPEN_STAGES.indexOf(st)>=0 ? 'st-assess' : 'st-'+st.replace(/\s/g,'') }
+function tierPill(t){ return t ? '<span class="pill t-'+t+'">'+t+'</span>' : '<span class="pill">Unscored</span>' }
+function stagePill(st){ return '<span class="pill '+stageClass(st)+'">'+esc(st)+'</span>' }
+function sevPill(s){ return '<span class="pill s-'+s+'">'+s+'</span>' }
+function nextVendorId(){ var m=0; list().forEach(function(v){ var n=parseInt(v.id.slice(3),10); if(n>m) m=n; }); return 'TP-'+String(m+1).padStart(4,'0') }
+function nextFindingId(v){ var m=0; (v.findings||[]).forEach(function(f){ var n=parseInt(f.id.split('-F')[1],10); if(n>m) m=n; }); return v.id+'-F'+(m+1) }
+function log(v,text){ v.history=v.history||[]; v.history.push({at:TODAY, by:S.me, text:text}); if(v.history.length>60) v.history=v.history.slice(-60) }
+function incidentMatches(inc){
+  var p=(inc.party||'').trim().toLowerCase(); if(!p) return [];
+  return list().filter(function(v){
+    if(v.stage==='Offboarded'||v.stage==='Rejected') return false;
+    return v.name.toLowerCase()===p || (v.fourthParties||[]).some(function(x){return x.toLowerCase()===p});
+  }).map(function(v){ return {v:v, direct:v.name.toLowerCase()===p} });
+}
+
+var ICON = {
+  home:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9.5 10 4l7 5.5V16a1 1 0 0 1-1 1h-3.5v-4.5h-5V17H4a1 1 0 0 1-1-1z"/></svg>',
+  plus:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="14" height="14" rx="3"/><path d="M10 6.5v7M6.5 10h7"/></svg>',
+  list:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 5h10M7 10h10M7 15h10"/><circle cx="3.5" cy="5" r=".9" fill="currentColor"/><circle cx="3.5" cy="10" r=".9" fill="currentColor"/><circle cx="3.5" cy="15" r=".9" fill="currentColor"/></svg>',
+  chart:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 17h14"/><rect x="4.5" y="9" width="3" height="6" rx=".5"/><rect x="8.5" y="5" width="3" height="10" rx=".5"/><rect x="12.5" y="11" width="3" height="4" rx=".5"/></svg>',
+  bell:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 13.5V9a5 5 0 0 1 10 0v4.5l1.5 2h-13z"/><path d="M8.3 17.2a2 2 0 0 0 3.4 0"/></svg>',
+  search:'<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg>'
+};
+
+/* ---------- alerts ---------- */
+function computeAlerts(){
+  var out=[];
+  list().forEach(function(v){
+    var r=reviewState(v);
+    if(r && (r.overdue||r.soon)){
+      out.push({id:'re-'+v.id+'-'+v.nextReview, type:'reassess', sev:r.overdue?'High':r.d<=30?'Medium':'Low', v:v, date:v.nextReview,
+        title: r.overdue ? 'Re-assessment overdue by '+plural(-r.d,'day') : 'Re-assessment due in '+plural(r.d,'day'),
+        detail: v.tier+' risk — '+(v.tier==='High'?'annual':'every two years')+' cadence. Last assessed '+fd(v.lastAssessed)+'.',
+        acts:[['startPeriodic','Start re-assessment',1]]});
+    }
+    if(isAssessing(v)){
+      var d=daysOpen(v), who=pendingTeams(v);
+      var detail = v.stage==='Intake' && v.vendorRequest&&v.vendorRequest.status==='Sent' ? 'Waiting on '+v.contact.name+' (vendor) since '+fd(v.vendorRequest.sentAt)+'.' : 'Waiting on: '+who.join(', ')+'.';
+      out.push({id:'oa-'+v.id+'-'+v.stage+'-'+((v.q&&v.q.startedAt)||v.createdAt), type:'open', sev:d>45?'High':d>30?'Medium':'Low', v:v, date:(v.q&&v.q.startedAt)||v.createdAt,
+        title:(v.reviewType&&v.reviewType!=='Initial'?v.reviewType+' review':'Assessment')+' open '+plural(d,'day')+' — '+v.stage, detail:detail,
+        acts:[['openVendor','Open assessment',1]]});
+    }
+    openF(v).forEach(function(f){
+      if(f.due && f.due<TODAY) out.push({id:'fd-'+f.id+'-'+f.due, type:'finding', sev:f.severity, v:v, date:f.due,
+        title:'Remediation overdue: '+f.title, detail:f.severity+' finding, due '+fd(f.due)+' ('+plural(days(f.due,TODAY),'day')+' late). Owner: '+(f.owner||'unassigned')+'.',
+        acts:[['openFindings','View finding',1]]});
+    });
+  });
+  Object.keys(S.incidents).forEach(function(k){
+    var inc=S.incidents[k]; if(inc.status==='Closed') return;
+    incidentMatches(inc).forEach(function(m){
+      var v=m.v, st='open';
+      if(v.oob && v.oob.incident===inc.id) st = v.oob.closedAt ? 'done' : 'review';
+      out.push({id:'inc-'+inc.id+'-'+v.id, type:'incident', sev:inc.severity, v:v, date:inc.date, inc:inc, state:st,
+        title:(st==='review'?'Out-of-band review in progress — ':'Out-of-band review required — ')+inc.party,
+        detail:(m.direct?'Incident at the vendor: ':'Fourth-party incident ('+inc.party+' supports '+v.name+'): ')+inc.title+'. '+inc.id+' · '+inc.source+'.',
+        acts: st==='open' ? [['startOOB','Start out-of-band review',1]] : [['openVendor','Open review',0]]});
+    });
+  });
+  out.forEach(function(a){
+    if(!a.state) a.state='open';
+    if(a.state==='open' && S.acks[a.id]) a.state='ack';
+    a.active = a.state==='open';
+  });
+  out.sort(function(a,b){ return (b.active-a.active) || (SEV_RANK[b.sev]-SEV_RANK[a.sev]) || (a.date<b.date?-1:1) });
+  return out;
+}
+
+/* ---------- data layer ---------- */
+var db=null, wq={};
+var LS_KEY='argus-gate-data';
+function saveLocal(){
+  if(S.mode!=='demo') return;
+  clearTimeout(saveLocal._t);
+  saveLocal._t=setTimeout(function(){
+    try{ localStorage.setItem(LS_KEY, JSON.stringify({v:1, vendors:list(), incidents:Object.keys(S.incidents).map(function(k){return S.incidents[k]}), acks:S.acks})); S.localOk=true }
+    catch(e){ if(S.localOk!==false){ S.localOk=false; renderModeNote() } }
+  },200);
+}
+function persist(v){
+  v.updatedAt=TODAY; S.vendors[v.id]=v;
+  if(!db){ saveLocal(); return; }
+  var e = wq[v.id] || (wq[v.id]={busy:false,next:null});
+  e.next=clone(v); pump(v.id);
+}
+function pump(id){
+  var e=wq[id]; if(!e||e.busy||!e.next) return;
+  e.busy=true; var body=e.next; e.next=null;
+  db.collection('vendors').doc(id).set(body).then(function(){}, dbErr).then(function(){ e.busy=false; if(e.next) pump(id); else delete wq[id]; });
+}
+function saveIncident(inc){ S.incidents[inc.id]=inc; if(db) db.collection('incidents').doc(inc.id).set(clone(inc)).catch(dbErr); else saveLocal() }
+function saveAcks(){ if(db) db.doc('meta/alerts').set({acks:clone(S.acks)}).catch(dbErr); else saveLocal() }
+function dbErr(err){
+  var c=err&&err.code;
+  if(c==='invalid_argument'){ S.canWrite=false; toast('You have view-only access to this register — changes were not saved.'); }
+  else if(c==='quota_exceeded') toast('The register is full — offboard or remove vendors before adding more.');
+  else toast('Could not save just now. Try again in a moment.');
+  renderModeNote();
+}
+function guardWrite(){ if(!S.canWrite){ toast('You have view-only access to this register.'); return false } return true }
+
+function loadDemo(){
+  var saved=null;
+  try{ saved=JSON.parse(localStorage.getItem(LS_KEY)||'null'); S.localOk=true }catch(e){ S.localOk=false }
+  var data = saved && saved.vendors && saved.vendors.length ? saved : T.buildSeed();
+  S.mode='demo'; S.vendors={}; S.incidents={}; S.acks=(saved&&saved.acks)||{};
+  data.vendors.forEach(function(v){S.vendors[v.id]=v});
+  (data.incidents||[]).forEach(function(i){S.incidents[i.id]=i});
+  renderModeNote(); route(); render();
+}
+
+function initData(){
+  if(!window.claude || typeof window.claude.use!=='function'){ loadDemo(); return; }
+  window.claude.use('db').then(function(d){
+    if(!d){ loadDemo(); return; }
+    db=d; S.mode='db'; renderModeNote();
+    var gotV=false, gotI=false, seeding=false;
+    function maybeSeed(snapV){
+      if(seeding||!gotV||!gotI||snapV.metadata.fromCache) return;
+      if(Object.keys(S.vendors).length||Object.keys(S.incidents).length) return;
+      seeding=true; seedStore();
+    }
+    var lastV=null;
+    db.collection('vendors').onSnapshot(function(snap){
+      gotV=true; lastV=snap; var seen={};
+      snap.docs.forEach(function(doc){ seen[doc.id]=1; if(wq[doc.id]) return; S.vendors[doc.id]=clone(doc.data()); });
+      Object.keys(S.vendors).forEach(function(k){ if(!seen[k]&&!wq[k]) delete S.vendors[k] });
+      if(S.mode==='db' && S.view==='loading') route();
+      maybeSeed(snap); scheduleRender();
+    }, function(){ toast('Lost connection to the vendor register. Reload to reconnect.') });
+    db.collection('incidents').onSnapshot(function(snap){
+      gotI=true; S.incidents={}; snap.docs.forEach(function(doc){ S.incidents[doc.id]=clone(doc.data()) });
+      if(lastV) maybeSeed(lastV); scheduleRender();
+    }, function(){});
+    db.doc('meta/alerts').onSnapshot(function(doc){ S.acks = doc.exists ? clone(doc.data().acks||{}) : {}; scheduleRender(); }, function(){});
+    route(); render();
+  }, function(){ loadDemo() });
+}
+function seedStore(){
+  var ref=db.doc('meta/seed');
+  ref.acquire({holder:'seed-'+Math.random().toString(36).slice(2), ttlMs:60000}).then(function(r){
+    if(!r.acquired) return;
+    return ref.get().then(function(s){
+      if(s.exists && s.data().seededAt) return;
+      var seed=T.buildSeed();
+      seed.vendors.forEach(function(v){ S.vendors[v.id]=v });
+      seed.incidents.forEach(function(i){ S.incidents[i.id]=i });
+      render();
+      var ops = seed.vendors.map(function(v){ return db.collection('vendors').doc(v.id).set(v) })
+        .concat(seed.incidents.map(function(i){ return db.collection('incidents').doc(i.id).set(i) }));
+      return Promise.all(ops).then(function(){ return ref.set({seededAt:TODAY}) }).then(function(){ toast('Loaded 20 sample vendors into the register.') });
+    });
+  }).catch(dbErr);
+}
+
+var pendingRender=false;
+function scheduleRender(){
+  var a=document.activeElement;
+  if(a && $('#main').contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.type!=='radio' && a.type!=='checkbox'){ pendingRender=true; return; }
+  render();
+}
+document.addEventListener('focusout', function(){ if(pendingRender){ setTimeout(function(){ if(pendingRender){ pendingRender=false; scheduleRender(); } },0) } });
+
+function renderModeNote(){
+  var n=$('#modeNote');
+  if(S.mode==='demo') n.innerHTML = (S.localOk===false ? '<b>Not saving.</b> This browser is blocking storage, so changes last until you reload.' : 'Saved in this browser only — nothing leaves your machine.')+
+    ' <button class="link" data-act="resetDemo" style="font-size:inherit">Reset sample data</button>';
+  else if(S.mode==='db') n.innerHTML = S.canWrite ? 'Changes save to the shared register for everyone with access.' : '<b>View only.</b> You can browse but not change the register.';
+  else n.textContent='Connecting…';
+}
+
+/* ---------- routing ---------- */
+function go(view, p){
+  S.view=view; S.p=p||{}; S.draft = view==='new' ? (S.draft||null) : S.draft;
+  var tok = view==='vendor' ? S.p.id : view;
+  try{ history.replaceState(null,'','#'+tok) }catch(e){}
+  render(); window.scrollTo(0,0);
+}
+function route(){
+  var h=(location.hash||'').slice(1);
+  if(/^TP-\d{4}$/.test(h)){ if(S.vendors[h]){ S.view='vendor'; S.p={id:h}; } }
+  else if(['new','inventory','dashboard','alerts','home'].indexOf(h)>=0){ S.view=h; }
+}
+
+/* ---------- render ---------- */
+function renderNav(al){
+  var n=al.filter(function(a){return a.active}).length;
+  var items=[['home','Home',ICON.home],['new','Add vendor',ICON.plus],['inventory','Vendor inventory',ICON.list],['dashboard','Dashboard',ICON.chart],['alerts','Alerts',ICON.bell]];
+  var cur = S.view==='vendor' ? 'inventory' : S.view;
+  $('#nav').innerHTML = items.map(function(it){
+    return '<button data-act="nav" data-view="'+it[0]+'"'+(cur===it[0]?' aria-current="page"':'')+'>'+it[2]+'<span>'+it[1]+'</span>'+(it[0]==='alerts'&&n?'<span class="count">'+n+'</span>':'')+'</button>';
+  }).join('');
+}
+function render(){
+  var al=computeAlerts();
+  renderNav(al);
+  var m=$('#main'), html='';
+  if(S.mode==='loading'){ m.innerHTML='<div class="loading">Loading the vendor register…</div>'; return; }
+  if(S.view==='home') html=vHome(al);
+  else if(S.view==='new') html=vNew();
+  else if(S.view==='inventory') html=vInventory();
+  else if(S.view==='vendor') html=vVendor();
+  else if(S.view==='dashboard') html=vDashboard(al);
+  else if(S.view==='alerts') html=vAlerts(al);
+  m.innerHTML=html;
+  if(S.view==='vendor' && S.p.tab==='risk') updateScore();
+}
+
+/* ---------- Home ---------- */
+function vHome(al){
+  var vs=list(), act=al.filter(function(a){return a.active});
+  var tc={High:0,Medium:0,Low:0}; vs.forEach(function(v){ if(v.tier) tc[v.tier]++ });
+  var open=vs.filter(isAssessing);
+  function opt(view,ico,title,desc,meta,cls){
+    return '<button class="opt '+(cls||'')+'" data-act="nav" data-view="'+view+'"><span class="ico">'+ico+'</span><h2>'+title+'</h2><p>'+desc+'</p><span class="meta">'+meta+'</span></button>';
+  }
+  var h='<header class="page-h"><div><p class="eyebrow">Third-party risk management</p><h1 style="margin-top:6px">What would you like to do?</h1>'+
+    '<p class="lede">Onboard vendors through intake, inherent-risk scoring and tiered due diligence, then keep them on a re-assessment cycle.</p></div></header>';
+  h+='<div class="options">'+
+    opt('new',ICON.plus,'Add a new vendor','Capture intake details, score inherent risk and launch a questionnaire sized to the risk tier.','Intake → Risk tier → Due diligence')+
+    opt('inventory',ICON.list,'Review existing vendors','Search the inventory by vendor or service type and open any assessment to review or edit.',plural(vs.length,'vendor')+' in the inventory')+
+    opt('dashboard',ICON.chart,'Risk dashboard','Portfolio risk picture, open issues and which teams hold open assessments.',tc.High+' High · '+tc.Medium+' Medium · '+tc.Low+' Low')+
+    opt('alerts',ICON.bell,'Open alerts','Re-assessments coming due, breaches at vendors or their fourth parties, and stalled assessments.','<b>'+act.length+'</b> need action',act.length?'alert':'')+
+  '</div>';
+  h+='<div class="grid g2"><section class="card"><div class="card-h"><h2>Needs attention</h2><button class="btn ghost sm" data-act="nav" data-view="alerts">All alerts</button></div>'+
+    (act.length? '<div class="stack" style="gap:0">'+act.slice(0,5).map(miniAlert).join('')+'</div>' : '<p class="muted">No open alerts.</p>')+'</section>';
+  h+='<section class="card"><div class="card-h"><h2>Assessments in progress</h2><span class="sub">'+plural(open.length,'vendor')+'</span></div>'+
+    (open.length? '<div class="stack" style="gap:0">'+open.sort(function(a,b){return daysOpen(b)-daysOpen(a)}).slice(0,6).map(function(v){
+      return '<div class="row" style="padding:9px 0;border-top:1px solid var(--line);flex-wrap:nowrap"><div style="min-width:0;flex:1"><button class="vname" data-act="openVendor" data-id="'+v.id+'">'+esc(v.name)+'</button>'+
+      '<div class="muted" style="font-size:12.5px">'+esc(v.stage)+' · with '+esc(pendingTeams(v).join(', '))+'</div></div>'+tierPill(v.tier)+'<span class="mono muted" style="width:44px;text-align:right">'+daysOpen(v)+'d</span></div>';
+    }).join('')+'</div>' : '<p class="muted">Nothing in flight.</p>')+'</section></div>';
+  return h;
+}
+function miniAlert(a){
+  return '<div class="row" style="padding:9px 0;border-top:1px solid var(--line);flex-wrap:nowrap;align-items:flex-start">'+sevPill(a.sev)+
+    '<div style="min-width:0;flex:1"><b style="font-weight:600">'+esc(a.title)+'</b><div class="muted" style="font-size:12.5px"><button class="link" data-act="openVendor" data-id="'+a.v.id+'">'+esc(a.v.name)+'</button> · '+fd(a.date)+'</div></div></div>';
+}
+
+/* ---------- Intake ---------- */
+function blankVendor(){
+  return {name:'',serviceType:'',services:'',description:'',contractValue:'',contractStart:'',termMonths:'',autoRenew:false,paymentTerms:'Net 45',costCenter:'',
+    businessOwner:'',department:'',contact:{name:'',title:'',email:'',phone:''},securityContact:'',website:'',hq:'',dataLocations:'',fourthParties:[],certifications:'',insurance:''};
+}
+function fld(name,label,val,o){
+  o=o||{}; var id='f_'+name.replace(/\./g,'_'), req=o.req?' <span class="req" aria-hidden="true">*</span>':'';
+  var ctl;
+  if(o.type==='textarea') ctl='<textarea id="'+id+'" name="'+name+'" rows="'+(o.rows||3)+'"'+(o.req?' required':'')+'>'+esc(val)+'</textarea>';
+  else if(o.type==='select') ctl='<select id="'+id+'" name="'+name+'"'+(o.req?' required':'')+'><option value="">Select…</option>'+o.opts.map(function(x){return '<option'+(x===val?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>';
+  else ctl='<input id="'+id+'" name="'+name+'" type="'+(o.type||'text')+'" value="'+esc(val)+'"'+(o.req?' required':'')+(o.ph?' placeholder="'+esc(o.ph)+'"':'')+(o.min!=null?' min="'+o.min+'"':'')+'>';
+  return '<div class="f'+(o.wide?' wide':'')+'"><label for="'+id+'">'+label+req+'</label>'+ctl+(o.hint?'<span class="hint">'+o.hint+'</span>':'')+'</div>';
+}
+function intakeForm(v, mode){
+  var c=v.contact||{};
+  var sent = v.vendorRequest && v.vendorRequest.status==='Sent';
+  var h='<form id="intakeForm" data-mode="'+mode+'" novalidate><div id="intakeErr"></div>';
+  if(sent) h+='<div class="note warn" style="margin-bottom:14px">Details requested from '+esc(c.name)+' on '+fd(v.vendorRequest.sentAt)+': '+esc((v.vendorRequest.fields||[]).join(', '))+'. Enter their answers below when they reply, then mark the response received.</div>';
+  h+='<div class="form-sec"><div><h3>Vendor &amp; service</h3><p>Who the vendor is and what they will do for us.</p></div><div class="fields">'+
+    fld('name','Vendor legal name',v.name,{req:1})+fld('serviceType','Service type',v.serviceType,{req:1,type:'select',opts:T.SERVICE_TYPES})+
+    fld('services','Services provided',v.services,{req:1,wide:1,type:'textarea',rows:2})+
+    fld('description','Business purpose of the engagement',v.description,{wide:1,type:'textarea',rows:2,hint:'Why we need this vendor and which business process it supports.'})+
+    fld('website','Website',v.website,{type:'url',ph:'https://'})+fld('hq','Headquarters',v.hq,{ph:'City, country'})+'</div></div>';
+  h+='<div class="form-sec"><div><h3>Commercial terms</h3><p>Used for spend exposure and contract-renewal tracking.</p></div><div class="fields">'+
+    fld('contractValue','Annual contract value (USD)',v.contractValue,{req:1,type:'number',min:0})+fld('termMonths','Contract duration (months)',v.termMonths,{req:1,type:'number',min:1})+
+    fld('contractStart','Contract start date',v.contractStart,{req:1,type:'date'})+fld('paymentTerms','Payment terms',v.paymentTerms)+
+    fld('costCenter','Cost centre / PO',v.costCenter)+
+    '<div class="f" style="justify-content:flex-end"><label class="check"><input type="checkbox" name="autoRenew"'+(v.autoRenew?' checked':'')+'> Contract auto-renews</label></div></div></div>';
+  h+='<div class="form-sec"><div><h3>Ownership &amp; contacts</h3><p>The internal owner accountable for the relationship, and the vendor’s contacts.</p></div><div class="fields">'+
+    fld('businessOwner','Business owner',v.businessOwner,{req:1})+fld('department','Department',v.department,{req:1})+
+    fld('contact.name','Vendor primary contact',c.name,{req:1})+fld('contact.title','Contact title',c.title)+
+    fld('contact.email','Contact email',c.email,{req:1,type:'email'})+fld('contact.phone','Contact phone',c.phone,{type:'tel'})+
+    fld('securityContact','Vendor security / incident contact',v.securityContact,{wide:1,ph:'Name and email for breach notifications'})+'</div></div>';
+  h+='<div class="form-sec"><div><h3>Data, hosting &amp; subcontractors</h3><p>The vendor can complete these — use <i>Request details from vendor</i>.</p></div><div class="fields">'+
+    fld('dataLocations','Data hosting locations',v.dataLocations,{ph:'e.g. US (Virginia), EU (Frankfurt)'})+fld('certifications','Security certifications',v.certifications,{ph:'SOC 2 Type II, ISO 27001…'})+
+    fld('fourthParties','Subcontractors / fourth parties',(v.fourthParties||[]).join(', '),{wide:1,hint:'Comma-separated. Incidents at these companies raise out-of-band review alerts.'})+
+    fld('insurance','Cyber-insurance coverage',v.insurance,{ph:'e.g. $10M cyber liability'})+'</div></div>';
+  h+='<div class="form-actions">';
+  if(mode==='new'){
+    h+='<button type="button" class="btn" data-act="requestVendor">Request details from vendor</button><button type="button" class="btn primary" data-act="submitIntake">Submit intake</button>';
+  } else {
+    if(sent) h+='<button type="button" class="btn" data-act="vendorResponded">Mark vendor response received</button>';
+    else if(v.stage==='Intake') h+='<button type="button" class="btn" data-act="requestVendor">Request details from vendor</button>';
+    h+= v.stage==='Intake' ? '<button type="button" class="btn primary" data-act="submitIntake">Submit intake</button>' : '<button type="button" class="btn primary" data-act="saveIntake">Save changes</button>';
+  }
+  return h+'</div></form>';
+}
+function readIntake(){
+  var f=$('#intakeForm'), o=blankVendor(), bad=[];
+  ['name','serviceType','services','description','contractValue','contractStart','termMonths','paymentTerms','costCenter','businessOwner','department','securityContact','website','hq','dataLocations','certifications','insurance'].forEach(function(k){ o[k]=f.elements[k].value.trim() });
+  ['name','title','email','phone'].forEach(function(k){ o.contact[k]=f.elements['contact.'+k].value.trim() });
+  o.autoRenew=f.elements.autoRenew.checked;
+  o.fourthParties=f.elements.fourthParties.value.split(',').map(function(s){return s.trim()}).filter(Boolean);
+  o.contractValue = o.contractValue===''?'':+o.contractValue; o.termMonths=o.termMonths===''?'':+o.termMonths;
+  return o;
+}
+function validateIntake(o, minimal){
+  var need = minimal ? [['name','Vendor legal name'],['contact.name','Vendor primary contact'],['contact.email','Contact email']] :
+    [['name','Vendor legal name'],['serviceType','Service type'],['services','Services provided'],['contractValue','Annual contract value'],['termMonths','Contract duration'],['contractStart','Contract start date'],['businessOwner','Business owner'],['department','Department'],['contact.name','Vendor primary contact'],['contact.email','Contact email']];
+  var f=$('#intakeForm'), miss=[];
+  Array.prototype.forEach.call(f.querySelectorAll('[aria-invalid]'),function(el){el.removeAttribute('aria-invalid')});
+  need.forEach(function(n){
+    var val = n[0].indexOf('contact.')===0 ? o.contact[n[0].slice(8)] : o[n[0]];
+    var ok = val!=='' && val!=null;
+    if(ok && n[0]==='contact.email') ok=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val);
+    if(!ok){ miss.push(n[1]); f.elements[n[0]].setAttribute('aria-invalid','true'); }
+  });
+  var dup = list().some(function(v){ return v.name.toLowerCase()===o.name.toLowerCase() && (!S.p.id || v.id!==S.p.id) });
+  var box=$('#intakeErr');
+  if(miss.length){ box.innerHTML='<div class="errbox" style="margin-bottom:14px">Complete these fields: '+esc(miss.join(', '))+'.</div>'; box.scrollIntoView({block:'center'}); return false; }
+  if(dup && S.view==='new'){ box.innerHTML='<div class="errbox" style="margin-bottom:14px">A vendor named “'+esc(o.name)+'” is already in the inventory. Open it from the inventory instead.</div>'; return false; }
+  box.innerHTML=''; return true;
+}
+function applyIntake(v,o){
+  Object.keys(o).forEach(function(k){ v[k]=o[k] });
+  v.contractEnd = v.contractStart && v.termMonths ? T.addMonths(v.contractStart, +v.termMonths) : '';
+  return v;
+}
+function newVendorFrom(o){
+  var v=applyIntake({id:nextVendorId(), stage:'Intake', reviewType:'Initial', createdAt:TODAY, ira:null, tier:null, q:null, findings:[], decision:null, lastAssessed:null, nextReview:null, history:[], vendorRequest:{status:'Not requested'}}, o);
+  return v;
+}
+function vNew(){
+  var v=S.draft||blankVendor();
+  return '<header class="page-h"><div><p class="eyebrow">Add a new vendor · Step 1 of 4</p><h1 style="margin-top:6px">Vendor intake</h1>'+
+    '<p class="lede">Capture the essentials. Submitting moves the vendor to the inherent risk assessment for Cyber Governance. Fields marked <span style="color:var(--high)">*</span> are required.</p></div></header>'+
+    stepper(null)+'<section class="card">'+intakeForm(v,'new')+'</section>';
+}
+function requestModal(v, isNew){
+  var c=v.contact||{};
+  var body = 'Hello '+(c.name||'[contact]')+',\n\nWe are onboarding '+(v.name||'[vendor]')+' as a supplier'+(v.services?' for '+v.services.toLowerCase():'')+'. To complete our third-party risk intake, please reply with:\n\n'+
+    REQUESTABLE.map(function(x){return '• '+x}).join('\n')+'\n\nA due-diligence questionnaire will follow once our inherent risk review is complete.\n\nThank you,\n'+S.me;
+  openModal('<h2>Request details from vendor</h2><p class="muted">Argus Gate can’t send email itself. Copy this request into your email to <b>'+esc(c.email||'the vendor contact')+'</b>, then mark it sent so the vendor shows as awaiting a response.</p>'+
+    '<div class="f" style="margin-top:14px"><label for="reqFields" class="flabel">Details to request</label><div id="reqFields" class="stack" style="gap:6px">'+REQUESTABLE.map(function(x,i){return '<label class="check"><input type="checkbox" name="rq" value="'+esc(x)+'" checked data-act-in="reqText"> '+esc(x)+'</label>'}).join('')+'</div></div>'+
+    '<div class="f" style="margin-top:14px"><label for="reqBody">Message</label><textarea id="reqBody" rows="9" readonly class="mono" style="font-size:12px">'+esc(body)+'</textarea></div>'+
+    '<div class="acts"><button class="btn" data-act="copyReq">Copy message</button><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="markSent" data-new="'+(isNew?1:0)+'">Mark as sent</button></div>');
+}
+
+/* ---------- Vendor workspace ---------- */
+function stepper(v){
+  var st=v?v.stage:'Intake', order={'Intake':0,'Inherent Risk':1,'Due Diligence':2,'Final Review':3,'Remediation':4,'Onboarded':4,'Rejected':4,'Offboarded':4}[st];
+  var steps=[['Intake', v? (st==='Intake'?(v.vendorRequest&&v.vendorRequest.status==='Sent'?'Awaiting vendor':'In progress'):'Submitted '+fd(v.createdAt)) : 'In progress'],
+    ['Inherent risk', v&&v.ira ? v.tier+' · score '+v.ira.pct : 'Cyber Governance'],
+    ['Due diligence', v&&v.q ? (function(){var p=qProgress(v); return T.DEPTH[v.q.tier]+' · '+p.ok+'/'+p.secs+' signed off'})() : 'Tiered questionnaire'],
+    ['Decision', v&&v.decision&&order>=4 ? v.decision.outcome : st==='Final Review' ? 'Ready for decision' : 'Approve or reject']];
+  return '<div class="stepper" role="list">'+steps.map(function(s,i){
+    var cls = i<order || (i===3&&order>=4) ? 'done' : i===order ? 'now' : '';
+    return '<div class="step '+cls+'" role="listitem"><span class="dot">'+(cls==='done'?'✓':i+1)+'</span><div style="min-width:0"><b>'+s[0]+'</b><span>'+esc(s[1])+'</span></div></div>';
+  }).join('')+'</div>';
+}
+function vVendor(){
+  var v=S.vendors[S.p.id];
+  if(!v) return '<div class="empty">That vendor isn’t in the inventory. <button class="link" data-act="nav" data-view="inventory">Back to inventory</button></div>';
+  var tab=S.p.tab||defaultTab(v); S.p.tab=tab;
+  var of=openF(v).length;
+  var tabs=[['overview','Overview'],['intake','Intake'],['risk','Inherent risk'],['q','Questionnaire'],['findings','Findings & decision',of],['activity','Activity']];
+  var h='<p class="eyebrow"><button class="link" data-act="nav" data-view="inventory" style="font-size:inherit;letter-spacing:inherit;text-transform:inherit">Vendor inventory</button> / '+esc(v.id)+'</p>';
+  h+='<div class="vhead"><div><h1 style="margin-top:6px">'+esc(v.name)+'</h1><div class="meta">'+tierPill(v.tier)+stagePill(v.stage)+
+    (v.reviewType&&v.reviewType!=='Initial'&&isAssessing(v)?'<span class="pill nodot st-Remediation">'+esc(v.reviewType)+' review</span>':'')+
+    '<span class="muted">'+esc(v.serviceType)+' · '+money(v.contractValue)+'/yr</span></div></div>'+
+    '<div class="row">'+(v.stage==='Onboarded'||v.stage==='Remediation'?'<button class="btn sm" data-act="startPeriodic" data-id="'+v.id+'">Start re-assessment</button>':'')+'</div></div>';
+  h+=stepper(v);
+  h+='<div class="tabs" role="tablist">'+tabs.map(function(t){ return '<button role="tab" data-act="tab" data-tab="'+t[0]+'" aria-selected="'+(tab===t[0])+'">'+t[1]+(t[2]?'<span class="count">'+t[2]+'</span>':'')+'</button>' }).join('')+'</div>';
+  if(tab==='overview') h+=tOverview(v);
+  else if(tab==='intake') h+='<section class="card">'+intakeForm(v,'edit')+'</section>';
+  else if(tab==='risk') h+=tRisk(v);
+  else if(tab==='q') h+=tQuestionnaire(v);
+  else if(tab==='findings') h+=tFindings(v);
+  else h+=tActivity(v);
+  return h;
+}
+function defaultTab(v){
+  return v.stage==='Intake'?'intake':v.stage==='Inherent Risk'?'risk':v.stage==='Due Diligence'?'q':v.stage==='Final Review'?'findings':'overview';
+}
+function tOverview(v){
+  var r=reviewState(v), of=openF(v), c=v.contact||{};
+  var incs=Object.keys(S.incidents).map(function(k){return S.incidents[k]}).filter(function(i){return i.status!=='Closed' && incidentMatches(i).some(function(m){return m.v.id===v.id})});
+  var h='<div class="stack">';
+  incs.forEach(function(i){ h+='<div class="note bad"><b>'+esc(i.severity)+' incident — '+esc(i.party)+':</b> '+esc(i.title)+' ('+fd(i.date)+'). '+(v.oob&&v.oob.incident===i.id?'Out-of-band review '+(v.oob.closedAt?'completed '+fd(v.oob.closedAt):'in progress')+'.':'<button class="link" data-act="startOOB" data-id="'+v.id+'" data-inc="'+i.id+'">Start out-of-band review</button>')+'</div>' });
+  if(isAssessing(v)) h+='<div class="note">Currently with <b>'+esc(pendingTeams(v).join(', '))+'</b> — '+esc(v.stage)+', open '+plural(daysOpen(v),'day')+'.</div>';
+  h+='<div class="grid g2">';
+  h+='<section class="card"><div class="card-h"><h2>Engagement</h2></div><dl class="kv">'+
+    kv('Services',v.services)+kv('Service type',v.serviceType)+kv('Business owner',v.businessOwner+' · '+v.department)+kv('Annual value',money(v.contractValue))+
+    kv('Contract',fd(v.contractStart)+' → '+fd(v.contractEnd)+(v.autoRenew?' (auto-renews)':''))+kv('Headquarters',v.hq)+kv('Data locations',v.dataLocations)+kv('Certifications',v.certifications)+'</dl></section>';
+  h+='<section class="card"><div class="card-h"><h2>Risk position</h2></div><dl class="kv">'+
+    kv('Risk tier', v.tier ? v.tier+(v.ira&&v.ira.override?' (overridden from '+v.ira.computedTier+')':'') : 'Not yet scored')+
+    kv('Inherent risk score', v.ira? v.ira.pct+' / 100':'—')+
+    kv('Questionnaire', v.q? T.DEPTH[v.q.tier]+' ('+qProgress(v).tot+' questions)':'—')+
+    kv('Open findings', of.length? of.length+' ('+of.map(function(f){return f.severity}).join(', ')+')':'None')+
+    kv('Last assessed', fd(v.lastAssessed))+
+    '<div><dt>Next re-assessment</dt><dd class="'+(r&&r.overdue?'late':r&&r.soon?'soon':'')+'">'+(v.nextReview? fd(v.nextReview)+(r?(r.overdue?' · overdue':r.soon?' · in '+r.d+'d':''):'') : '—')+'</dd></div>'+
+    kv('Decision', v.decision? v.decision.outcome+' · '+fd(v.decision.at):'—')+'</dl></section>';
+  h+='<section class="card"><div class="card-h"><h2>Vendor contacts</h2></div><dl class="kv">'+kv('Primary contact',c.name+(c.title?' — '+c.title:''))+
+    '<div><dt>Email</dt><dd class="mono">'+esc(c.email||'—')+'</dd></div>'+kv('Phone',c.phone)+kv('Security contact',v.securityContact)+kv('Intake request',(v.vendorRequest&&v.vendorRequest.status)||'Not requested')+'</dl></section>';
+  h+='<section class="card"><div class="card-h"><h2>Fourth parties</h2><span class="sub">Watched for incidents</span></div>'+
+    ((v.fourthParties||[]).length? '<div class="chips">'+v.fourthParties.map(function(x){return '<span class="chip">'+esc(x)+'</span>'}).join('')+'</div>' : '<p class="muted">None disclosed.</p>')+
+    '<div class="row" style="margin-top:18px">'+(v.stage!=='Offboarded'?'<button class="btn sm danger" data-act="offboard">Offboard vendor</button>':'')+'</div></section>';
+  return h+'</div></div>';
+}
+function kv(k,val){ return '<div><dt>'+esc(k)+'</dt><dd>'+esc(val||'—')+'</dd></div>' }
+
+/* inherent risk */
+function tRisk(v){
+  if(v.stage==='Intake') return '<div class="card"><p class="muted">Submit the intake first — the inherent risk assessment opens once the intake is complete.</p><div class="row" style="margin-top:12px"><button class="btn primary" data-act="tab" data-tab="intake">Go to intake</button></div></div>';
+  var a=(v.ira&&v.ira.answers)||{data:[]}, ov=v.ira&&v.ira.override;
+  var h='<div class="ira"><section class="card"><form id="iraForm"><div class="card-h"><div><h2>Inherent risk assessment</h2><p class="sub" style="margin-top:4px">Completed by Cyber Governance. Each answer adds weighted points; the total sets the tier (Low &lt; 30, Medium 30–54, High ≥ 55). Critical impact with restricted data is always High.</p></div></div>';
+  T.IRA_FACTORS.forEach(function(f){
+    h+='<fieldset class="factor" style="border:0;margin:0;padding-inline:0"><legend style="padding:0"><h3>'+esc(f.label)+' <span class="mono muted" style="font-weight:400">×'+f.w+'</span></h3></legend>'+(f.hint?'<p class="hint">'+esc(f.hint)+'</p>':'')+'<div class="opts">';
+    if(f.multi) T.DATA_TYPES.forEach(function(d){ h+='<label class="opt-r"><input type="checkbox" name="data" value="'+d.id+'"'+((a.data||[]).indexOf(d.id)>=0?' checked':'')+'><span>'+esc(d.label)+'</span><span class="pts">'+d.s+'</span></label>' });
+    else f.opts.forEach(function(o,i){ h+='<label class="opt-r"><input type="radio" name="'+f.id+'" value="'+i+'"'+(a[f.id]===i?' checked':'')+'><span>'+esc(o[0])+'</span><span class="pts">'+o[1]+'</span></label>' });
+    h+='</div></fieldset>';
+  });
+  h+='<div class="f" style="margin-top:12px"><label for="iraNotes">Assessor notes</label><textarea id="iraNotes" name="notes" rows="2">'+esc(v.ira&&v.ira.notes||'')+'</textarea></div>';
+  // override
+  h+='<div class="override"><h3>Override the risk tier</h3>';
+  if(ov){
+    h+='<p style="margin-top:6px">Tier overridden to <b>'+ov.tier+'</b> (computed '+esc(v.ira.computedTier)+') by '+esc(ov.by)+' on '+fd(ov.at)+'.</p><p class="muted" style="margin-top:4px"><b>Reason:</b> '+esc(ov.reason)+' — '+esc(ov.justification)+'</p><div class="row" style="margin-top:10px"><button type="button" class="btn sm" data-act="removeOverride">Remove override</button></div>';
+  } else {
+    h+='<p class="muted" style="margin-top:4px;font-size:12.5px">Only when the score doesn’t reflect the real exposure. A reason code, justification and your confirmation are required, and the override is logged.</p>'+
+      '<div class="fields" style="margin-top:12px">'+
+      '<div class="f"><label for="ovTier">Override tier to</label><select id="ovTier"><option value="">Select…</option><option>High</option><option>Medium</option><option>Low</option></select></div>'+
+      '<div class="f"><label for="ovReason">Reason code</label><select id="ovReason"><option value="">Select…</option>'+T.OVERRIDE_REASONS.map(function(r){return '<option>'+esc(r)+'</option>'}).join('')+'</select></div>'+
+      '<div class="f wide"><label for="ovJust">Justification</label><textarea id="ovJust" rows="2" placeholder="What makes the computed tier inaccurate? (at least 20 characters)"></textarea></div>'+
+      '<label class="check wide" style="grid-column:1/-1"><input type="checkbox" id="ovConfirm"> I confirm this override is justified and accept accountability for it.</label></div>'+
+      '<div class="row" style="margin-top:12px"><button type="button" class="btn sm" data-act="confirmOverride">Confirm override…</button><span id="ovErr" style="color:var(--high);font-size:12.5px"></span></div>';
+  }
+  h+='</div>';
+  h+='<div class="form-actions">'+(v.stage==='Inherent Risk' ? '<button type="button" class="btn primary" data-act="submitIRA">Submit and generate questionnaire</button>' : '<button type="button" class="btn primary" data-act="submitIRA">Save inherent risk</button>')+'</div>';
+  h+='</form></section><aside class="card scorebox" id="scoreBox"></aside></div>';
+  return h;
+}
+function readIRA(){
+  var f=$('#iraForm'); if(!f) return null;
+  var a={data:[]};
+  T.IRA_FACTORS.forEach(function(fac){
+    if(fac.multi){ Array.prototype.forEach.call(f.querySelectorAll('input[name=data]:checked'),function(el){a.data.push(el.value)}); }
+    else { var el=f.querySelector('input[name='+fac.id+']:checked'); a[fac.id]= el? +el.value : null; }
+  });
+  a.notes=f.elements.notes.value;
+  return a;
+}
+function updateScore(){
+  var box=$('#scoreBox'); if(!box) return;
+  var v=S.vendors[S.p.id], a=readIRA(), sc=T.scoreIRA(a), ov=v&&v.ira&&v.ira.override;
+  var eff = ov ? ov.tier : sc.tier;
+  var h='<p class="eyebrow">Inherent risk</p><div class="row" style="margin-top:8px;align-items:baseline"><span class="bigtier '+eff+'">'+eff+'</span><span class="mono muted">score '+sc.pct+'/100</span></div>';
+  if(ov) h+='<p style="font-size:12.5px;margin-top:4px" class="muted">Overridden from computed <b>'+sc.tier+'</b></p>';
+  h+='<div class="gauge" aria-hidden="true"><i style="left:'+sc.pct+'%"></i></div><div class="gauge-l" aria-hidden="true"><span style="left:0;transform:none">0</span><span style="left:30%">30</span><span style="left:55%">55</span><span style="left:100%;transform:translateX(-100%)">100</span></div>';
+  if(sc.knockout) h+='<div class="note bad" style="margin-top:12px;font-size:12.5px"><b>Automatic High:</b> '+esc(sc.knockout)+'.</div>';
+  if(!sc.complete) h+='<div class="note warn" style="margin-top:12px;font-size:12.5px">Answer every factor to finalise the score.</div>';
+  h+='<h3 style="margin-top:18px;font-size:13px">What drives the score</h3><div style="margin-top:6px">'+sc.drivers.map(function(d){
+    return '<div class="drv"><span>'+esc(d.label.replace(/ if the service fails| the vendor will process/,''))+'</span><div class="bar"><i style="width:'+(d.pts/d.max*100)+'%"></i></div><span class="mono muted" style="text-align:right">'+d.pts+'</span></div>'}).join('')+'</div>';
+  var qs=T.sectionsFor(eff,a), qn=qs.reduce(function(n,s){return n+s.qs.length},0);
+  h+='<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)"><p class="eyebrow">Questionnaire this triggers</p><p style="margin-top:6px"><b>'+T.DEPTH[eff]+'</b> — '+plural(qs.length,'section')+', '+plural(qn,'question')+'</p><p class="muted" style="font-size:12.5px;margin-top:4px">'+esc(qs.map(function(s){return s.title}).join(' · '))+'</p></div>';
+  box.innerHTML=h;
+}
+
+/* questionnaire */
+function tQuestionnaire(v){
+  if(!v.q) return '<div class="card"><p class="muted">The questionnaire is generated when the inherent risk assessment is submitted.</p><div class="row" style="margin-top:12px"><button class="btn primary" data-act="tab" data-tab="risk">Go to inherent risk</button></div></div>';
+  var ss=secs(v), cur=S.p.sec && ss.some(function(s){return s.id===S.p.sec}) ? S.p.sec : ((ss.filter(function(s){return secSt(v,s.id)!=='Signed off'})[0])||ss[0]).id;
+  S.p.sec=cur;
+  var p=qProgress(v);
+  var h='<div class="card" style="margin-bottom:16px"><div class="row" style="justify-content:space-between"><div><h2>'+T.DEPTH[v.q.tier]+' due-diligence questionnaire</h2><p class="sub muted" style="font-size:12.5px;margin-top:2px">'+v.q.tier+' risk · '+plural(p.secs,'section')+' · '+p.ans+' of '+p.tot+' answered · started '+fd(v.q.startedAt)+(v.reviewType&&v.reviewType!=='Initial'?' · '+esc(v.reviewType)+' review':'')+'</p></div>'+
+    '<div style="min-width:200px;flex:0 1 280px"><div class="progress"><i class="ok" style="width:'+(p.ok/p.secs*100)+'%"></i><i class="ip" style="width:'+(p.ip/p.secs*100)+'%"></i></div><p class="mono muted" style="font-size:11.5px;margin-top:4px">'+p.ok+' signed off · '+p.ip+' in progress</p></div></div>';
+  if(p.ok===p.secs && v.stage==='Final Review') h+='<div class="note" style="margin-top:12px">Every section is signed off. <button class="link" data-act="tab" data-tab="findings">Record the onboarding decision</button>.</div>';
+  h+='</div><div class="qwrap"><nav class="secnav" aria-label="Questionnaire sections">';
+  ss.forEach(function(s){
+    var st=secSt(v,s.id), n=s.qs.filter(function(q){return v.q.answers[q.id]&&v.q.answers[q.id].v}).length;
+    h+='<button data-act="sec" data-sec="'+s.id+'" aria-current="'+(s.id===cur)+'"><span class="sico '+(st==='Signed off'?'ok':st==='In progress'?'ip':'')+'" aria-label="'+st+'"></span><span><span class="sn-t">'+esc(s.title)+'</span><span class="sn-m">'+esc(s.team)+' · '+st+'</span></span><span class="sn-p">'+n+'/'+s.qs.length+'</span></button>';
+  });
+  h+='</nav>';
+  var s=ss.filter(function(x){return x.id===cur})[0], st=secSt(v,s.id), locked=st==='Signed off', sec=v.q.sections[s.id]||{};
+  h+='<section class="card"><div class="card-h"><div><p class="eyebrow">'+esc(s.team)+' review</p><h2 style="margin-top:4px">'+esc(s.title)+'</h2></div><span class="pill '+(locked?'st-Onboarded':st==='In progress'?'st-assess':'')+'">'+st+'</span></div>';
+  if(locked) h+='<div class="note" style="margin-bottom:6px">Signed off by '+esc(sec.by)+' on '+fd(sec.at)+(sec.comment?' — “'+esc(sec.comment)+'”':'')+'. Reopen the section to edit answers.</div>';
+  s.qs.forEach(function(q){
+    var ans=v.q.answers[q.id]||{}, dis=locked||!S.canWrite?' disabled':'';
+    h+='<div class="qitem"><span class="qid">'+q.id.toUpperCase()+'</span><div class="qtext">'+esc(q.text)+(q.w===3?'<span class="w3" title="Key control">KEY</span>':'')+'</div><div class="qctl"><div class="seg" role="radiogroup" aria-label="Answer for '+q.id+'">'+
+      ['Yes','Partial','No','N/A'].map(function(o){ return '<label class="o-'+o.replace('/','')+'"><input type="radio" name="ans-'+q.id+'" value="'+o+'" data-q="'+q.id+'"'+(ans.v===o?' checked':'')+dis+'><span>'+o+'</span></label>' }).join('')+
+      '</div><div class="qnote"><input type="text" aria-label="Evidence or notes for '+q.id+'" placeholder="Evidence / notes" value="'+esc(ans.note||'')+'" data-qnote="'+q.id+'"'+dis+'></div></div>'+
+      (T.isGap(ans.v)?'<div class="gapflag">Gap → '+T.gapSeverity(q,ans.v)+' finding on sign-off: “'+esc(q.gap)+'”</div>':'')+'</div>';
+  });
+  h+='<div class="form-actions" style="justify-content:space-between;align-items:flex-end">';
+  if(locked) h+='<span class="muted" style="font-size:12.5px">Reviewer: '+esc(sec.by)+'</span><button class="btn" data-act="reopenSec" data-sec="'+s.id+'">Reopen section</button>';
+  else h+='<div class="f" style="flex:1 1 260px"><label for="secComment">Reviewer comment</label><input type="text" id="secComment" placeholder="Optional note for the record"></div><button class="btn primary" data-act="signSec" data-sec="'+s.id+'">Sign off as '+esc(S.me)+'</button>';
+  h+='</div></section></div>';
+  return h;
+}
+
+/* findings & decision */
+function tFindings(v){
+  var fs=(v.findings||[]).slice().sort(function(a,b){ return (OPEN_F.indexOf(b.status)>=0)-(OPEN_F.indexOf(a.status)>=0) || SEV_RANK[b.severity]-SEV_RANK[a.severity] });
+  var h='<div class="stack">';
+  // decision
+  if(v.stage==='Final Review' || v.stage==='Due Diligence'){
+    var ready=v.stage==='Final Review';
+    h+='<section class="card"><div class="card-h"><h2>Onboarding decision</h2><span class="sub">'+(ready?'All sections signed off':'Available once every questionnaire section is signed off')+'</span></div>';
+    if(ready){
+      h+='<div class="stack" style="gap:8px">'+[['Approved','Onboard — findings, if any, are low risk and tracked'],['Approved with conditions','Onboard, with open findings remediated to agreed dates'],['Rejected','Do not onboard — risk exceeds appetite']].map(function(o,i){
+        return '<label class="opt-r"><input type="radio" name="decision" value="'+o[0]+'"'+(i===(openF(v).length?1:0)?' checked':'')+'><span><b>'+o[0]+'</b><br><span class="muted">'+o[1]+'</span></span></label>'}).join('')+'</div>'+
+        '<div class="f" style="margin-top:12px"><label for="decNote">Decision rationale</label><textarea id="decNote" rows="2"></textarea></div>'+
+        '<div class="form-actions"><button class="btn primary" data-act="decide">Record decision</button></div>';
+    }
+    h+='</section>';
+  } else if(v.decision){
+    h+='<section class="card"><div class="card-h"><h2>Decision: '+esc(v.decision.outcome)+'</h2><span class="sub">'+esc(v.decision.by)+' · '+fd(v.decision.at)+'</span></div>'+(v.decision.note?'<p>'+esc(v.decision.note)+'</p>':'')+
+      (v.stage==='Remediation' ? (openF(v).length ? '<p class="muted" style="margin-top:6px">Onboarded under remediation. '+plural(openF(v).length,'finding')+' still open.</p>' : '<div class="note" style="margin-top:10px">All findings are closed or accepted. <button class="link" data-act="completeOnboard">Mark remediation complete</button></div>') : '')+'</section>';
+  }
+  h+='<section class="card"><div class="card-h"><h2>Findings</h2><span class="sub">'+openF(v).length+' open of '+fs.length+'</span></div>';
+  if(fs.length){
+    h+='<div class="tablewrap" style="border:0"><table><thead><tr><th>ID</th><th>Finding</th><th>Severity</th><th>Status</th><th>Owner</th><th>Due</th></tr></thead><tbody>'+fs.map(function(f){
+      var late=OPEN_F.indexOf(f.status)>=0 && f.due && f.due<TODAY, dis=S.canWrite?'':' disabled';
+      return '<tr><td class="mono">'+esc(f.id.split('-').pop())+'</td><td style="min-width:220px"><b style="font-weight:600">'+esc(f.title)+'</b><span class="sub-id">'+(f.qid?esc(f.qid.toUpperCase())+' · ':'')+esc(sectionTitle(f.section))+'</span></td>'+
+        '<td><select aria-label="Severity" data-fedit="severity" data-fid="'+f.id+'"'+dis+'>'+['High','Medium','Low'].map(function(s){return '<option'+(s===f.severity?' selected':'')+'>'+s+'</option>'}).join('')+'</select></td>'+
+        '<td><select aria-label="Status" data-fedit="status" data-fid="'+f.id+'"'+dis+'>'+F_STATUSES.map(function(s){return '<option'+(s===f.status?' selected':'')+'>'+s+'</option>'}).join('')+'</select></td>'+
+        '<td style="min-width:150px"><input type="text" aria-label="Owner" value="'+esc(f.owner)+'" data-fedit="owner" data-fid="'+f.id+'"'+dis+'></td>'+
+        '<td><input type="date" aria-label="Due date" value="'+esc(f.due)+'" data-fedit="due" data-fid="'+f.id+'"'+dis+(late?' style="border-color:var(--high);color:var(--high)"':'')+'></td></tr>';
+    }).join('')+'</tbody></table></div>';
+  } else h+='<p class="muted">No findings recorded. Gaps answered No or Partial become findings when a section is signed off.</p>';
+  var sOpts=(secs(v).length?secs(v):T.SECTIONS).map(function(s){return '<option value="'+s.id+'">'+esc(s.title)+'</option>'}).join('');
+  h+='<details style="margin-top:14px"><summary class="link" style="display:inline">Add a finding manually</summary><div class="fields" style="margin-top:12px">'+
+    '<div class="f wide"><label for="nfTitle">Finding</label><input type="text" id="nfTitle"></div>'+
+    '<div class="f"><label for="nfSec">Area</label><select id="nfSec">'+sOpts+'</select></div>'+
+    '<div class="f"><label for="nfSev">Severity</label><select id="nfSev"><option>High</option><option selected>Medium</option><option>Low</option></select></div>'+
+    '<div class="f"><label for="nfOwner">Owner</label><input type="text" id="nfOwner" value="'+esc((v.contact&&v.contact.name?v.contact.name+' (vendor)':''))+'"></div>'+
+    '<div class="f"><label for="nfDue">Due</label><input type="date" id="nfDue" value="'+T.addDays(TODAY,60)+'"></div></div>'+
+    '<div class="row" style="margin-top:12px"><button class="btn sm primary" data-act="addFinding">Add finding</button></div></details></section>';
+  return h+'</div>';
+}
+function sectionTitle(id){ var s=T.SECTIONS.filter(function(x){return x.id===id})[0]; return s?s.title:'General' }
+function tActivity(v){
+  var hs=(v.history||[]).slice().reverse();
+  return '<section class="card"><div class="card-h"><h2>Activity</h2></div>'+(hs.length?'<div>'+hs.map(function(e){
+    return '<div class="row" style="padding:9px 0;border-top:1px solid var(--line);flex-wrap:nowrap;align-items:flex-start"><span class="mono muted" style="width:96px;flex:none">'+fd(e.at)+'</span><span style="flex:1">'+esc(e.text)+'</span><span class="muted" style="font-size:12.5px">'+esc(e.by)+'</span></div>'}).join('')+'</div>':'<p class="muted">No activity yet.</p>')+'</section>';
+}
+
+/* ---------- Inventory ---------- */
+function matchFilters(v){
+  var f=S.f, q=f.q.trim().toLowerCase();
+  if(q && v.name.toLowerCase().indexOf(q)<0 && (v.serviceType||'').toLowerCase().indexOf(q)<0 && (v.services||'').toLowerCase().indexOf(q)<0) return false;
+  if(f.type && v.serviceType!==f.type) return false;
+  if(f.tier && (f.tier==='none' ? v.tier : v.tier!==f.tier)) return false;
+  if(f.stage){ if(f.stage==='assessing'){ if(!isAssessing(v)) return false } else if(f.stage==='closed'){ if(v.stage!=='Rejected'&&v.stage!=='Offboarded') return false } else if(v.stage!==f.stage) return false; }
+  if(f.sev){ var of=openF(v); if(!of.length) return false; if(f.sev!=='any' && !of.some(function(x){return x.severity===f.sev})) return false; }
+  if(f.team && pendingTeams(v).indexOf(f.team)<0) return false;
+  if(f.review){ var r=reviewState(v); if(!r) return false; if(f.review==='overdue'&&!r.overdue) return false; if(f.review==='due'&&!(r.overdue||r.soon)) return false; }
+  if(f.incident){ var inc=S.incidents[f.incident]; if(!inc||!incidentMatches(inc).some(function(m){return m.v.id===v.id})) return false; }
+  return true;
+}
+function vInventory(){
+  var all=list(), rows=all.filter(matchFilters), k=S.sort.k, d=S.sort.dir;
+  var keyf={name:function(v){return v.name.toLowerCase()}, type:function(v){return v.serviceType}, tier:function(v){return -(({High:3,Medium:2,Low:1})[v.tier]||0)}, stage:function(v){return T.STAGES.indexOf(v.stage)},
+    findings:function(v){return -openF(v).length}, next:function(v){return v.nextReview||'9999'}, value:function(v){return -(+v.contractValue||0)}, last:function(v){return v.lastAssessed||'0000'}}[k];
+  rows.sort(function(a,b){ var x=keyf(a), y=keyf(b); return (x<y?-1:x>y?1:0)*d || (a.name<b.name?-1:1) });
+  var types=[]; all.forEach(function(v){ if(v.serviceType&&types.indexOf(v.serviceType)<0) types.push(v.serviceType) }); types.sort();
+  function sel(id,label,cur,opts){ return '<select id="'+id+'" aria-label="'+label+'" data-filter="'+id.slice(2)+'"><option value="">'+label+'</option>'+opts.map(function(o){ var val=Array.isArray(o)?o[0]:o, lab=Array.isArray(o)?o[1]:o; return '<option value="'+esc(val)+'"'+(cur===val?' selected':'')+'>'+esc(lab)+'</option>'}).join('')+'</select>' }
+  var h='<header class="page-h"><div><p class="eyebrow">Review existing vendors</p><h1 style="margin-top:6px">Vendor inventory</h1><p class="lede">Every vendor with its risk tier, onboarding status, findings and review dates. Select a vendor to open its assessment.</p></div><button class="btn primary" data-act="nav" data-view="new">'+ICON.plus.replace('<svg','<svg width="16" height="16"')+' Add vendor</button></header>';
+  h+='<div class="toolbar"><div class="search">'+ICON.search+'<input type="search" id="invSearch" placeholder="Search by vendor name or type of service" value="'+esc(S.f.q)+'" aria-label="Search vendors"></div>'+
+    sel('f-type','All service types',S.f.type,types)+sel('f-tier','All tiers',S.f.tier,[['High','High risk'],['Medium','Medium risk'],['Low','Low risk'],['none','Unscored']])+
+    sel('f-stage','All statuses',S.f.stage,[['assessing','In assessment (any stage)']].concat(T.STAGES))+sel('f-sev','Any findings',S.f.sev,[['any','Has open findings'],['High','Open High findings'],['Medium','Open Medium findings'],['Low','Open Low findings']])+'</div>';
+  var extra=[];
+  if(S.f.team) extra.push(['team','Waiting on '+S.f.team]);
+  if(S.f.review) extra.push(['review',S.f.review==='overdue'?'Re-assessment overdue':'Re-assessment due ≤ 90 days']);
+  if(S.f.incident) extra.push(['incident','Affected by '+S.f.incident]);
+  var any = extra.length || S.f.q || S.f.type || S.f.tier || S.f.stage || S.f.sev;
+  h+='<div class="row" style="margin-bottom:12px;min-height:26px"><span class="muted">Showing <b style="color:var(--ink)">'+rows.length+'</b> of '+all.length+' vendors</span>'+
+    extra.map(function(e){return '<button class="chip" data-act="clearOne" data-k="'+e[0]+'">'+esc(e[1])+' ✕</button>'}).join('')+(any?'<button class="btn ghost sm" data-act="clearFilters">Clear filters</button>':'')+'</div>';
+  function th(key,label){ return '<th scope="col" aria-sort="'+(k===key?(d>0?'ascending':'descending'):'none')+'"><button data-act="sort" data-k="'+key+'">'+label+(k===key?(d>0?' ↑':' ↓'):'')+'</button></th>' }
+  h+='<div class="tablewrap"><table><thead><tr>'+th('name','Vendor')+th('type','Service type')+th('tier','Risk tier')+th('stage','Onboarding status')+th('findings','Remediation')+'<th>Key open finding</th><th>With</th>'+th('last','Last assessed')+th('next','Next review')+th('value','Annual value')+'</tr></thead><tbody>';
+  if(!rows.length) h+='<tr><td colspan="10" class="empty">No vendors match. Try a different name or service type.</td></tr>';
+  rows.forEach(function(v){
+    var of=openF(v), tot=(v.findings||[]).length, r=reviewState(v), top=of.slice().sort(function(a,b){return SEV_RANK[b.severity]-SEV_RANK[a.severity]})[0];
+    var rem = !tot ? '<span class="muted">No findings</span>' : of.length ? '<span class="sevdots">'+of.map(function(f){return '<i class="'+f.severity[0]+'" title="'+f.severity+'"></i>'}).join('')+'</span> '+of.length+' open / '+tot : '<span style="color:var(--low)">All '+tot+' resolved</span>';
+    h+='<tr><td style="min-width:190px"><button class="vname" data-act="openVendor" data-id="'+v.id+'">'+esc(v.name)+'</button><span class="sub-id">'+v.id+'</span></td><td style="white-space:nowrap">'+esc(v.serviceType)+'</td><td>'+tierPill(v.tier)+(v.ira&&v.ira.override?'<span class="sub-id" title="Tier overridden">override</span>':'')+'</td>'+
+      '<td>'+stagePill(v.stage)+'</td><td style="white-space:nowrap">'+rem+'</td><td style="min-width:200px;font-size:12.5px">'+(top?esc(top.title):'<span class="muted">—</span>')+'</td>'+
+      '<td style="font-size:12.5px;min-width:120px">'+(pendingTeams(v).join(', ')||'<span class="muted">—</span>')+'</td><td class="num" style="white-space:nowrap">'+fd(v.lastAssessed)+'</td>'+
+      '<td class="num '+(r&&r.overdue?'late':r&&r.soon?'soon':'')+'" style="white-space:nowrap">'+fd(v.nextReview)+'</td><td class="num" style="text-align:right">'+money(v.contractValue)+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+/* ---------- Dashboard ---------- */
+function vDashboard(al){
+  var vs=list(), live=vs.filter(function(v){return v.stage!=='Offboarded'&&v.stage!=='Rejected'});
+  var tc={High:0,Medium:0,Low:0,none:0}; live.forEach(function(v){ tc[v.tier||'none']++ });
+  var onb=vs.filter(function(v){return v.stage==='Onboarded'}).length, rem=vs.filter(function(v){return v.stage==='Remediation'}).length, assessing=vs.filter(isAssessing);
+  var allOpen=[]; vs.forEach(function(v){ openF(v).forEach(function(f){ allOpen.push({f:f,v:v}) }) });
+  var vWithF=vs.filter(function(v){return openF(v).length}).length;
+  var overdue=vs.filter(function(v){var r=reviewState(v);return r&&r.overdue}).length, due=vs.filter(function(v){var r=reviewState(v);return r&&(r.overdue||r.soon)}).length;
+  var incAff={}; Object.keys(S.incidents).forEach(function(k){var i=S.incidents[k]; if(i.status!=='Closed') incidentMatches(i).forEach(function(m){incAff[m.v.id]=1})});
+  var nInc=Object.keys(incAff).length;
+  function kpi(label,val,desc,act,cls){ return '<button class="kpi '+(cls||'')+'" data-act="drill" data-drill="'+act+'"><span class="eyebrow">'+label+'</span><div class="v">'+val+'</div><div class="d">'+desc+'</div></button>' }
+  var h='<header class="page-h"><div><p class="eyebrow">Third-party risk dashboard</p><h1 style="margin-top:6px">Vendor risk landscape</h1><p class="lede">Built live from the vendor inventory. Select any figure, bar or cell to open the matching vendors.</p></div><span class="mono muted">As of '+fd(TODAY)+'</span></header>';
+  h+='<div class="kpis">'+kpi('Vendors',vs.length,live.length+' active','all')+kpi('Onboarded',onb+rem,rem+' under remediation','stage:Onboarded')+kpi('In assessment',assessing.length,'across '+plural(DASH_TEAMS.filter(function(t){return vs.some(function(v){return pendingTeams(v).indexOf(t)>=0&&isAssessing(v)})}).length,'team'),'stage:assessing')+
+    kpi('Open findings',allOpen.length,'impacting '+plural(vWithF,'vendor'),'sev:any',allOpen.some(function(x){return x.f.severity==='High'})?'bad':'')+kpi('Re-assessments',due,overdue+' overdue · rest due ≤ 90d','review:due',overdue?'bad':'')+kpi('Incident exposure',nInc,'vendors hit by open incidents','alerts',nInc?'bad':'')+'</div>';
+  // risk picture
+  var tot=live.length||1, order=['High','Medium','Low','none'];
+  h+='<div class="grid g2" style="margin-bottom:16px"><section class="card"><div class="card-h"><h2>Risk picture</h2><span class="sub">'+live.length+' active vendors by inherent risk tier</span></div>'+
+    '<div class="stackbar">'+order.filter(function(t){return tc[t]}).map(function(t){return '<button class="sb-'+t+'" style="flex:'+tc[t]+'" data-act="drill" data-drill="tier:'+t+'" aria-label="'+(t==='none'?'Unscored':t)+': '+tc[t]+' vendors">'+tc[t]+'</button>'}).join('')+'</div>'+
+    '<div class="legend">'+order.map(function(t){ var val=live.filter(function(v){return (v.tier||'none')===t}).reduce(function(s,v){return s+(+v.contractValue||0)},0);
+      return '<button data-act="drill" data-drill="tier:'+t+'"><i class="sb-'+t+'"></i>'+(t==='none'?'Unscored':t)+' <b class="num">'+tc[t]+'</b> <span class="muted num">'+money(val)+'/yr</span></button>'}).join('')+'</div>';
+  var cols=[['assessing','In assessment'],['Remediation','Remediation'],['Onboarded','Onboarded'],['closed','Rejected / off']];
+  h+='<div class="matrix"><span></span>'+cols.map(function(c){return '<span class="h">'+c[1]+'</span>'}).join('');
+  ['High','Medium','Low'].forEach(function(t){
+    h+='<span class="rl">'+tierPill(t)+'</span>';
+    cols.forEach(function(c){
+      var n=vs.filter(function(v){ if(v.tier!==t) return false; return c[0]==='assessing'?isAssessing(v):c[0]==='closed'?(v.stage==='Rejected'||v.stage==='Offboarded'):v.stage===c[0] }).length;
+      var alpha = n ? Math.min(18+n*14,70) : 0;
+      h+='<button class="'+(n?'':'z')+'" style="background:color-mix(in srgb,var(--'+({High:'high',Medium:'med',Low:'low'})[t]+') '+alpha+'%,var(--surface-2))'+(alpha>45?';color:#fff':'')+'" data-act="drill" data-drill="tier:'+t+'|stage:'+c[0]+'" aria-label="'+t+' risk, '+c[1]+': '+n+'">'+n+'</button>';
+    });
+  });
+  h+='</div></section>';
+  // status
+  var stages=['Intake','Inherent Risk','Due Diligence','Final Review','Remediation','Onboarded','Rejected','Offboarded'], mx=Math.max.apply(null,stages.map(function(s){return vs.filter(function(v){return v.stage===s}).length}).concat([1]));
+  h+='<section class="card"><div class="card-h"><h2>Onboarding status</h2><span class="sub">Where each vendor sits in the lifecycle</span></div><div class="hbars">'+stages.map(function(s){
+    var n=vs.filter(function(v){return v.stage===s}).length, col=T.OPEN_STAGES.indexOf(s)>=0?'var(--info)':s==='Remediation'?'var(--med)':s==='Onboarded'?'var(--low)':s==='Rejected'?'var(--high)':'var(--faint)';
+    return '<button class="hb" data-act="drill" data-drill="stage:'+s+'"><span class="hb-l">'+s+'</span><span class="hb-track"><i style="width:'+(n/mx*100)+'%;background:'+col+'"></i></span><span class="n">'+n+'</span></button>'}).join('')+'</div></section></div>';
+  // open issues
+  var sevs=['High','Medium','Low'];
+  h+='<div class="grid g2" style="margin-bottom:16px"><section class="card"><div class="card-h"><h2>Open issues</h2><span class="sub">'+plural(allOpen.length,'open finding')+' across '+plural(vWithF,'vendor')+'</span></div>';
+  h+='<div class="grid g3" style="gap:10px;margin-bottom:16px">'+sevs.map(function(s){
+    var fsv=allOpen.filter(function(x){return x.f.severity===s}), nv={}; fsv.forEach(function(x){nv[x.v.id]=1});
+    var od=fsv.filter(function(x){return x.f.due&&x.f.due<TODAY}).length;
+    return '<button class="kpi" style="padding:12px 14px" data-act="drill" data-drill="sev:'+s+'">'+sevPill(s)+'<div class="v" style="font-size:26px">'+fsv.length+'</div><div class="d">'+plural(Object.keys(nv).length,'vendor')+' impacted'+(od?' · <span class="late">'+od+' overdue</span>':'')+'</div></button>'}).join('')+'</div>';
+  var topF=allOpen.slice().sort(function(a,b){return SEV_RANK[b.f.severity]-SEV_RANK[a.f.severity] || (a.f.due<b.f.due?-1:1)}).slice(0,8);
+  h+='<div class="tablewrap" style="border:0"><table><thead><tr><th>Finding</th><th>Vendor</th><th>Status</th><th>Due</th></tr></thead><tbody>'+(topF.length?topF.map(function(x){
+    var late=x.f.due&&x.f.due<TODAY;
+    return '<tr><td>'+sevPill(x.f.severity)+' <span style="font-weight:500">'+esc(x.f.title)+'</span></td><td><button class="vname" data-act="openFindings" data-id="'+x.v.id+'">'+esc(x.v.name)+'</button></td><td style="white-space:nowrap">'+esc(x.f.status)+'</td><td class="num '+(late?'late':'')+'" style="white-space:nowrap">'+fd(x.f.due)+'</td></tr>'}).join(''):'<tr><td colspan="4" class="empty">No open findings.</td></tr>')+'</tbody></table></div></section>';
+  // teams
+  h+='<section class="card"><div class="card-h"><h2>Open assessments by team</h2><span class="sub">Who holds each vendor right now</span></div><div>';
+  DASH_TEAMS.forEach(function(t){
+    var w=assessing.filter(function(v){return pendingTeams(v).indexOf(t)>=0}).concat(t==='Vendor'?vs.filter(function(v){return v.stage==='Remediation'}):[]);
+    h+='<div class="teamrow"><button class="link" style="color:var(--ink);font-weight:600" data-act="drill" data-drill="team:'+esc(t)+'">'+esc(t)+(t==='Vendor'?' <span class="muted" style="font-weight:400;font-size:12px">(responses &amp; remediation)</span>':t==='Cyber Governance'?' <span class="muted" style="font-weight:400;font-size:12px">(inherent risk &amp; decision)</span>':'')+'</button><span class="n '+(w.length?'':'z')+'">'+w.length+'</span><div class="chips">'+
+      w.map(function(v){ var d=daysOpen(v); return '<button class="chip" data-act="openVendor" data-id="'+v.id+'">'+esc(v.name)+(isAssessing(v)?' <span class="mono '+(d>30?'late':'muted')+'">'+d+'d</span>':'')+'</button>' }).join('')+'</div></div>';
+  });
+  h+='</div></section></div>';
+  // open assessment table
+  h+='<section class="card"><div class="card-h"><h2>Assessment pipeline</h2><span class="sub">'+plural(assessing.length,'open assessment')+'</span></div><div class="tablewrap" style="border:0"><table><thead><tr><th>Vendor</th><th>Tier</th><th>Stage</th><th>Currently with</th><th style="min-width:160px">Questionnaire progress</th><th>Days open</th></tr></thead><tbody>'+
+    (assessing.length?assessing.sort(function(a,b){return daysOpen(b)-daysOpen(a)}).map(function(v){
+      var p=v.q?qProgress(v):null, d=daysOpen(v);
+      return '<tr><td><button class="vname" data-act="openVendor" data-id="'+v.id+'">'+esc(v.name)+'</button><span class="sub-id">'+esc(v.reviewType||'Initial')+' review</span></td><td>'+tierPill(v.tier)+'</td><td>'+stagePill(v.stage)+'</td><td style="font-size:12.5px">'+esc(pendingTeams(v).join(', '))+'</td>'+
+        '<td>'+(p?'<div class="progress"><i class="ok" style="width:'+(p.ok/p.secs*100)+'%"></i><i class="ip" style="width:'+(p.ip/p.secs*100)+'%"></i></div><span class="mono muted" style="font-size:11.5px">'+p.ok+'/'+p.secs+' sections signed off</span>':'<span class="muted">Not started</span>')+'</td><td class="num '+(d>30?'late':'')+'">'+d+'</td></tr>'}).join('') : '<tr><td colspan="6" class="empty">No open assessments.</td></tr>')+'</tbody></table></div></section>';
+  return h;
+}
+
+/* ---------- Alerts ---------- */
+function vAlerts(al){
+  var types=[['all','All'],['reassess','Re-assessment'],['incident','Breaches & incidents'],['open','Open assessments'],['finding','Overdue remediation']];
+  var shown=al.filter(function(a){ return (S.afilter==='all'||a.type===S.afilter) && (S.showAck || a.state==='open' || a.state==='review') });
+  var h='<header class="page-h"><div><p class="eyebrow">Open alerts</p><h1 style="margin-top:6px">Alerts</h1><p class="lede">Re-assessment reminders (High risk yearly, Medium and Low every two years), out-of-band reviews when a vendor or one of its fourth parties has an incident, and assessments that haven’t closed.</p></div></header>';
+  h+='<div class="row" style="margin-bottom:14px;justify-content:space-between"><div class="afilters" style="margin:0">'+types.map(function(t){
+    var c=al.filter(function(a){return a.active&&(t[0]==='all'||a.type===t[0])}).length;
+    return '<button data-act="afilter" data-t="'+t[0]+'" aria-pressed="'+(S.afilter===t[0])+'">'+t[1]+'<span class="c">'+c+'</span></button>'}).join('')+'</div>'+
+    '<label class="check" style="font-size:13px"><input type="checkbox" id="showAck"'+(S.showAck?' checked':'')+'> Show acknowledged &amp; completed</label></div>';
+  h+='<div class="alerts" style="margin-bottom:26px">'+(shown.length?shown.map(function(a){
+    var lab={reassess:'Re-assessment',incident:'Incident · out-of-band',open:'Open assessment',finding:'Overdue remediation'}[a.type];
+    var acts=a.acts.map(function(x){ return '<button class="btn sm'+(x[2]&&a.state==='open'?' primary':'')+'" data-act="'+x[0]+'" data-id="'+a.v.id+'"'+(a.inc?' data-inc="'+a.inc.id+'"':'')+'>'+x[1]+'</button>' }).join('');
+    if(a.state==='open') acts+='<button class="btn sm ghost" data-act="ack" data-aid="'+esc(a.id)+'">Acknowledge</button>';
+    else if(a.state==='ack') acts+='<button class="btn sm ghost" data-act="unack" data-aid="'+esc(a.id)+'">Reopen</button>';
+    return '<div class="al sev-'+a.sev+(a.state==='ack'||a.state==='done'?' dim':'')+'"><span class="stripe"></span><div class="ty">'+lab+'<small>'+fd(a.date)+'</small></div><div class="body"><b>'+esc(a.title)+'</b><p><button class="link" data-act="openVendor" data-id="'+a.v.id+'">'+esc(a.v.name)+'</button> · '+tierPill(a.v.tier)+' · '+esc(a.detail)+
+      (a.state==='ack'?' <i>Acknowledged by '+esc(S.acks[a.id].by)+' '+fd(S.acks[a.id].at)+'.</i>':'')+(a.state==='done'?' <i>Out-of-band review completed '+fd(a.v.oob.closedAt)+'.</i>':'')+'</p></div><div class="acts">'+acts+'</div></div>';
+  }).join(''):'<div class="empty">No alerts in this view.</div>')+'</div>';
+  // incident log
+  var incs=Object.keys(S.incidents).map(function(k){return S.incidents[k]}).sort(function(a,b){return a.date<b.date?1:-1});
+  var parties=[]; list().forEach(function(v){ [v.name].concat(v.fourthParties||[]).forEach(function(p){ if(parties.indexOf(p)<0) parties.push(p) }) }); parties.sort();
+  h+='<div class="grid" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)"><section class="card"><div class="card-h"><h2>Breach &amp; incident log</h2><span class="sub">Matched against vendors and their fourth parties</span></div><div class="tablewrap" style="border:0"><table><thead><tr><th>Incident</th><th>Company</th><th>Severity</th><th>Vendors affected</th><th>Status</th></tr></thead><tbody>'+
+    (incs.length?incs.map(function(i){ var m=incidentMatches(i);
+      return '<tr><td style="min-width:200px"><span style="font-weight:500">'+esc(i.title)+'</span><span class="sub-id">'+esc(i.id)+' · '+fd(i.date)+' · '+esc(i.source)+'</span></td><td>'+esc(i.party)+'</td><td>'+sevPill(i.severity)+'</td><td>'+(m.length?'<button class="link" data-act="drill" data-drill="incident:'+i.id+'">'+plural(m.length,'vendor')+'</button><span class="sub-id">'+esc(m.map(function(x){return x.v.name}).join(', '))+'</span>':'<span class="muted">None</span>')+'</td>'+
+      '<td><button class="btn sm" data-act="toggleInc" data-inc="'+i.id+'">'+(i.status==='Closed'?'Closed · reopen':'Open · close')+'</button></td></tr>'}).join(''):'<tr><td colspan="5" class="empty">No incidents logged.</td></tr>')+'</tbody></table></div></section>';
+  h+='<section class="card"><div class="card-h"><h2>Log an incident</h2></div><p class="muted" style="font-size:12.5px;margin-bottom:12px">Record a breach reported by a vendor, a threat-intel feed or the press. Any vendor whose name or fourth parties match gets an out-of-band review alert.</p>'+
+    '<datalist id="partyList">'+parties.map(function(p){return '<option value="'+esc(p)+'">'}).join('')+'</datalist><div class="fields">'+
+    '<div class="f wide"><label for="niParty">Company affected</label><input type="text" id="niParty" list="partyList" placeholder="Vendor or fourth party"></div>'+
+    '<div class="f wide"><label for="niTitle">What happened</label><input type="text" id="niTitle"></div>'+
+    '<div class="f"><label for="niDate">Date</label><input type="date" id="niDate" value="'+TODAY+'"></div>'+
+    '<div class="f"><label for="niSev">Severity</label><select id="niSev"><option>Critical</option><option selected>High</option><option>Medium</option><option>Low</option></select></div>'+
+    '<div class="f wide"><label for="niSrc">Source</label><select id="niSrc"><option>Vendor notification</option><option>Threat-intel feed</option><option>Public disclosure</option><option>Internal detection</option><option>Regulator notice</option></select></div></div>'+
+    '<div id="niErr" style="color:var(--high);font-size:12.5px;margin-top:8px"></div><div class="row" style="margin-top:10px"><button class="btn primary" data-act="logInc">Log incident</button></div></section></div>';
+  return h;
+}
+
+/* ---------- actions ---------- */
+function toast(msg){ var t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(function(){t.hidden=true},3600) }
+function openModal(html){ var m=$('#modal'); m.innerHTML='<div class="modal-bg" data-act="bg"><div class="modal" role="dialog" aria-modal="true">'+html+'</div></div>'; m.hidden=false; var b=m.querySelector('.modal .btn.primary, .modal button'); if(b) b.focus() }
+function closeModal(){ var m=$('#modal'); m.hidden=true; m.innerHTML='' }
+document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !$('#modal').hidden) closeModal() });
+
+function startReview(v, type, incId){
+  if(!guardWrite()) return;
+  v=clone(v);
+  v.reviewType=type;
+  if(!v.ira){ v.stage='Inherent Risk'; }
+  else {
+    v.stage='Due Diligence'; v.q=v.q||{depth:T.DEPTH[v.tier],tier:v.tier,answers:{},sections:{}};
+    v.q.tier=v.tier; v.q.depth=T.DEPTH[v.tier]; v.q.startedAt=TODAY;
+    var scope = type==='Out-of-band' ? ['dataprot','iam','secops','fourth','resiliency','ai','dpia'] : null;
+    secs(v).forEach(function(s){ if(!scope || scope.indexOf(s.id)>=0) v.q.sections[s.id]={status:'Not started'} });
+    if(scope && secs(v).every(function(s){return secSt(v,s.id)==='Signed off'})) v.q.sections[secs(v)[0].id]={status:'Not started'};
+  }
+  if(incId) v.oob={incident:incId, at:TODAY};
+  log(v, type+' review started'+(incId?' after '+incId+' ('+S.incidents[incId].party+')':'')+'. Previous answers kept for re-confirmation.');
+  persist(v); toast(type+' review started for '+v.name+'.');
+  go('vendor',{id:v.id, tab:v.stage==='Inherent Risk'?'risk':'q'});
+}
+
+var ACT = {
+  nav:function(d){ if(d.view==='new') S.draft=null; go(d.view) },
+  openVendor:function(d){ go('vendor',{id:d.id}) },
+  openFindings:function(d){ go('vendor',{id:d.id, tab:'findings'}) },
+  tab:function(d){ S.p.tab=d.tab; S.p.sec=null; go('vendor',S.p) },
+  sec:function(d){ S.p.sec=d.sec; render(); var c=document.querySelector('.qwrap'); if(c && c.getBoundingClientRect().top<0) c.scrollIntoView({block:'start'}) },
+  closeModal:closeModal,
+  bg:function(d,el,e){ if(e.target===el) closeModal() },
+  sort:function(d){ if(S.sort.k===d.k) S.sort.dir*=-1; else { S.sort.k=d.k; S.sort.dir=1 } render() },
+  clearFilters:function(){ S.f={q:'',type:'',tier:'',stage:'',sev:'',team:'',review:''}; render() },
+  clearOne:function(d){ S.f[d.k]=''; render() },
+  drill:function(d){
+    if(d.drill==='alerts'){ S.afilter='incident'; go('alerts'); return }
+    S.f={q:'',type:'',tier:'',stage:'',sev:'',team:'',review:''};
+    if(d.drill!=='all') d.drill.split('|').forEach(function(p){ var i=p.indexOf(':'); S.f[p.slice(0,i)]=p.slice(i+1) });
+    go('inventory');
+  },
+  afilter:function(d){ S.afilter=d.t; render() },
+  ack:function(d){ if(!guardWrite()) return; S.acks[d.aid]={by:S.me,at:TODAY}; saveAcks(); render(); toast('Alert acknowledged.') },
+  unack:function(d){ if(!guardWrite()) return; delete S.acks[d.aid]; saveAcks(); render() },
+  startPeriodic:function(d){ startReview(S.vendors[d.id],'Periodic') },
+  startOOB:function(d){ startReview(S.vendors[d.id],'Out-of-band',d.inc) },
+
+  requestVendor:function(){
+    var o=readIntake(); if(!validateIntake(o,true)) return;
+    requestModal(o, S.view==='new');
+  },
+  copyReq:function(){
+    var ta=$('#reqBody');
+    function sel(){ ta.focus(); ta.select(); toast('Message selected — press Ctrl+C to copy.') }
+    try{ navigator.clipboard.writeText(ta.value).then(function(){toast('Message copied.')}, sel) }catch(e){ sel() }
+  },
+  markSent:function(d){
+    if(!guardWrite()) return;
+    var fields=Array.prototype.map.call(document.querySelectorAll('input[name=rq]:checked'),function(el){return el.value});
+    var o=readIntake(), v;
+    if(d['new']==='1'){ v=newVendorFrom(o); log(v,'Intake started'); }
+    else { v=applyIntake(clone(S.vendors[S.p.id]),o); }
+    v.vendorRequest={status:'Sent', sentAt:TODAY, fields:fields};
+    log(v,'Intake details requested from '+v.contact.name+' ('+v.contact.email+')');
+    persist(v); closeModal(); S.draft=null;
+    toast('Marked as sent. '+v.name+' is awaiting the vendor’s response.');
+    go('vendor',{id:v.id, tab:'intake'});
+  },
+  vendorResponded:function(){
+    if(!guardWrite()) return;
+    var v=applyIntake(clone(S.vendors[S.p.id]),readIntake());
+    v.vendorRequest.status='Completed'; v.vendorRequest.completedAt=TODAY;
+    log(v,'Vendor response received and recorded'); persist(v); render(); toast('Vendor response recorded. Submit the intake when it’s complete.');
+  },
+  submitIntake:function(){
+    if(!guardWrite()) return;
+    var o=readIntake(); if(!validateIntake(o,false)) return;
+    var v;
+    if(S.view==='new'){ v=newVendorFrom(o); log(v,'Intake submitted'); }
+    else { v=applyIntake(clone(S.vendors[S.p.id]),o); if(v.vendorRequest&&v.vendorRequest.status==='Sent') v.vendorRequest.status='Completed'; log(v,'Intake submitted'); }
+    v.stage='Inherent Risk'; persist(v); S.draft=null;
+    toast('Intake submitted. Next: the inherent risk assessment.');
+    go('vendor',{id:v.id, tab:'risk'});
+  },
+  saveIntake:function(){
+    if(!guardWrite()) return;
+    var o=readIntake(); if(!validateIntake(o,false)) return;
+    var v=applyIntake(clone(S.vendors[S.p.id]),o); log(v,'Intake details updated'); persist(v); render(); toast('Intake saved.');
+  },
+  confirmOverride:function(){
+    var tier=$('#ovTier').value, reason=$('#ovReason').value, just=$('#ovJust').value.trim(), ok=$('#ovConfirm').checked, err=$('#ovErr');
+    var a=readIRA(), sc=T.scoreIRA(a);
+    if(!sc.complete){ err.textContent='Answer every factor first.'; return }
+    if(!tier||!reason){ err.textContent='Choose the new tier and a reason code.'; return }
+    if(tier===sc.tier){ err.textContent='That is already the computed tier.'; return }
+    if(just.length<20){ err.textContent='Add a justification of at least 20 characters.'; return }
+    if(!ok){ err.textContent='Tick the confirmation to proceed.'; return }
+    err.textContent='';
+    S._ov={tier:tier,reason:reason,justification:just,a:a,sc:sc};
+    openModal('<h2>Override '+sc.tier+' → '+tier+'?</h2><p class="muted">The computed tier is <b>'+sc.tier+'</b> (score '+sc.pct+'). Overriding sets the questionnaire depth to <b>'+T.DEPTH[tier]+'</b> and the re-assessment cadence to '+(tier==='High'?'annual':'every two years')+'.</p>'+
+      '<dl class="kv" style="margin-top:14px">'+kv('Reason code',reason)+kv('Recorded by',S.me)+'</dl><p style="margin-top:10px;font-size:13px">“'+esc(just)+'”</p><div class="acts"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="applyOverride">Confirm override</button></div>');
+  },
+  applyOverride:function(){
+    if(!guardWrite()) return;
+    var o=S._ov, v=clone(S.vendors[S.p.id]);
+    v.ira={answers:stripNotes(o.a), notes:o.a.notes, pct:o.sc.pct, computedTier:o.sc.tier, by:(v.ira&&v.ira.by)||S.me, at:(v.ira&&v.ira.at)||TODAY,
+      override:{tier:o.tier, reason:o.reason, justification:o.justification, by:S.me, at:TODAY}};
+    if(v.stage!=='Inherent Risk') retier(v, o.tier); else v.tier=o.tier;
+    log(v,'Risk tier overridden '+o.sc.tier+' → '+o.tier+' ('+o.reason+')');
+    persist(v); closeModal(); render(); toast('Override recorded.');
+  },
+  removeOverride:function(){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]), was=v.ira.override.tier; v.ira.override=null;
+    if(v.stage!=='Inherent Risk') retier(v, v.ira.computedTier); else v.tier=v.ira.computedTier;
+    log(v,'Tier override removed ('+was+' → '+v.tier+')'); persist(v); render(); toast('Override removed.');
+  },
+  submitIRA:function(){
+    if(!guardWrite()) return;
+    var a=readIRA(), sc=T.scoreIRA(a);
+    if(!sc.complete){ toast('Answer every factor before submitting.'); var first=T.IRA_FACTORS.filter(function(f){return f.multi?!a.data.length:a[f.id]==null})[0]; var el=document.querySelector('input[name='+(first.multi?'data':first.id)+']'); if(el) el.scrollIntoView({block:'center'}); return }
+    var v=clone(S.vendors[S.p.id]), ov=v.ira&&v.ira.override;
+    v.ira={answers:stripNotes(a), notes:a.notes, pct:sc.pct, computedTier:sc.tier, override:ov||null, by:S.me, at:TODAY};
+    var tier=ov?ov.tier:sc.tier;
+    if(v.stage==='Inherent Risk'){
+      v.tier=tier;
+      v.q={depth:T.DEPTH[tier], tier:tier, startedAt:TODAY, answers:(v.q&&v.q.answers)||{}, sections:{}};
+      secs(v).forEach(function(s){ v.q.sections[s.id]={status:'Not started'} });
+      v.stage='Due Diligence';
+      log(v,'Inherent risk scored '+sc.tier+' ('+sc.pct+')'+(ov?'; override '+ov.tier+' applies':'')+'. '+T.DEPTH[tier]+' questionnaire issued.');
+      persist(v);
+      var ss=secs(v), teams=[]; ss.forEach(function(s){ if(teams.indexOf(s.team)<0) teams.push(s.team) });
+      var qn=ss.reduce(function(n,s){return n+s.qs.length},0);
+      openModal('<p class="eyebrow">Due diligence issued</p><h2 style="margin-top:6px">'+tier+' risk → '+T.DEPTH[tier]+' questionnaire</h2><p class="muted">'+esc(v.name)+' needs '+plural(ss.length,'section')+' and '+plural(qn,'question')+' reviewed by '+plural(teams.length,'team')+'.</p>'+
+        '<div class="stack" style="gap:0;margin-top:14px">'+ss.map(function(s){return '<div class="row" style="padding:7px 0;border-top:1px solid var(--line);flex-wrap:nowrap"><span style="flex:1">'+esc(s.title)+'</span><span class="muted" style="font-size:12.5px">'+esc(s.team)+'</span><span class="mono muted" style="width:28px;text-align:right">'+s.qs.length+'</span></div>'}).join('')+'</div>'+
+        '<div class="acts"><button class="btn" data-act="closeModal">Later</button><button class="btn primary" data-act="openQ">Open questionnaire</button></div>');
+      S.p.tab='q'; S.p.sec=null;
+    } else {
+      var changed = tier!==v.tier;
+      if(changed) retier(v,tier);
+      log(v,'Inherent risk updated: '+sc.tier+' ('+sc.pct+')'+(changed?'; tier now '+tier:'')); persist(v); render(); toast(changed?'Saved. Tier changed to '+tier+' — questionnaire scope updated.':'Inherent risk saved.');
+    }
+  },
+  openQ:function(){ closeModal(); go('vendor',{id:S.p.id, tab:'q'}) },
+  signSec:function(d){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]), s=secs(v).filter(function(x){return x.id===d.sec})[0];
+    var un=s.qs.filter(function(q){return !(v.q.answers[q.id]&&v.q.answers[q.id].v)});
+    if(un.length){ toast('Answer all questions before sign-off ('+un.map(function(q){return q.id.toUpperCase()}).join(', ')+' left).'); return }
+    var added=0;
+    s.qs.forEach(function(q){
+      var an=v.q.answers[q.id];
+      if(T.isGap(an.v) && !(v.findings||[]).some(function(f){return f.qid===q.id && f.status!=='Closed'})){
+        var sev=T.gapSeverity(q,an.v);
+        v.findings.push({id:nextFindingId(v), qid:q.id, title:q.gap, severity:sev, status:'Open', owner:(v.contact&&v.contact.name?v.contact.name+' (vendor)':''), due:T.addDays(TODAY,sev==='High'?30:sev==='Medium'?60:90), created:TODAY, section:s.id, note:an.note||''});
+        added++;
+      }
+    });
+    var cm=$('#secComment'); v.q.sections[s.id]={status:'Signed off', by:S.me, at:TODAY, comment:cm?cm.value.trim():''};
+    log(v,s.title+' signed off by '+s.team+(added?' — '+plural(added,'finding')+' raised':''));
+    var allDone=secs(v).every(function(x){return secSt(v,x.id)==='Signed off'});
+    if(allDone && v.stage==='Due Diligence'){ v.stage='Final Review'; log(v,'All sections signed off; ready for decision'); }
+    persist(v);
+    var next=secs(v).filter(function(x){return secSt(v,x.id)!=='Signed off'})[0];
+    S.p.sec = next?next.id:s.id; render();
+    toast(s.title+' signed off'+(added?' · '+plural(added,'finding')+' raised':'')+(allDone?' · ready for decision':''));
+  },
+  reopenSec:function(d){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]); v.q.sections[d.sec]={status:'In progress'};
+    if(v.stage==='Final Review') v.stage='Due Diligence';
+    log(v,sectionTitle(d.sec)+' reopened for edits'); persist(v); render();
+  },
+  addFinding:function(){
+    if(!guardWrite()) return;
+    var t=$('#nfTitle').value.trim(); if(!t){ toast('Describe the finding first.'); $('#nfTitle').focus(); return }
+    var v=clone(S.vendors[S.p.id]);
+    v.findings.push({id:nextFindingId(v), qid:null, title:t, severity:$('#nfSev').value, status:'Open', owner:$('#nfOwner').value.trim(), due:$('#nfDue').value, created:TODAY, section:$('#nfSec').value, note:''});
+    log(v,'Finding added: '+t); persist(v); render(); toast('Finding added.');
+  },
+  decide:function(){
+    if(!guardWrite()) return;
+    var el=document.querySelector('input[name=decision]:checked'); if(!el) return;
+    var v=clone(S.vendors[S.p.id]), out=el.value, note=$('#decNote').value.trim();
+    v.decision={outcome:out, by:S.me, at:TODAY, note:note};
+    if(out==='Rejected'){ v.stage='Rejected'; }
+    else {
+      v.stage = openF(v).length ? 'Remediation' : 'Onboarded';
+      v.lastAssessed=TODAY; v.nextReview=T.nextReview(v.tier,TODAY);
+    }
+    if(v.oob && !v.oob.closedAt) v.oob.closedAt=TODAY;
+    log(v,'Decision: '+out+(note?' — '+note:'')); persist(v);
+    toast(out==='Rejected'?v.name+' rejected.':v.name+' onboarded. Next review '+fd(v.nextReview)+'.');
+    go('vendor',{id:v.id, tab:'overview'});
+  },
+  completeOnboard:function(){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]); v.stage='Onboarded'; log(v,'Remediation complete; fully onboarded'); persist(v); render(); toast('Remediation complete.');
+  },
+  offboard:function(){
+    openModal('<h2>Offboard '+esc(S.vendors[S.p.id].name)+'?</h2><p class="muted">The vendor stays in the inventory for audit history but drops out of re-assessment and incident alerts. Confirm that access has been revoked and data returned or destroyed.</p><div class="acts"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="doOffboard">Offboard vendor</button></div>');
+  },
+  doOffboard:function(){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]); v.stage='Offboarded'; log(v,'Vendor offboarded'); persist(v); closeModal(); render(); toast('Vendor offboarded.');
+  },
+  resetDemo:function(){
+    openModal('<h2>Reset to the sample data?</h2><p class="muted">This replaces everything saved in this browser — vendors you added, questionnaire answers, findings, incidents and acknowledged alerts — with the original 20 sample vendors.</p><div class="acts"><button class="btn" data-act="closeModal">Cancel</button><button class="btn primary" data-act="doResetDemo">Reset sample data</button></div>');
+  },
+  doResetDemo:function(){
+    try{ localStorage.removeItem(LS_KEY) }catch(e){}
+    closeModal(); loadDemo(); go('home'); toast('Sample data restored.');
+  },
+  toggleInc:function(d){
+    if(!guardWrite()) return;
+    var i=clone(S.incidents[d.inc]); i.status = i.status==='Closed'?'Open':'Closed'; saveIncident(i); render();
+  },
+  logInc:function(){
+    if(!guardWrite()) return;
+    var party=$('#niParty').value.trim(), title=$('#niTitle').value.trim(), err=$('#niErr');
+    if(!party||!title){ err.textContent='Enter the company affected and what happened.'; return }
+    var yr=($('#niDate').value||TODAY).slice(0,4), m=0;
+    Object.keys(S.incidents).forEach(function(k){ var p=k.split('-'); if(p[1]===yr && +p[2]>m) m=+p[2] });
+    var inc={id:'INC-'+yr+'-'+String(m+1).padStart(3,'0'), party:party, title:title, date:$('#niDate').value||TODAY, severity:$('#niSev').value, source:$('#niSrc').value, status:'Open', loggedBy:S.me};
+    saveIncident(inc);
+    var n=incidentMatches(inc).length; S.afilter='incident'; render();
+    toast(inc.id+' logged — '+(n?plural(n,'vendor')+' flagged for out-of-band review.':'no vendors or fourth parties match that name.'));
+  }
+};
+function stripNotes(a){ var o=clone(a); delete o.notes; return o }
+function retier(v,tier){
+  v.tier=tier;
+  if(v.q){
+    v.q.tier=tier; v.q.depth=T.DEPTH[tier];
+    secs(v).forEach(function(s){ if(!v.q.sections[s.id]) v.q.sections[s.id]={status:'Not started'} });
+    if(v.stage==='Final Review' && !secs(v).every(function(s){return secSt(v,s.id)==='Signed off'})) v.stage='Due Diligence';
+  }
+  if(v.lastAssessed && (v.stage==='Onboarded'||v.stage==='Remediation')) v.nextReview=T.nextReview(tier,v.lastAssessed);
+}
+
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act]'); if(!el) return;
+  var fn=ACT[el.getAttribute('data-act')]; if(!fn) return;
+  if(el.tagName==='A') e.preventDefault();
+  fn(el.dataset, el, e);
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.id==='meName'){ S.me=t.value.trim()||'Cyber Governance'; try{localStorage.setItem('tprm-me',S.me)}catch(x){} render(); return }
+  if(t.id==='showAck'){ S.showAck=t.checked; render(); return }
+  if(t.dataset.filter){ S.f[t.dataset.filter]=t.value; render(); return }
+  if(t.closest && t.closest('#iraForm') && (t.type==='radio'||t.type==='checkbox')){ updateScore(); return }
+  if(t.dataset.q && t.type==='radio'){
+    if(!guardWrite()) return;
+    var v=clone(S.vendors[S.p.id]), cur=v.q.answers[t.dataset.q]||{};
+    v.q.answers[t.dataset.q]={v:t.value, note:cur.note||''};
+    var sid=T.QINDEX[t.dataset.q].section;
+    if(secSt(v,sid)==='Not started') v.q.sections[sid]={status:'In progress'};
+    persist(v); render(); return;
+  }
+  if(t.dataset.qnote){
+    if(!guardWrite()) return;
+    var v2=clone(S.vendors[S.p.id]), c2=v2.q.answers[t.dataset.qnote]||{};
+    v2.q.answers[t.dataset.qnote]={v:c2.v||'', note:t.value.trim()};
+    persist(v2); return;
+  }
+  if(t.dataset.fedit){
+    if(!guardWrite()) return;
+    var v3=clone(S.vendors[S.p.id]), f=v3.findings.filter(function(x){return x.id===t.dataset.fid})[0];
+    var old=f[t.dataset.fedit]; f[t.dataset.fedit]=t.value;
+    if(t.dataset.fedit==='status') log(v3,f.id.split('-').pop()+' '+old+' → '+t.value);
+    persist(v3); if(t.dataset.fedit!=='owner') render(); return;
+  }
+  if(t.name==='rq') regenReq();
+});
+document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.id==='invSearch'){ S.f.q=t.value; var pos=t.selectionStart; render(); var n=$('#invSearch'); n.focus(); try{n.setSelectionRange(pos,pos)}catch(x){} }
+  if(S.view==='new' && t.closest && t.closest('#intakeForm')){ clearTimeout(S._dt); S._dt=setTimeout(function(){ S.draft=readIntake() },250) }
+});
+function regenReq(){
+  var ta=$('#reqBody'); if(!ta) return;
+  var fields=Array.prototype.map.call(document.querySelectorAll('input[name=rq]:checked'),function(el){return el.value});
+  ta.value=ta.value.replace(/(please reply with:\n\n)[\s\S]*?(\n\nA due-diligence)/, '$1'+fields.map(function(x){return '• '+x}).join('\n')+'$2');
+}
+
+$('#meName').value=S.me;
+renderModeNote();
+initData();
+})();
+</script>
