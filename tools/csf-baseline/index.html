@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CSF 2.0 Baseline — a NIST Cybersecurity Framework 2.0 self-assessment across all 22 categories, with current and target maturity, a function profile, category heatmap and priority gaps.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>html,body{margin:0}[hidden]{display:none!important}</style>
+<title>CSF 2.0 Baseline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap">
+<style>
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --surface-2:#eaeef2; --line:#d5dce3; --line-soft:#e4e9ee;
+  --ink:#0f1720; --ink-2:#48525e; --ink-3:#6c7682;
+  --accent:#1f5fae; --accent-soft:#dce8f7; --focus:#1f5fae;
+  --cur:#2a78d6; --cur-fill:rgba(42,120,214,.18); --tgt:#0f1720;
+  --seq-0:#eef1f4; --seq-1:#cde2fb; --seq-2:#86b6ef; --seq-3:#3987e5; --seq-4:#1c5cab;
+  --seq-ink-dark:#0f1720; --seq-ink-light:#ffffff;
+  --good:#2f7d3e; --good-bg:#e1f1e4; --warn:#9a6200; --warn-bg:#fbefd6; --crit:#b3261e; --crit-bg:#fbe3e1;
+  --f-gv:#b58a00; --f-id:#2a78d6; --f-pr:#6a4bbd; --f-de:#d0661f; --f-rs:#c0392b; --f-rc:#2f8f46;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0e1318; --surface:#151c23; --surface-2:#1c252e; --line:#2b3642; --line-soft:#222c36;
+    --ink:#eef2f6; --ink-2:#b3bdc8; --ink-3:#8793a0;
+    --accent:#6ea8ee; --accent-soft:#1d3148; --focus:#6ea8ee;
+    --cur:#3987e5; --cur-fill:rgba(57,135,229,.25); --tgt:#eef2f6;
+    --seq-0:#1c252e; --seq-1:#1d3a5c; --seq-2:#1c5cab; --seq-3:#3987e5; --seq-4:#86b6ef;
+    --seq-ink-dark:#0e1318; --seq-ink-light:#eef2f6;
+    --good:#6cc27d; --good-bg:#16301c; --warn:#e0a53a; --warn-bg:#352812; --crit:#f07a70; --crit-bg:#3a1a18;
+    --f-gv:#e0b52e; --f-id:#6ea8ee; --f-pr:#a08ae6; --f-de:#ec8a4a; --f-rs:#ef6f62; --f-rc:#5cbf72;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0e1318; --surface:#151c23; --surface-2:#1c252e; --line:#2b3642; --line-soft:#222c36;
+  --ink:#eef2f6; --ink-2:#b3bdc8; --ink-3:#8793a0;
+  --accent:#6ea8ee; --accent-soft:#1d3148; --focus:#6ea8ee;
+  --cur:#3987e5; --cur-fill:rgba(57,135,229,.25); --tgt:#eef2f6;
+  --seq-0:#1c252e; --seq-1:#1d3a5c; --seq-2:#1c5cab; --seq-3:#3987e5; --seq-4:#86b6ef;
+  --seq-ink-dark:#0e1318; --seq-ink-light:#eef2f6;
+  --good:#6cc27d; --good-bg:#16301c; --warn:#e0a53a; --warn-bg:#352812; --crit:#f07a70; --crit-bg:#3a1a18;
+  --f-gv:#e0b52e; --f-id:#6ea8ee; --f-pr:#a08ae6; --f-de:#ec8a4a; --f-rs:#ef6f62; --f-rc:#5cbf72;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;margin:0;font-weight:700;letter-spacing:-.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--ink-3)}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+
+/* Header */
+header.top{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-end;justify-content:space-between;padding-block:28px 18px;border-bottom:1px solid var(--line)}
+header.top h1{font-size:30px;line-height:1.1}
+header.top p{margin:6px 0 0;color:var(--ink-2);max-width:60ch}
+.meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:min(100%,460px)}
+.meta label{display:flex;flex-direction:column;gap:4px}
+.meta input{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0;width:100%}
+
+/* Toolbar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding-block:12px;border-bottom:1px solid var(--line-soft)}
+.tabs{display:inline-flex;background:var(--surface-2);border-radius:8px;padding:3px;gap:2px}
+.tabs button{border:0;background:transparent;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:500;color:var(--ink-2)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13.5px}
+.btn:hover{border-color:var(--ink-3)}
+.btn.danger{color:var(--crit)}
+.save-state{font-size:12.5px;color:var(--ink-3);display:inline-flex;gap:6px;align-items:center;margin-right:6px}
+.save-state::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.save-state[data-s="saved"]::before{background:var(--good)}
+.save-state[data-s="saving"]::before{background:var(--warn)}
+.save-state[data-s="error"]::before{background:var(--crit)}
+
+.notice{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:16px;padding:10px 14px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);font-size:13.5px;color:var(--ink-2)}
+.notice strong{color:var(--ink)}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--crit-bg);color:var(--ink);font-size:13.5px}
+
+/* Scale legend */
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:18px}
+.scale div{background:var(--surface);border:1px solid var(--line-soft);border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--ink-2)}
+.scale b{display:block;font:600 13px var(--sans);color:var(--ink);margin-bottom:2px}
+.scale .n{font-family:var(--mono);color:var(--accent);margin-right:6px}
+
+/* Assessment */
+.fn{margin-top:28px}
+.fn-head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding-bottom:10px;border-bottom:2px solid var(--fc)}
+.fn-head h2{font-size:22px}
+.fn-head .code{font:600 13px var(--mono);color:var(--fc)}
+.fn-head p{margin:0;color:var(--ink-2);font-size:13.5px;flex-basis:100%;max-width:80ch}
+.fn-head .fn-score{margin-left:auto;font:500 13px var(--mono);color:var(--ink-2)}
+.cat{display:grid;grid-template-columns:minmax(0,1.5fr) auto auto;gap:10px 22px;align-items:start;padding-block:16px;border-bottom:1px solid var(--line-soft)}
+.cat .id{font:500 12.5px var(--mono);color:var(--ink-3)}
+.cat h3{font:600 15.5px/1.3 var(--sans);margin:2px 0 4px}
+.cat .q{margin:0;color:var(--ink-2);font-size:13.5px;max-width:62ch}
+.cat .notes{grid-column:1/-1}
+.cat textarea{width:100%;min-height:36px;resize:vertical;background:var(--surface);border:1px solid var(--line-soft);border-radius:6px;padding:7px 9px;font-size:13.5px}
+.cat textarea::placeholder{color:var(--ink-3)}
+.ctl{display:flex;flex-direction:column;gap:5px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--surface)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{min-width:34px;padding:6px 0;text-align:center;cursor:pointer;font:500 13.5px var(--mono);color:var(--ink-2);border-left:1px solid var(--line-soft)}
+.seg label:first-of-type{border-left:0}
+.seg input:checked+label{background:var(--accent);color:#fff}
+.seg input:focus-visible+label{outline:2px solid var(--focus);outline-offset:-2px}
+.seg label:hover{background:var(--surface-2)}
+.seg input:checked+label:hover{background:var(--accent)}
+.ctl .lvl{font-size:12px;color:var(--ink-3);min-height:1.2em}
+.ctl select{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:13.5px}
+
+/* Dashboard */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px}
+.kpi{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:14px 16px}
+.kpi .v{font:600 30px/1.1 var(--serif);margin-top:8px;font-variant-numeric:tabular-nums}
+.kpi .v small{font:500 14px var(--sans);color:var(--ink-3);margin-left:4px}
+.kpi .s{font-size:12.5px;color:var(--ink-2);margin-top:4px}
+.meter{height:6px;border-radius:3px;background:var(--surface-2);margin-top:10px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--cur);border-radius:3px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;margin-top:16px}
+.panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:16px 18px;min-width:0}
+.panel h3{font-size:17px}
+.panel .sub{font-size:12.5px;color:var(--ink-3);margin:3px 0 10px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:10px;border-radius:2px}
+.sw.cur{background:var(--cur)}
+.sw.tgt{border:2px dashed var(--tgt);height:10px}
+.sw.tick{width:3px;height:14px;background:var(--tgt)}
+svg text{fill:var(--ink-2);font-family:var(--sans)}
+.radar-wrap{max-width:420px;margin:0 auto}
+.fbars{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.fbar{display:grid;grid-template-columns:118px minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:13.5px}
+.fbar .nm{display:flex;gap:8px;align-items:center}
+.fbar .nm i{width:8px;height:8px;border-radius:2px;background:var(--fc);flex:none}
+.track{position:relative;height:18px;background:var(--surface-2);border-radius:4px}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:var(--cur);border-radius:0 4px 4px 0}
+.track .tk{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;background:var(--tgt);border-radius:1px}
+.track .gl{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.fbar .val{font:500 12.5px var(--mono);color:var(--ink-2);text-align:right;font-variant-numeric:tabular-nums}
+.axis{display:grid;grid-template-columns:118px minmax(0,1fr) 92px;gap:10px;font:11px var(--mono);color:var(--ink-3)}
+.axis .ticks{position:relative;height:14px}
+.axis .ticks span{position:absolute;transform:translateX(-50%)}
+
+.heat{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:6px}
+.heat .col h4{margin:0 0 6px;font:600 12px var(--mono);color:var(--fc);letter-spacing:.04em}
+.heat .cells{display:flex;flex-direction:column;gap:3px}
+.cell{border-radius:5px;padding:7px 8px;font:500 12px/1.2 var(--mono);display:flex;justify-content:space-between;gap:6px;cursor:default;border:1px solid transparent}
+.cell.na{background:transparent;border:1px dashed var(--line);color:var(--ink-3)}
+.heat-legend{display:flex;align-items:center;gap:4px;margin-top:12px;font:11px var(--mono);color:var(--ink-3);flex-wrap:wrap}
+.heat-legend .sw{width:22px;height:12px}
+
+.tablewrap{overflow-x:auto;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+th{text-align:left;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td .cid{font:500 12px var(--mono);color:var(--ink-3);display:block}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.good{background:var(--good-bg);color:var(--good)}
+.pill.na{background:var(--surface-2);color:var(--ink-3)}
+.empty{padding:18px;text-align:center;color:var(--ink-3);font-size:13.5px}
+
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;padding:7px 10px;border-radius:6px;max-width:260px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);max-width:90ch}
+
+@media (max-width:900px){
+  .grid2{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .heat{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .meta{grid-template-columns:1fr}
+  .scale{grid-template-columns:1fr 1fr}
+  .cat{grid-template-columns:1fr}
+  .heat{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fbar,.axis{grid-template-columns:84px minmax(0,1fr) 70px}
+  header.top h1{font-size:25px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .track .fill,.meter i{transition:width .35s ease}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">NIST Cybersecurity Framework 2.0 · Category-level self-assessment</div>
+      <h1 style="margin-top:8px">CSF 2.0 Baseline</h1>
+      <p>Rate current and target maturity for each of the 22 CSF categories. The dashboard updates as you go.</p>
+    </div>
+    <div class="meta">
+      <label><span class="eyebrow">Organization</span><input id="m-org" type="text" placeholder="Organization name"></label>
+      <label><span class="eyebrow">Assessor</span><input id="m-who" type="text" placeholder="Name / team"></label>
+      <label><span class="eyebrow">Date</span><input id="m-date" type="date"></label>
+    </div>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist">
+      <button id="tab-assess" role="tab" aria-selected="true" aria-controls="view-assess">Assess</button>
+      <button id="tab-dash" role="tab" aria-selected="false" aria-controls="view-dash">Dashboard</button>
+    </div>
+    <div class="actions">
+      <span class="save-state" id="save-state" data-s="idle">Not saved yet</span>
+      <button class="btn" id="btn-csv">Export CSV</button>
+      <button class="btn" id="btn-json">Export JSON</button>
+      <label class="btn" for="imp" style="display:inline-block">Import JSON</label>
+      <input id="imp" type="file" accept="application/json,.json" hidden>
+      <button class="btn danger" id="btn-reset">Start blank</button>
+    </div>
+  </div>
+
+  <div id="confirm" class="confirm" hidden>
+    <span>Clear every rating, target and note? This replaces the saved assessment.</span>
+    <button class="btn danger" id="confirm-yes">Clear assessment</button>
+    <button class="btn" id="confirm-no">Cancel</button>
+  </div>
+  <div id="example-note" class="notice" hidden>
+    <span><strong>Example assessment.</strong> These ratings are illustrative sample data, not your organization's results. Edit any rating to make it yours, or start blank.</span>
+  </div>
+  <div id="msg" class="notice" hidden></div>
+
+  <section id="view-assess" role="tabpanel" aria-labelledby="tab-assess">
+    <div class="scale" id="scale"></div>
+    <div id="fns"></div>
+  </section>
+
+  <section id="view-dash" role="tabpanel" aria-labelledby="tab-dash" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Function profile</h3>
+        <div class="sub">Average maturity per function, 0–4 scale</div>
+        <div class="radar-wrap" id="radar"></div>
+        <div class="legend"><span><i class="sw cur"></i>Current profile</span><span><i class="sw tgt"></i>Target profile</span></div>
+      </div>
+      <div class="panel">
+        <h3>Current vs. target by function</h3>
+        <div class="sub">Bar = current average · marker = target average</div>
+        <div class="fbars" id="fbars"></div>
+        <div class="legend" style="margin-top:14px"><span><i class="sw cur"></i>Current</span><span><i class="sw tick"></i>Target</span></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>Category heatmap</h3>
+      <div class="sub">Current maturity for all 22 categories — hover a cell for detail</div>
+      <div class="heat" id="heat"></div>
+      <div class="heat-legend" id="heat-legend"></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>Priority gaps</h3>
+      <div class="sub">Categories ranked by gap between target and current. Largest gaps first.</div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Category</th><th>Function</th><th>Current</th><th>Target</th><th>Gap</th><th>Priority</th><th>Notes</th></tr></thead>
+        <tbody id="gaps"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <footer>
+    Categories and identifiers follow NIST CSF 2.0 (CSWP 29, February 2024). The 0–4 scale borrows the CSF implementation tier names (Partial, Risk Informed, Repeatable, Adaptive) and applies them per category, a common practice for self-assessment — it is not an official NIST scoring method. Guiding questions summarize each category's outcomes; consult the framework's subcategories for full detail.
+  </footer>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const LEVELS = [
+  {n:0, name:"Not in place", d:"No practice exists or it is entirely ad hoc."},
+  {n:1, name:"Partial", d:"Informal, reactive, inconsistently applied."},
+  {n:2, name:"Risk Informed", d:"Approved by management but not organization-wide."},
+  {n:3, name:"Repeatable", d:"Formal policy, consistently applied and reviewed."},
+  {n:4, name:"Adaptive", d:"Continuously improved using lessons and indicators."}
+];
+const FNS = [
+  {id:"GV", name:"Govern", c:"--f-gv", d:"The organization's cybersecurity risk management strategy, expectations, and policy are established, communicated, and monitored.", cats:[
+    ["GV.OC","Organizational Context",5,"Are mission, stakeholder expectations, and legal and regulatory requirements understood and used to inform cybersecurity risk decisions?"],
+    ["GV.RM","Risk Management Strategy",7,"Are risk appetite, tolerance and priorities established, communicated, and used to guide operational risk decisions?"],
+    ["GV.RR","Roles, Responsibilities, and Authorities",4,"Are cybersecurity roles and authorities defined, resourced, and accountable — with leadership owning the outcome?"],
+    ["GV.PO","Policy",2,"Is cybersecurity policy set from context and strategy, communicated, enforced, and kept current?"],
+    ["GV.OV","Oversight",3,"Are the results of risk management activities reviewed and used to adjust strategy and direction?"],
+    ["GV.SC","Cybersecurity Supply Chain Risk Management",10,"Are supplier and third-party cyber risks identified, built into contracts, and managed across the relationship lifecycle?"]
+  ]},
+  {id:"ID", name:"Identify", c:"--f-id", d:"The organization's current cybersecurity risks are understood.", cats:[
+    ["ID.AM","Asset Management",7,"Are hardware, software, services, data, and systems inventoried and managed in line with their criticality?"],
+    ["ID.RA","Risk Assessment",10,"Are vulnerabilities, threats, likelihood, and impact understood well enough to prioritize responses?"],
+    ["ID.IM","Improvement",4,"Are improvements identified from assessments, exercises, and incidents — and acted on?"]
+  ]},
+  {id:"PR", name:"Protect", c:"--f-pr", d:"Safeguards to manage the organization's cybersecurity risks are used.", cats:[
+    ["PR.AA","Identity Management, Authentication, and Access Control",6,"Are identities and credentials managed, users and devices authenticated, and access limited to least privilege?"],
+    ["PR.AT","Awareness and Training",2,"Are personnel, including privileged users, trained to perform their tasks with cybersecurity risk in mind?"],
+    ["PR.DS","Data Security",4,"Is data protected at rest, in transit, and in use, with backups created, protected, and tested?"],
+    ["PR.PS","Platform Security",6,"Are hardware, software, and services configured, patched, and maintained securely, with logs generated?"],
+    ["PR.IR","Technology Infrastructure Resilience",4,"Are networks and environments architected for resilience, adequate capacity, and protection from unauthorized access?"]
+  ]},
+  {id:"DE", name:"Detect", c:"--f-de", d:"Possible cybersecurity attacks and compromises are found and analyzed.", cats:[
+    ["DE.CM","Continuous Monitoring",5,"Are networks, users, endpoints, and external service providers monitored for adverse activity?"],
+    ["DE.AE","Adverse Event Analysis",6,"Are anomalies analyzed, correlated, and escalated so that incidents are declared promptly?"]
+  ]},
+  {id:"RS", name:"Respond", c:"--f-rs", d:"Actions regarding a detected cybersecurity incident are taken.", cats:[
+    ["RS.MA","Incident Management",5,"Is the incident response plan executed with triage, prioritization, escalation, and clear criteria?"],
+    ["RS.AN","Incident Analysis",4,"Are investigations performed to establish root cause and scope while preserving evidence?"],
+    ["RS.CO","Incident Response Reporting and Communication",2,"Are internal and external stakeholders notified as required by law, contract, and policy?"],
+    ["RS.MI","Incident Mitigation",2,"Are incidents contained and eradicated effectively?"]
+  ]},
+  {id:"RC", name:"Recover", c:"--f-rc", d:"Assets and operations affected by a cybersecurity incident are restored.", cats:[
+    ["RC.RP","Incident Recovery Plan Execution",6,"Are recovery activities performed to restore systems and services, with integrity verified before return to normal?"],
+    ["RC.CO","Incident Recovery Communication",2,"Is recovery progress communicated to internal and external stakeholders as appropriate?"]
+  ]}
+];
+const CATS = FNS.flatMap(f => f.cats.map(c => ({id:c[0], name:c[1], subs:c[2], q:c[3], fn:f})));
+
+const EXAMPLE = {
+  example:true,
+  meta:{org:"Example Co. (sample)", who:"Security team", date:new Date().toISOString().slice(0,10)},
+  scores:{
+    "GV.OC":[2,3],"GV.RM":[1,3],"GV.RR":[2,3],"GV.PO":[3,3],"GV.OV":[1,3],"GV.SC":[1,3],
+    "ID.AM":[2,4],"ID.RA":[2,3],"ID.IM":[1,3],
+    "PR.AA":[3,4],"PR.AT":[2,3],"PR.DS":[3,3],"PR.PS":[2,3],"PR.IR":[2,3],
+    "DE.CM":[2,3],"DE.AE":[1,3],
+    "RS.MA":[2,3],"RS.AN":[1,3],"RS.CO":[2,3],"RS.MI":[2,3],
+    "RC.RP":[1,3],"RC.CO":[1,2]
+  },
+  notes:{"GV.SC":"No tiering of suppliers; contract clauses vary.","ID.AM":"CMDB covers servers only; SaaS not inventoried.","DE.AE":"SIEM alerts triaged manually, no correlation rules.","RC.RP":"Restore tests not run in the last 12 months."}
+};
+function blank(){
+  const s={}; CATS.forEach(c=>s[c.id]=[null,3]);
+  return {example:false, meta:{org:"",who:"",date:new Date().toISOString().slice(0,10)}, scores:s, notes:{}};
+}
+function normalize(d){
+  const b=blank(); if(!d||typeof d!=="object") return b;
+  b.example=!!d.example;
+  if(d.meta) Object.assign(b.meta, {org:String(d.meta.org||""), who:String(d.meta.who||""), date:String(d.meta.date||b.meta.date)});
+  const ok=v=>v===null||(Number.isInteger(v)&&v>=0&&v<=4);
+  CATS.forEach(c=>{const v=d.scores&&d.scores[c.id]; if(Array.isArray(v)&&ok(v[0])&&ok(v[1])) b.scores[c.id]=[v[0], v[1]===null?3:v[1]];
+    const n=d.notes&&d.notes[c.id]; if(typeof n==="string"&&n) b.notes[c.id]=n.slice(0,2000);});
+  return b;
+}
+
+let state = normalize(JSON.parse(JSON.stringify(EXAMPLE)));
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const fmt = v => v==null ? "—" : v.toFixed(1);
+
+/* ---------- persistence ---------- */
+const LS_KEY="csf2-baseline-v1";
+let db=null, docRef=null, saveTimer=null, saving=false, pending=false;
+function setSave(s, text){ const el=$("save-state"); el.dataset.s=s; el.textContent=text; }
+function lsWrite(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); return true; }catch(e){ return false; } }
+function lsRead(){ try{ const r=localStorage.getItem(LS_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+function scheduleSave(){ clearTimeout(saveTimer); setSave("saving","Unsaved changes…"); saveTimer=setTimeout(flush, 900); }
+async function flush(){
+  if(saving){ pending=true; return; }
+  const local=lsWrite();
+  if(!docRef){ setSave(local?"saved":"error", local?"Saved in this browser":"Not saved — export to keep"); return; }
+  saving=true; setSave("saving","Saving…");
+  try{ await docRef.set({...state, updatedAt:new Date().toISOString()}); setSave("saved","Saved"); }
+  catch(e){ setSave(local?"saved":"error", local?"Saved in this browser only":"Save failed — export to keep"); }
+  saving=false; if(pending){ pending=false; flush(); }
+}
+function touched(){ if(state.example){ state.example=false; $("example-note").hidden=true; } scheduleSave(); renderDash(); renderFnScores(); }
+
+/* ---------- assess view ---------- */
+function renderScale(){
+  $("scale").innerHTML = LEVELS.map(l=>`<div><b><span class="n">${l.n}</span>${l.name}</b>${l.d}</div>`).join("");
+}
+function renderAssess(){
+  $("fns").innerHTML = FNS.map(f=>`
+    <section class="fn" style="--fc:var(${f.c})">
+      <div class="fn-head"><span class="code">${f.id}</span><h2>${f.name}</h2><span class="fn-score" id="fs-${f.id}"></span><p>${f.d}</p></div>
+      ${f.cats.map(c=>catRow(c[0],c[1],c[2],c[3])).join("")}
+    </section>`).join("");
+  renderFnScores();
+}
+function catRow(id,name,subs,q){
+  const [cur,tgt]=state.scores[id]; const k=id.replace(".","_");
+  const radios=[null,0,1,2,3,4].map(v=>{const val=v==null?"na":v; const rid=`c-${k}-${val}`;
+    return `<input type="radio" name="c-${k}" id="${rid}" value="${val}" ${cur===v?"checked":""} data-cat="${id}"><label for="${rid}" title="${v==null?"Not assessed":LEVELS[v].name}">${v==null?"–":v}</label>`}).join("");
+  return `<div class="cat">
+    <div><div class="id">${id} · ${subs} subcategories</div><h3>${esc(name)}</h3><p class="q">${esc(q)}</p></div>
+    <div class="ctl"><span class="eyebrow">Current</span><div class="seg" role="radiogroup" aria-label="${id} current maturity">${radios}</div><span class="lvl" id="lvl-${k}">${cur==null?"Not assessed":LEVELS[cur].name}</span></div>
+    <div class="ctl"><label class="eyebrow" for="t-${k}">Target</label><select id="t-${k}" data-cat="${id}">${LEVELS.map(l=>`<option value="${l.n}" ${tgt===l.n?"selected":""}>${l.n} · ${l.name}</option>`).join("")}</select></div>
+    <div class="notes"><textarea id="n-${k}" data-cat="${id}" rows="1" placeholder="Evidence, owner, or next step (optional)">${esc(state.notes[id]||"")}</textarea></div>
+  </div>`;
+}
+function renderFnScores(){
+  FNS.forEach(f=>{const s=fnStats(f); const el=$("fs-"+f.id); if(el) el.textContent=`${s.rated}/${f.cats.length} rated · current ${fmt(s.cur)} · target ${fmt(s.tgt)}`;});
+}
+$("fns").addEventListener("change", e=>{
+  const t=e.target, id=t.dataset.cat; if(!id) return;
+  const k=id.replace(".","_");
+  if(t.type==="radio"){ const v=t.value==="na"?null:+t.value; state.scores[id][0]=v; $("lvl-"+k).textContent=v==null?"Not assessed":LEVELS[v].name; touched(); }
+  else if(t.tagName==="SELECT"){ state.scores[id][1]=+t.value; touched(); }
+});
+$("fns").addEventListener("input", e=>{
+  const t=e.target; if(t.tagName!=="TEXTAREA") return;
+  const v=t.value.slice(0,2000); if(v) state.notes[t.dataset.cat]=v; else delete state.notes[t.dataset.cat]; touched();
+});
+["org","who","date"].forEach(k=>$("m-"+k).addEventListener("input", e=>{ state.meta[k]=e.target.value; touched(); }));
+function renderMeta(){ $("m-org").value=state.meta.org; $("m-who").value=state.meta.who; $("m-date").value=state.meta.date; }
+
+/* ---------- stats ---------- */
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+function fnStats(f){
+  const rows=f.cats.map(c=>state.scores[c[0]]);
+  const rated=rows.filter(r=>r[0]!=null);
+  return {rated:rated.length, cur:avg(rated.map(r=>r[0])), tgt:avg(rows.map(r=>r[1])), tgtRated:avg(rated.map(r=>r[1]))};
+}
+function priority(gap, cur){
+  if(cur==null) return {k:"na", t:"Not assessed"};
+  if(gap>=2) return {k:"crit", t:"▲ High"};
+  if(gap>=1) return {k:"warn", t:"● Medium"};
+  return {k:"good", t:"✓ On target"};
+}
+
+/* ---------- dashboard ---------- */
+function renderDash(){
+  const all=CATS.map(c=>({...c, cur:state.scores[c.id][0], tgt:state.scores[c.id][1]}));
+  const rated=all.filter(c=>c.cur!=null);
+  const oc=avg(rated.map(c=>c.cur)), ot=avg(rated.map(c=>c.tgt));
+  const met=rated.filter(c=>c.cur>=c.tgt).length;
+  const high=rated.filter(c=>c.tgt-c.cur>=2).length;
+  const pct=Math.round(rated.length/CATS.length*100);
+  $("kpis").innerHTML = `
+    <div class="kpi"><div class="eyebrow">Overall maturity</div><div class="v">${fmt(oc)}<small>/ 4</small></div><div class="s">${oc==null?"No categories rated":LEVELS[Math.floor(oc)].name+" on average"}</div></div>
+    <div class="kpi"><div class="eyebrow">Target (rated)</div><div class="v">${fmt(ot)}<small>/ 4</small></div><div class="s">Average gap ${oc==null?"—":(ot-oc).toFixed(1)} levels</div></div>
+    <div class="kpi"><div class="eyebrow">Targets met</div><div class="v">${met}<small>of ${rated.length}</small></div><div class="s">${high} high-priority gap${high===1?"":"s"} (≥2 levels)</div></div>
+    <div class="kpi"><div class="eyebrow">Completion</div><div class="v">${pct}<small>%</small></div><div class="meter"><i style="width:${pct}%"></i></div><div class="s">${rated.length} of ${CATS.length} categories rated</div></div>`;
+  renderRadar(); renderBars(); renderHeat(all); renderGaps(all);
+}
+function renderRadar(){
+  const W=420,H=380,cx=W/2,cy=H/2+4,R=132, n=FNS.length;
+  const ang=i=>-Math.PI/2+i*2*Math.PI/n;
+  const pt=(i,v)=>[cx+Math.cos(ang(i))*R*v/4, cy+Math.sin(ang(i))*R*v/4];
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Radar chart of current versus target maturity by function">`;
+  for(let r=1;r<=4;r++){ s+=`<polygon points="${FNS.map((_,i)=>pt(i,r).join(",")).join(" ")}" fill="none" stroke="var(--line)" stroke-width="1"/>`; }
+  FNS.forEach((f,i)=>{const [x,y]=pt(i,4); s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;});
+  for(let r=1;r<=4;r++){ s+=`<text x="${cx+4}" y="${cy-R*r/4-3}" font-size="10" style="fill:var(--ink-3)" font-family="IBM Plex Mono,monospace">${r}</text>`; }
+  const stats=FNS.map(fnStats);
+  const tgtPts=stats.map((st,i)=>pt(i,st.tgt??0).join(",")).join(" ");
+  s+=`<polygon points="${tgtPts}" fill="none" stroke="var(--tgt)" stroke-width="2" stroke-dasharray="5 4"/>`;
+  if(stats.some(st=>st.cur!=null)){
+    const curPts=stats.map((st,i)=>pt(i,st.cur??0).join(",")).join(" ");
+    s+=`<polygon points="${curPts}" fill="var(--cur-fill)" stroke="var(--cur)" stroke-width="2" stroke-linejoin="round"/>`;
+    stats.forEach((st,i)=>{ if(st.cur==null) return; const [x,y]=pt(i,st.cur);
+      s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="var(--cur)" stroke="var(--surface)" stroke-width="2"/>`;});
+  }
+  FNS.forEach((f,i)=>{const [x,y]=pt(i,4.62); const a=Math.cos(ang(i)); const anchor=Math.abs(a)<.2?"middle":(a>0?"start":"end");
+    const st=stats[i];
+    s+=`<g data-tip="${esc(f.name)}: current ${fmt(st.cur)}, target ${fmt(st.tgt)} (${st.rated}/${f.cats.length} rated)">
+      <circle cx="${pt(i,4)[0]}" cy="${pt(i,4)[1]}" r="16" fill="transparent"/>
+      <text x="${x}" y="${y-2}" text-anchor="${anchor}" font-size="13" font-weight="600" style="fill:var(--ink)">${f.name}</text>
+      <text x="${x}" y="${y+13}" text-anchor="${anchor}" font-size="11" font-family="IBM Plex Mono,monospace" style="fill:var(--ink-3)">${fmt(st.cur)} / ${fmt(st.tgt)}</text></g>`;});
+  $("radar").innerHTML=s+"</svg>";
+}
+function renderBars(){
+  const ticks=[0,1,2,3,4];
+  $("fbars").innerHTML = FNS.map(f=>{const st=fnStats(f);
+    return `<div class="fbar" style="--fc:var(${f.c})" data-tip="${esc(f.name)}: current ${fmt(st.cur)}, target ${fmt(st.tgt)} · ${st.rated}/${f.cats.length} categories rated">
+      <span class="nm"><i></i>${f.name}</span>
+      <div class="track">${[1,2,3].map(t=>`<span class="gl" style="left:${t*25}%"></span>`).join("")}
+        <span class="fill" style="width:${(st.cur??0)*25}%"></span><span class="tk" style="left:${st.tgt*25}%"></span></div>
+      <span class="val">${fmt(st.cur)} → ${fmt(st.tgt)}</span></div>`;}).join("")
+    + `<div class="axis"><span></span><div class="ticks">${ticks.map(t=>`<span style="left:${t*25}%">${t}</span>`).join("")}</div><span></span></div>`;
+}
+function heatStyle(v){ if(v==null) return ""; const ink=v>=3?"var(--seq-ink-light)":"var(--seq-ink-dark)"; return `background:var(--seq-${v});color:${ink}`; }
+function renderHeat(all){
+  $("heat").innerHTML = FNS.map(f=>`<div class="col" style="--fc:var(${f.c})"><h4>${f.id} · ${f.name.toUpperCase()}</h4><div class="cells">
+    ${all.filter(c=>c.fn===f).map(c=>{const g=c.cur==null?null:c.tgt-c.cur;
+      return `<div class="cell ${c.cur==null?"na":""}" style="${heatStyle(c.cur)}" tabindex="0"
+        data-tip="${c.id} ${esc(c.name)} — current ${c.cur==null?"not assessed":c.cur+" ("+LEVELS[c.cur].name+")"}, target ${c.tgt}${g!=null&&g>0?", gap "+g:""}">
+        <span>${c.id.split(".")[1]}</span><span>${c.cur==null?"–":c.cur}${g>0?" ↑"+g:""}</span></div>`}).join("")}
+  </div></div>`).join("");
+  $("heat-legend").innerHTML = `Current level: ` + LEVELS.map(l=>`<span class="sw" style="background:var(--seq-${l.n})"></span>${l.n}`).join(" ") + ` <span class="sw" style="border:1px dashed var(--line)"></span>not assessed · ↑n = gap to target`;
+}
+function renderGaps(all){
+  const rows=all.map(c=>({...c, gap:c.cur==null?null:c.tgt-c.cur}))
+    .sort((a,b)=>(b.gap??-99)-(a.gap??-99) || a.id.localeCompare(b.id));
+  const shown=rows.filter(r=>r.gap==null||r.gap>0);
+  if(!shown.length){ $("gaps").innerHTML=`<tr><td colspan="7" class="empty">Every rated category meets its target.</td></tr>`; return; }
+  $("gaps").innerHTML = shown.map(r=>{const p=priority(r.gap,r.cur);
+    return `<tr><td><span class="cid">${r.id}</span>${esc(r.name)}</td><td>${r.fn.name}</td>
+      <td class="num">${r.cur==null?"—":r.cur+" · "+LEVELS[r.cur].name}</td><td class="num">${r.tgt} · ${LEVELS[r.tgt].name}</td>
+      <td class="num">${r.gap==null?"—":"+"+r.gap}</td><td><span class="pill ${p.k}">${p.t}</span></td>
+      <td style="color:var(--ink-2);max-width:32ch">${esc(state.notes[r.id]||"")}</td></tr>`;}).join("");
+}
+
+/* tooltip */
+const tip=$("tip");
+function showTip(el, x, y){ tip.textContent=el.dataset.tip; tip.hidden=false;
+  const r=tip.getBoundingClientRect(); let L=x+14, T=y+14;
+  if(L+r.width>innerWidth-8) L=x-r.width-14; if(T+r.height>innerHeight-8) T=y-r.height-14;
+  tip.style.left=Math.max(8,L)+"px"; tip.style.top=Math.max(8,T)+"px"; }
+document.addEventListener("mousemove", e=>{ const el=e.target.closest&&e.target.closest("[data-tip]"); if(el) showTip(el,e.clientX,e.clientY); else tip.hidden=true; });
+document.addEventListener("focusin", e=>{ const el=e.target.closest&&e.target.closest("[data-tip]"); if(el){const r=el.getBoundingClientRect(); showTip(el,r.left,r.bottom);} else tip.hidden=true; });
+document.addEventListener("scroll", ()=>tip.hidden=true, true);
+
+/* tabs */
+function setTab(which){
+  const dash=which==="dash";
+  $("tab-assess").setAttribute("aria-selected", String(!dash)); $("tab-dash").setAttribute("aria-selected", String(dash));
+  $("view-assess").hidden=dash; $("view-dash").hidden=!dash; tip.hidden=true;
+  if(dash) renderDash();
+  try{ localStorage.setItem(LS_KEY+"-tab", which); }catch(e){}
+}
+$("tab-assess").onclick=()=>setTab("assess"); $("tab-dash").onclick=()=>setTab("dash");
+
+/* exports */
+function message(t){ const m=$("msg"); m.textContent=t; m.hidden=false; clearTimeout(message.t); message.t=setTimeout(()=>m.hidden=true, 6000); }
+function csv(){
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const lines=[["Function","Category ID","Category","Current","Current level","Target","Target level","Gap","Priority","Notes"].map(q).join(",")];
+  CATS.forEach(c=>{const [cur,tgt]=state.scores[c.id]; const g=cur==null?"":tgt-cur;
+    lines.push([c.fn.name,c.id,c.name,cur??"",cur==null?"Not assessed":LEVELS[cur].name,tgt,LEVELS[tgt].name,g,priority(g===""?null:g,cur).t.replace(/^[^A-Za-z]+/,""),state.notes[c.id]||""].map(q).join(","));});
+  return "﻿"+lines.join("\r\n");
+}
+const slug=()=>((state.meta.org||"assessment").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"assessment")+"-csf2-"+(state.meta.date||"");
+async function save(filename, data){
+  if(!window.claude){ // standalone copy (e.g. the website): plain browser download
+    const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([data],{type:filename.endsWith(".csv")?"text/csv":"application/json"}));
+    a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    message("Exported "+filename); return;
+  }
+  const dl = await claude.use("downloads");
+  if(!dl){ message("File export isn't available in this view."); return; }
+  try{ await dl.save({filename, data}); message("Exported "+filename); }
+  catch(e){ if(e&&e.code!=="declined") message("Export failed ("+(e&&e.code||"error")+")."); }
+}
+$("btn-csv").onclick=()=>save(slug()+".csv", csv());
+$("btn-json").onclick=()=>save(slug()+".json", JSON.stringify({format:"csf2-baseline", version:1, ...state}, null, 2));
+$("imp").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  try{ const d=JSON.parse(await f.text()); if(!d||!d.scores) throw 0; state=normalize(d); state.example=false; rerender(); scheduleSave(); message("Imported "+f.name); }
+  catch(err){ message("That file isn't a CSF Baseline JSON export. Choose a file saved with Export JSON."); }
+};
+$("btn-reset").onclick=()=>{ $("confirm").hidden=false; $("confirm-yes").focus(); };
+$("confirm-no").onclick=()=>{ $("confirm").hidden=true; };
+$("confirm-yes").onclick=()=>{ $("confirm").hidden=true; state=blank(); rerender(); scheduleSave(); message("Assessment cleared. Start rating categories below."); setTab("assess"); };
+
+function rerender(){ renderMeta(); renderAssess(); renderDash(); $("example-note").hidden=!state.example; }
+
+/* boot */
+(function(){
+  const local=lsRead(); if(local&&local.scores) state=normalize(local);
+  renderScale(); rerender();
+  let t="assess"; try{ t=localStorage.getItem(LS_KEY+"-tab")||"assess"; }catch(e){}
+  if(location.hash==="#dashboard") t="dash";
+  setTab(t);
+  setSave("idle", local ? "Saved in this browser" : "Not saved yet");
+})();
+(async function(){
+  if(!window.claude||!claude.use) return;
+  try{
+    db=await claude.use("db"); if(!db) return;
+    docRef=db.doc("assessments/current");
+    const snap=await docRef.get();
+    if(snap.exists){ state=normalize(snap.data()); rerender(); lsWrite(); setSave("saved","Saved"); }
+    else setSave("idle","Not saved yet");
+  }catch(e){ docRef=null; }
+})();
+</script>
