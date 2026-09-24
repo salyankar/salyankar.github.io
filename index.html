@@ -8,57 +8,49 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="preload" as="image" href="assets/landing.jpg">
 <style>
-  /* Landing page — full-bleed photo with name and an Enter button. Standalone styles; the
-     rest of the site uses assets/site.css. Swap the photo by replacing assets/landing.jpg. */
+  /* Landing page — plain black, name, Enter, contact.
+     Standalone styles; the rest of the site uses assets/site.css. */
   :root{color-scheme:dark}
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:#0b0c0e;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  .landing{position:relative;min-height:100vh;min-height:100dvh;overflow:hidden}
-  .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:38% 40%}
-  /* Scrim: keeps the text legible over the bright window on the right without flattening the photo. */
-  .scrim{position:absolute;inset:0;background:
-      linear-gradient(to left, rgba(8,10,14,.72) 0%, rgba(8,10,14,.45) 38%, rgba(8,10,14,0) 62%),
-      linear-gradient(to bottom, rgba(8,10,14,.35) 0%, rgba(8,10,14,0) 30%)}
-  .content{position:absolute;right:clamp(24px,9vw,140px);top:44%;transform:translateY(-60%);
-      text-align:left;max-width:min(520px,80vw)}
+  body{margin:0;background:#000;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .landing{position:relative;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 24px 72px}
+  .content{text-align:center;max-width:min(560px,90vw)}
   .name{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-weight:500;
-      font-size:clamp(20px,3.2vw,34px);letter-spacing:.14em;margin:0 0 6px;white-space:nowrap;
-      text-shadow:0 2px 18px rgba(0,0,0,.55)}
-  .name .slash{opacity:.55}
+      font-size:clamp(22px,4.4vw,38px);letter-spacing:.14em;margin:0 0 10px;white-space:nowrap}
+  .name .slash{opacity:.45}
   .name .first{color:#fff}
-  .name .last{color:#7FE0E8}   /* teal — the site accent, lifted for the dark photo */
-  .tagline{margin:0 0 30px;font-size:clamp(15px,1.5vw,18px);font-weight:400;letter-spacing:.02em;color:rgba(255,255,255,.88);
-      text-shadow:0 1px 12px rgba(0,0,0,.6)}
-  .enter{display:inline-block;padding:13px 32px;border:1.5px solid rgba(255,255,255,.9);color:#fff;text-decoration:none;
+  .name .last{color:#7FE0E8}   /* teal — the site accent */
+  .tagline{margin:0 0 36px;font-size:clamp(15px,1.7vw,18px);font-weight:400;letter-spacing:.03em;color:rgba(255,255,255,.72)}
+  .actions{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .enter{display:inline-block;padding:13px 34px;border:1.5px solid rgba(255,255,255,.9);color:#fff;text-decoration:none;
       font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
-      background:rgba(8,10,14,.25);backdrop-filter:blur(2px);transition:background .2s,color .2s,transform .2s}
-  .enter:hover,.enter:focus-visible{background:#fff;color:#0b0c0e;outline:none;transform:translateY(-1px)}
-  .foot{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.55)}
-  .foot a{color:inherit}
-  @media (max-width:720px){
-    .photo{object-position:42% 30%}
-    .scrim{background:linear-gradient(to top, rgba(8,10,14,.88) 0%, rgba(8,10,14,.55) 40%, rgba(8,10,14,0) 70%)}
-    .content{right:auto;left:24px;top:auto;bottom:18vh;transform:none;max-width:calc(100vw - 48px)}
-    .name{font-size:clamp(18px,6vw,26px);letter-spacing:.1em}
-  }
+      transition:background .2s,color .2s,transform .2s}
+  .enter:hover,.enter:focus-visible{background:#fff;color:#000;outline:none;transform:translateY(-1px)}
+  .contact{color:rgba(255,255,255,.78);text-decoration:none;font-family:"IBM Plex Mono",ui-monospace,monospace;
+      font-size:13px;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.28);
+      padding-bottom:3px;transition:color .2s,border-color .2s}
+  .contact:hover,.contact:focus-visible{color:#fff;border-color:#fff;outline:none}
+  .foot{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.4)}
+  .foot a{color:inherit;text-decoration:none}
+  .foot a:hover{color:rgba(255,255,255,.7)}
+  @media (max-width:520px){.name{font-size:clamp(18px,6.4vw,26px);letter-spacing:.1em}}
   @media (prefers-reduced-motion:reduce){.enter{transition:none}}
 </style>
 </head>
 <body>
 <main class="landing">
-  <img class="photo" src="assets/landing.jpg" alt="Satya Salyankar sitting in a diner booth, looking out of the window" fetchpriority="high">
-  <div class="scrim" aria-hidden="true"></div>
-
   <div class="content">
     <h1 class="name"><span class="slash">\</span><span class="first">satya</span><span class="last">salyankar</span><span class="slash">\</span></h1>
     <p class="tagline">Cybersecurity · Tools · Time</p>
-    <a class="enter" href="home/">Enter</a>
+    <div class="actions">
+      <a class="enter" href="home/">Enter</a>
+      <a class="contact" href="mailto:satyajitsalyankar@gmail.com?subject=Hello%20from%20satyajitsalyankar.com">Say hello</a>
+    </div>
   </div>
 
-  <div class="foot"><a href="home/">salyankar.github.io</a></div>
+  <div class="foot"><a href="home/">satyajitsalyankar.com</a></div>
 </main>
 </body>
 </html>
