@@ -11,24 +11,57 @@
 <link rel="stylesheet" href="../assets/site.css">
 <script src="../assets/site.js"></script>
 <style>
-  /* ---- featured tool ---- */
-  .feature{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:32px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;margin-top:8px}
-  .feature .mark{width:52px;height:52px;border-radius:13px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:22px;margin-bottom:16px}
-  .feature h2{font-size:clamp(26px,3.2vw,34px);margin:0 0 4px}
-  .feature .tag-line{font-family:var(--mono);font-size:14px;color:var(--accent);margin:0 0 16px}
-  .feature .lede{font-size:17px;color:var(--ink-2);margin-bottom:22px}
-  .feature .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .feature .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-left:auto}
-  .caps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  /* ============ tile grid ============
+     Every tool is a small tile; clicking one opens its full detail panel
+     directly beneath that row. Without JavaScript the panels simply all show. */
+  .tool-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px;margin-top:8px}
+  @media (max-width:560px){.tool-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+
+  .ttile{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);
+      border-radius:14px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+  .ttile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--line-strong)}
+  .ttile.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+
+  .ttile-expand{appearance:none;border:0;background:none;text-align:left;cursor:pointer;color:inherit;
+      font:inherit;padding:18px 18px 12px;display:flex;flex-direction:column;gap:9px;flex:1;position:relative}
+  .ttile-expand:focus-visible{outline:2px solid var(--focus);outline-offset:-3px}
+  .ttile .mark{width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent);
+      display:grid;place-items:center;font-size:20px;font-family:var(--mono)}
+  .ttile .tname{font-family:var(--display);font-weight:600;font-size:17.5px;line-height:1.2}
+  .ttile .tsum{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+  .ttile .chev{position:absolute;top:16px;right:16px;color:var(--ink-3);font-size:15px;transition:transform .2s,color .2s}
+  .ttile.on .chev{transform:rotate(180deg);color:var(--accent)}
+
+  .ttile-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:10px 18px 14px;border-top:1px solid var(--line);margin-top:auto}
+  .ttile-foot .tlaunch{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--accent);
+      text-decoration:none;font-weight:500;white-space:nowrap}
+  .ttile-foot .tlaunch:hover{text-decoration:underline}
+  .ttile-foot .tver{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+
+  /* ============ detail panel ============ */
+  .tpanel{grid-column:1/-1;background:var(--surface);border:1px solid var(--accent);border-radius:16px;
+      padding:30px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;animation:open .22s ease-out}
+  @keyframes open{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  @media (max-width:820px){.tpanel{grid-template-columns:1fr;padding:22px;gap:24px}}
+  .tpanel h2{font-size:clamp(24px,3vw,31px);margin:0 0 4px}
+  .tpanel .tag-line{font-family:var(--mono);font-size:14px;color:var(--accent);margin:0 0 16px}
+  .tpanel .lede{font-size:16.5px;color:var(--ink-2);margin-bottom:22px}
+  .tpanel .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .tpanel .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .tpanel .close{margin-left:auto}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:20px 0 0;font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .flow em{font-style:normal;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--ink-2)}
+  .flow i{font-style:normal;color:var(--line-strong)}
+  .caps{list-style:none;margin:0;padding:0;display:grid;gap:12px;align-content:start}
   .caps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
   .caps .ic{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:17px}
   .caps b{display:block;font-family:var(--display);font-weight:600;font-size:15.5px}
   .caps span{font-size:14px;color:var(--ink-2);line-height:1.45}
-  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:20px 0 0;font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
-  .flow em{font-style:normal;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--ink-2)}
-  .flow i{font-style:normal;color:var(--line-strong)}
-  @media (max-width:820px){.feature{grid-template-columns:1fr;padding:24px}}
 
+  /* Panels live in this holder until JavaScript moves the open one into the grid. */
+  .tool-details{display:grid;gap:22px;margin-top:22px}
+  .js-on .tool-details{display:none}
 </style>
 </head>
 <body>
@@ -53,143 +86,194 @@
     <p>
       Security tools I build in conversation with Claude. Each one is a single HTML file that runs
       entirely in your browser — no accounts, no server, nothing leaves your machine.
+      Open one straight from its tile, or click the tile for the full story.
     </p>
   </div>
 
-  <!-- ===================== FEATURED: ARGUS WATCH ===================== -->
-  <section class="wrap" aria-labelledby="argus-h">
-    <div class="feature">
-      <div>
-        <div class="mark">A</div>
-        <h2 id="argus-h">Argus Watch</h2>
-        <p class="tag-line">Cyber risk management, every eye open.</p>
-        <p class="lede">
-          A cyber risk register that thinks like a CISO's office: describe the organization, build the
-          register against sector-specific impact and likelihood drivers, see the exposure on 5×5 heat
-          maps, and generate what leadership actually asks for — a board pack, and a draft of the
-          Form 10-K Item 1C cybersecurity disclosure.
-        </p>
-        <div class="row">
-          <a class="btn primary" href="argus-risk-register/" target="_blank" rel="noopener">Open Argus Watch ↗</a>
-          <span class="meta">v2 · Sep 2026 · single HTML file</span>
-        </div>
-        <div class="flow" aria-label="Workflow">
-          <em>Organization profile</em><i>→</i><em>Risk register</em><i>→</i><em>Heat map</em><i>→</i><em>Controls &amp; regulations</em><i>→</i><em>Reports</em>
+  <section class="wrap" aria-label="Tools">
+    <!-- ===================== TILES =====================
+         To add a tool: save it as tools/<slug>/index.html, then copy one tile below and one
+         matching .tpanel further down. The button's aria-controls must equal the panel's id. -->
+    <div class="tool-tiles" id="tiles">
+
+      <div class="ttile" data-tool="argus-watch">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-argus-watch">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">A</span>
+          <span class="tname">Argus Watch</span>
+          <span class="tsum">Risk register, heat maps, board pack and an SEC Item 1C draft.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="argus-risk-register/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v2</span>
         </div>
       </div>
 
-      <ul class="caps">
-        <li><span class="ic">◎</span><div><b>Sector-aware scoring</b><span>Sector, revenue, headcount, and footprint set the impact dimensions, likelihood drivers, and regulatory obligations before you score a single risk.</span></div></li>
-        <li><span class="ic">▦</span><div><b>Register, heat maps, treatment</b><span>Inherent vs residual on 5×5 heat maps, risk templates per sector, owners, treatment plans, due dates, and overdue tracking.</span></div></li>
-        <li><span class="ic">⛨</span><div><b>Controls &amp; regulations</b><span>Map risks to controls and to the regulations that apply to your footprint; see coverage and gaps.</span></div></li>
-        <li><span class="ic">▤</span><div><b>Board pack export</b><span>One click to PowerPoint, Word, or PDF: KPIs, both heat maps, top-ten residual risks, open risks by category, and obligations — built from the live register.</span></div></li>
-        <li><span class="ic">§</span><div><b>SEC Item 1C draft</b><span>Drafts the Form 10-K cybersecurity disclosure (governance, risk management and strategy) and downloads it as Inline XBRL.</span></div></li>
-        <li><span class="ic">⌂</span><div><b>Private by design</b><span>Everything stays in your browser's local storage. Export and import as CSV to move or back up.</span></div></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===================== FEATURED: ARGUS ATLAS ===================== -->
-  <section class="wrap" aria-labelledby="atlas-h">
-    <div class="feature">
-      <div>
-        <div class="mark">◍</div>
-        <h2 id="atlas-h">Argus Atlas</h2>
-        <p class="tag-line">Every eye on the world.</p>
-        <p class="lede">
-          A world map for the questions a security leader gets asked in the first week: which
-          cybersecurity regulations apply where we operate, what has been breached in our sector
-          lately, and which supply-chain shocks — wars, oil, disease, export controls — are heading
-          our way. Pick your sector and countries; the map, the counts and the lists follow.
-        </p>
-        <div class="row">
-          <a class="btn primary" href="argus-atlas/" target="_blank" rel="noopener">Open Argus Atlas ↗</a>
-          <span class="meta">v1 · Sep 2026 · single HTML file</span>
-        </div>
-        <div class="flow" aria-label="Workflow">
-          <em>Sector</em><i>→</i><em>Countries of operation</em><i>→</i><em>Map</em><i>→</i><em>Hover a dot</em><i>→</i><em>Obligations &amp; exposure</em>
+      <div class="ttile" data-tool="argus-atlas">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-argus-atlas">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">◍</span>
+          <span class="tname">Argus Atlas</span>
+          <span class="tsum">World map of regulations, live breaches and supply-chain risk.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="argus-atlas/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
         </div>
       </div>
 
-      <ul class="caps">
-        <li><span class="ic" style="color:#2a78d6;background:rgba(42,120,214,.14)">●</span><div><b>Regulations in blue</b><span>Ninety-plus instruments across sixty-six countries — GDPR, NIS2, DORA, CRA, HIPAA, SEC, NYDFS, CIRCIA, China's CSL/PIPL, India's DPDP, SOCI and more — each with authority, effective date, reporting deadline and key obligations.</span></div></li>
-        <li><span class="ic" style="color:#e34948;background:rgba(227,73,72,.14)">●</span><div><b>Breaches in red</b><span>A live feed of the last 60 days, refreshed every six hours from SEC 8-K Item 1.05 filings, the HHS OCR breach portal and ransomware leak-site listings. The newer the breach, the redder the dot; older ones fade to grey. Leak-site entries are flagged as unverified claims.</span></div></li>
-        <li><span class="ic" style="color:#eb6834;background:rgba(235,104,52,.16)">●</span><div><b>Supply chain in orange</b><span>Structural risks by driver — conflict, energy, disease, trade, materials, logistics, climate, cyber — sized by severity, with impacts and mitigations.</span></div></li>
-        <li><span class="ic">◎</span><div><b>Hover to expand</b><span>Every dot opens a tooltip and a detail pane; click to pin it. Click a country on the map to add it to your filter.</span></div></li>
-        <li><span class="ic">▤</span><div><b>Table view too</b><span>Everything in scope is also listed — regulations by country, breaches by recency, supply risks by severity — so nothing depends on colour alone.</span></div></li>
-        <li><span class="ic">⌂</span><div><b>Private by design</b><span>No accounts and no tracking. The page reads one JSON file that a scheduled GitHub Action rebuilds from public sources; nothing you filter or click leaves your browser.</span></div></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===================== FEATURED: ARGUS GATE ===================== -->
-  <section class="wrap" aria-labelledby="gate-h">
-    <div class="feature">
-      <div>
-        <div class="mark">◫</div>
-        <h2 id="gate-h">Argus Gate</h2>
-        <p class="tag-line">Every eye on your vendors.</p>
-        <p class="lede">
-          Third-party risk management from intake to re-assessment. Capture a new vendor, score its
-          inherent risk, and send it through a due-diligence questionnaire sized to that risk —
-          with Procurement, Legal, Compliance, Cybersecurity and both architecture teams signing off
-          their own sections. Then keep every vendor on a review cycle, and pull it back in the
-          moment it, or one of its fourth parties, is breached.
-        </p>
-        <div class="row">
-          <a class="btn primary" href="argus-gate/" target="_blank" rel="noopener">Open Argus Gate ↗</a>
-          <span class="meta">v1 · Sep 2026 · single HTML file</span>
-        </div>
-        <div class="flow" aria-label="Workflow">
-          <em>Intake</em><i>→</i><em>Inherent risk</em><i>→</i><em>Tiered questionnaire</em><i>→</i><em>Team sign-offs</em><i>→</i><em>Decision</em><i>→</i><em>Re-assessment</em>
+      <div class="ttile" data-tool="argus-gate">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-argus-gate">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">◫</span>
+          <span class="tname">Argus Gate</span>
+          <span class="tsum">Vendor intake, risk tiering, due diligence and re-assessment.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="argus-gate/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
         </div>
       </div>
 
-      <ul class="caps">
-        <li><span class="ic">◎</span><div><b>Inherent risk that drives the work</b><span>Nine weighted factors — business impact, data sensitivity, access, fourth-party reliance, AI use, regulatory scope — score each vendor High, Medium or Low. Overrides need a reason code and a confirmed justification, and are logged.</span></div></li>
-        <li><span class="ic">▦</span><div><b>Questionnaires sized to the risk</b><span>High-risk vendors get the full 58-question review: privacy impact assessment, resiliency, AI model risk, data protection, IAM, fourth-party management and more. Low-risk vendors get a nine-question lite review.</span></div></li>
-        <li><span class="ic">⛨</span><div><b>Every team signs its part</b><span>Each section belongs to a team. Gaps become findings with severity and due dates the moment a section is signed off.</span></div></li>
-        <li><span class="ic">▤</span><div><b>Inventory and dashboard</b><span>Search the inventory by vendor or service. The dashboard shows the risk picture, open issues and who holds each open assessment — click any figure to drill in.</span></div></li>
-        <li><span class="ic">◷</span><div><b>Alerts that bring vendors back</b><span>Annual re-assessment for High risk, every two years for Medium and Low; out-of-band reviews when a vendor or its fourth party has an incident; stalled assessments and overdue remediation.</span></div></li>
-        <li><span class="ic">⌂</span><div><b>Private by design</b><span>Loads with twenty fictional sample vendors. Everything you add is saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===================== FEATURED: CSF 2.0 BASELINE ===================== -->
-  <section class="wrap" aria-labelledby="csf-h">
-    <div class="feature">
-      <div>
-        <div class="mark">◇</div>
-        <h2 id="csf-h">CSF 2.0 Baseline</h2>
-        <p class="tag-line">Where you stand against NIST CSF 2.0.</p>
-        <p class="lede">
-          A quick self-assessment against the NIST Cybersecurity Framework 2.0. Rate current and
-          target maturity for each of the 22 categories across Govern, Identify, Protect, Detect,
-          Respond and Recover, and the dashboard turns it into a function profile, a category
-          heatmap and a ranked list of the gaps worth closing first.
-        </p>
-        <div class="row">
-          <a class="btn primary" href="csf-baseline/" target="_blank" rel="noopener">Open CSF 2.0 Baseline ↗</a>
-          <span class="meta">v1 · Sep 2026 · single HTML file</span>
-        </div>
-        <div class="flow" aria-label="Workflow">
-          <em>Rate current</em><i>→</i><em>Set target</em><i>→</i><em>Add evidence</em><i>→</i><em>Dashboard</em><i>→</i><em>Priority gaps</em>
+      <div class="ttile" data-tool="csf-baseline">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-csf-baseline">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">◇</span>
+          <span class="tname">CSF 2.0 Baseline</span>
+          <span class="tsum">Self-assessment across all 22 CSF 2.0 categories, with a gap dashboard.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="csf-baseline/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
         </div>
       </div>
 
-      <ul class="caps">
-        <li><span class="ic">◎</span><div><b>All 22 categories</b><span>Every CSF 2.0 category with its official identifier (GV.OC to RC.CO), subcategory count and a plain-language guiding question.</span></div></li>
-        <li><span class="ic">▦</span><div><b>Tier-based 0–4 scale</b><span>Not in place, Partial, Risk Informed, Repeatable, Adaptive — the CSF implementation tier names applied per category, with a target for each.</span></div></li>
-        <li><span class="ic">◈</span><div><b>Dashboard</b><span>Overall maturity, targets met and completion; a radar of the six functions; current-vs-target bars; and a heatmap of every category.</span></div></li>
-        <li><span class="ic">▤</span><div><b>Priority gaps</b><span>Categories ranked by the distance to target, flagged High, Medium or On target, with your notes alongside.</span></div></li>
-        <li><span class="ic">⇩</span><div><b>Export and import</b><span>Download the assessment as CSV for a spreadsheet or JSON to reload later.</span></div></li>
-        <li><span class="ic">⌂</span><div><b>Private by design</b><span>Opens with a labelled example assessment. Your ratings are saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
-      </ul>
+    </div>
+
+    <!-- ===================== DETAIL PANELS =====================
+         These hold the full write-up for each tool. JavaScript hides them and moves the open one
+         into the tile grid; with JavaScript off they all stay visible here. -->
+    <div class="tool-details" id="details">
+
+      <section class="tpanel" id="panel-argus-watch" data-tool="argus-watch" role="region" aria-labelledby="argus-h">
+        <div>
+          <h2 id="argus-h">Argus Watch</h2>
+          <p class="tag-line">Cyber risk management, every eye open.</p>
+          <p class="lede">
+            A cyber risk register that thinks like a CISO's office: describe the organization, build the
+            register against sector-specific impact and likelihood drivers, see the exposure on 5×5 heat
+            maps, and generate what leadership actually asks for — a board pack, and a draft of the
+            Form 10-K Item 1C cybersecurity disclosure.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="argus-risk-register/" target="_blank" rel="noopener">Open Argus Watch ↗</a>
+            <span class="meta">v2 · Sep 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Organization profile</em><i>→</i><em>Risk register</em><i>→</i><em>Heat map</em><i>→</i><em>Controls &amp; regulations</em><i>→</i><em>Reports</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic">◎</span><div><b>Sector-aware scoring</b><span>Sector, revenue, headcount, and footprint set the impact dimensions, likelihood drivers, and regulatory obligations before you score a single risk.</span></div></li>
+          <li><span class="ic">▦</span><div><b>Register, heat maps, treatment</b><span>Inherent vs residual on 5×5 heat maps, risk templates per sector, owners, treatment plans, due dates, and overdue tracking.</span></div></li>
+          <li><span class="ic">⛨</span><div><b>Controls &amp; regulations</b><span>Map risks to controls and to the regulations that apply to your footprint; see coverage and gaps.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Board pack export</b><span>One click to PowerPoint, Word, or PDF: KPIs, both heat maps, top-ten residual risks, open risks by category, and obligations — built from the live register.</span></div></li>
+          <li><span class="ic">§</span><div><b>SEC Item 1C draft</b><span>Drafts the Form 10-K cybersecurity disclosure (governance, risk management and strategy) and downloads it as Inline XBRL.</span></div></li>
+          <li><span class="ic">⌂</span><div><b>Private by design</b><span>Everything stays in your browser's local storage. Export and import as CSV to move or back up.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-argus-atlas" data-tool="argus-atlas" role="region" aria-labelledby="atlas-h">
+        <div>
+          <h2 id="atlas-h">Argus Atlas</h2>
+          <p class="tag-line">Every eye on the world.</p>
+          <p class="lede">
+            A world map for the questions a security leader gets asked in the first week: which
+            cybersecurity regulations apply where we operate, what has been breached in our sector
+            lately, and which supply-chain shocks — wars, oil, disease, export controls — are heading
+            our way. Pick your sector and countries; the map, the counts and the lists follow.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="argus-atlas/" target="_blank" rel="noopener">Open Argus Atlas ↗</a>
+            <span class="meta">v1 · Sep 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Sector</em><i>→</i><em>Countries of operation</em><i>→</i><em>Map</em><i>→</i><em>Hover a dot</em><i>→</i><em>Obligations &amp; exposure</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic" style="color:#2a78d6;background:rgba(42,120,214,.14)">●</span><div><b>Regulations in blue</b><span>Ninety-plus instruments across sixty-six countries — GDPR, NIS2, DORA, CRA, HIPAA, SEC, NYDFS, CIRCIA, China's CSL/PIPL, India's DPDP, SOCI and more — each with authority, effective date, reporting deadline and key obligations.</span></div></li>
+          <li><span class="ic" style="color:#e34948;background:rgba(227,73,72,.14)">●</span><div><b>Breaches in red</b><span>A live feed of the last 60 days, refreshed every six hours from SEC 8-K Item 1.05 filings, the HHS OCR breach portal and ransomware leak-site listings. The newer the breach, the redder the dot; older ones fade to grey. Leak-site entries are flagged as unverified claims.</span></div></li>
+          <li><span class="ic" style="color:#eb6834;background:rgba(235,104,52,.16)">●</span><div><b>Supply chain in orange</b><span>Structural risks by driver — conflict, energy, disease, trade, materials, logistics, climate, cyber — sized by severity, with impacts and mitigations.</span></div></li>
+          <li><span class="ic">◎</span><div><b>Hover to expand</b><span>Every dot opens a tooltip and a detail pane; click to pin it. Click a country on the map to add it to your filter.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Table view too</b><span>Everything in scope is also listed — regulations by country, breaches by recency, supply risks by severity — so nothing depends on colour alone.</span></div></li>
+          <li><span class="ic">⌂</span><div><b>Private by design</b><span>No accounts and no tracking. The page reads one JSON file that a scheduled GitHub Action rebuilds from public sources; nothing you filter or click leaves your browser.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-argus-gate" data-tool="argus-gate" role="region" aria-labelledby="gate-h">
+        <div>
+          <h2 id="gate-h">Argus Gate</h2>
+          <p class="tag-line">Every eye on your vendors.</p>
+          <p class="lede">
+            Third-party risk management from intake to re-assessment. Capture a new vendor, score its
+            inherent risk, and send it through a due-diligence questionnaire sized to that risk —
+            with Procurement, Legal, Compliance, Cybersecurity and both architecture teams signing off
+            their own sections. Then keep every vendor on a review cycle, and pull it back in the
+            moment it, or one of its fourth parties, is breached.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="argus-gate/" target="_blank" rel="noopener">Open Argus Gate ↗</a>
+            <span class="meta">v1 · Sep 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Intake</em><i>→</i><em>Inherent risk</em><i>→</i><em>Tiered questionnaire</em><i>→</i><em>Team sign-offs</em><i>→</i><em>Decision</em><i>→</i><em>Re-assessment</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic">◎</span><div><b>Inherent risk that drives the work</b><span>Nine weighted factors — business impact, data sensitivity, access, fourth-party reliance, AI use, regulatory scope — score each vendor High, Medium or Low. Overrides need a reason code and a confirmed justification, and are logged.</span></div></li>
+          <li><span class="ic">▦</span><div><b>Questionnaires sized to the risk</b><span>High-risk vendors get the full 58-question review: privacy impact assessment, resiliency, AI model risk, data protection, IAM, fourth-party management and more. Low-risk vendors get a nine-question lite review.</span></div></li>
+          <li><span class="ic">⛨</span><div><b>Every team signs its part</b><span>Each section belongs to a team. Gaps become findings with severity and due dates the moment a section is signed off.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Inventory and dashboard</b><span>Search the inventory by vendor or service. The dashboard shows the risk picture, open issues and who holds each open assessment — click any figure to drill in.</span></div></li>
+          <li><span class="ic">◷</span><div><b>Alerts that bring vendors back</b><span>Annual re-assessment for High risk, every two years for Medium and Low; out-of-band reviews when a vendor or its fourth party has an incident; stalled assessments and overdue remediation.</span></div></li>
+          <li><span class="ic">⌂</span><div><b>Private by design</b><span>Loads with twenty fictional sample vendors. Everything you add is saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-csf-baseline" data-tool="csf-baseline" role="region" aria-labelledby="csf-h">
+        <div>
+          <h2 id="csf-h">CSF 2.0 Baseline</h2>
+          <p class="tag-line">Where you stand against NIST CSF 2.0.</p>
+          <p class="lede">
+            A quick self-assessment against the NIST Cybersecurity Framework 2.0. Rate current and
+            target maturity for each of the 22 categories across Govern, Identify, Protect, Detect,
+            Respond and Recover, and the dashboard turns it into a function profile, a category
+            heatmap and a ranked list of the gaps worth closing first.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="csf-baseline/" target="_blank" rel="noopener">Open CSF 2.0 Baseline ↗</a>
+            <span class="meta">v1 · Sep 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Rate current</em><i>→</i><em>Set target</em><i>→</i><em>Add evidence</em><i>→</i><em>Dashboard</em><i>→</i><em>Priority gaps</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic">◎</span><div><b>All 22 categories</b><span>Every CSF 2.0 category with its official identifier (GV.OC to RC.CO), subcategory count and a plain-language guiding question.</span></div></li>
+          <li><span class="ic">▦</span><div><b>Tier-based 0–4 scale</b><span>Not in place, Partial, Risk Informed, Repeatable, Adaptive — the CSF implementation tier names applied per category, with a target for each.</span></div></li>
+          <li><span class="ic">◈</span><div><b>Dashboard</b><span>Overall maturity, targets met and completion; a radar of the six functions; current-vs-target bars; and a heatmap of every category.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Priority gaps</b><span>Categories ranked by the distance to target, flagged High, Medium or On target, with your notes alongside.</span></div></li>
+          <li><span class="ic">⇩</span><div><b>Export and import</b><span>Download the assessment as CSV for a spreadsheet or JSON to reload later.</span></div></li>
+          <li><span class="ic">⌂</span><div><b>Private by design</b><span>Opens with a labelled example assessment. Your ratings are saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
+        </ul>
+      </section>
+
     </div>
   </section>
-
-
 
   <section class="section wrap prose">
     <h2>How these are built</h2>
@@ -212,6 +296,80 @@
     <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a> · <a href="https://github.com/salyankar/salyankar.github.io">Source</a></span>
   </div>
 </footer>
-<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* Tile grid: one panel open at a time, inserted after the last tile in the clicked tile's row.
+   The panels are real markup, so with JavaScript off the page still shows every word. */
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js-on');            // hides the plain panel holder
+
+  var grid = document.getElementById('tiles');
+  var store = document.getElementById('details');
+  var tiles = Array.prototype.slice.call(grid.querySelectorAll('.ttile'));
+  var open = null;
+
+  function panelFor(slug) { return document.getElementById('panel-' + slug); }
+  function tileFor(slug) { return grid.querySelector('.ttile[data-tool="' + slug + '"]'); }
+
+  function close() {
+    if (!open) return;
+    var p = panelFor(open);
+    if (p) { p.hidden = true; store.appendChild(p); }      // park it back in the holder
+    var t = tileFor(open);
+    if (t) { t.classList.remove('on'); t.querySelector('.ttile-expand').setAttribute('aria-expanded', 'false'); }
+    open = null;
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+  }
+
+  function show(slug, scroll) {
+    var tile = tileFor(slug), panel = panelFor(slug);
+    if (!tile || !panel) return;
+    if (open === slug) { close(); return; }
+    close();
+
+    // Find the last tile sharing this tile's row, so the panel opens under the whole row.
+    var top = tile.offsetTop, last = tile;
+    for (var i = tiles.indexOf(tile) + 1; i < tiles.length && tiles[i].offsetTop === top; i++) last = tiles[i];
+
+    last.insertAdjacentElement('afterend', panel);
+    panel.hidden = false;
+    tile.classList.add('on');
+    tile.querySelector('.ttile-expand').setAttribute('aria-expanded', 'true');
+    open = slug;
+
+    if (!panel.querySelector('.close')) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn small close'; b.textContent = 'Close';
+      b.addEventListener('click', function () { close(); tile.querySelector('.ttile-expand').focus(); });
+      panel.querySelector('.row').appendChild(b);
+    }
+    if (history.replaceState) history.replaceState(null, '', '#' + slug);
+    if (scroll) setTimeout(function () { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 30);
+  }
+
+  // Park every panel out of sight to begin with.
+  tiles.forEach(function (t) {
+    var slug = t.dataset.tool, p = panelFor(slug);
+    if (p) p.hidden = true;
+    t.querySelector('.ttile-expand').addEventListener('click', function () { show(slug, true); });
+  });
+
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) close(); });
+
+  // Keep the panel under the right row when the grid reflows.
+  var rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { if (open) { var s = open; close(); show(s, false); } }, 150);
+  });
+
+  // Deep link: /tools/#argus-atlas opens that tool.
+  var start = location.hash.replace('#', '');
+  if (start && tileFor(start)) show(start, true);
+})();
+</script>
 </body>
 </html>
