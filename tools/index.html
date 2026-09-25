@@ -59,6 +59,10 @@
   .caps b{display:block;font-family:var(--display);font-weight:600;font-size:15.5px}
   .caps span{font-size:14px;color:var(--ink-2);line-height:1.45}
 
+  /* Closing note: same measure as the intro blurb above, with a quieter last line. */
+  .built p{max-width:691px}    /* same measure as the intro blurb above: 64ch at 18px */
+  .built .note{font-size:14.5px;color:var(--ink-3);line-height:1.6}
+
   /* Panels live in this holder until JavaScript moves the open one into the grid. */
   .tool-details{display:grid;gap:22px;margin-top:22px}
   .js-on .tool-details{display:none}
@@ -275,7 +279,7 @@
     </div>
   </section>
 
-  <section class="section wrap prose">
+  <section class="section wrap built">
     <h2>How these are built</h2>
     <p>
       Each tool starts as a problem I keep running into with clients. I work through the design
@@ -283,7 +287,7 @@
       feel to use — and it produces a self-contained page. I test it against real scenarios, push
       back on the rough edges, and publish it here when it's genuinely useful.
     </p>
-    <p>
+    <p class="note">
       Because they're single files with no backend, you can save any tool to your own machine and
       run it offline. If you find a bug or want a feature, <a href="../home/#elsewhere">get in touch</a>.
     </p>
