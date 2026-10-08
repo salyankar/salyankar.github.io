@@ -5,12 +5,10 @@ Hosted on GitHub Pages.
 
 ```
 index.html                  Landing page (plain black: name, Enter, contact)
-home/index.html             Hub page: hello + Resume / Tools / Time tiles
+home/index.html             Hub page: hello + Resume / Tools tiles
 resume/index.html           Resume
 tools/index.html            Tool gallery
 tools/<tool>/index.html     One folder per tool (single self-contained HTML file)
-watches/index.html          Time: list of articles
-watches/<slug>/index.html   One folder per article; photos live in watches/photos/
 assets/site.css             Shared styles (colors, fonts, layout)
 assets/site.js              Theme toggle + current-nav highlight
 404.html                    Not-found page (GitHub Pages serves this automatically)
@@ -31,9 +29,6 @@ Text marked with a yellow `TODO` box on the live site is placeholder — search 
    title/description/tags/date and point the link at `<tool-slug>/`.
 
 
-**A new watch article**
-1. Copy `watches/myths-of-watch-collecting/` to `watches/<slug>/` and edit `index.html`.
-2. In `watches/index.html`, copy the `<a class="post">` card and point it at the new folder.
 
 
 ## Publishing (first time)
