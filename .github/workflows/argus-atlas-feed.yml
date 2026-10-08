@@ -5,6 +5,10 @@ on:
     - cron: "17 */6 * * *"   # every six hours (UTC)
   workflow_dispatch:
   push:
+    # Branch filter matters: without it a tag push also triggers this workflow, and
+    # actions/checkout leaves a detached HEAD on tags, so the final git push exits 128.
+    branches:
+      - main
     paths:
       - "tools/argus-atlas/feed/**"
       - ".github/workflows/argus-atlas-feed.yml"
@@ -19,12 +23,14 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # Belt and braces: never try to commit from anything but main.
+    if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: Build breaches.json from public sources
         run: node tools/argus-atlas/feed/build-breaches.mjs --days 60
@@ -38,5 +44,8 @@ jobs:
             echo "Feed unchanged."
           else
             git commit -m "Argus Atlas: refresh breach feed ($(date -u +'%Y-%m-%d %H:%M UTC'))"
-            git push
+            # Someone may have pushed while the feed was building; rebase before pushing
+            # so a normal site edit never makes this run fail.
+            git pull --rebase --autostash origin main
+            git push origin HEAD:main
           fi
