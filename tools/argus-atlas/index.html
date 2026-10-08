@@ -208,7 +208,6 @@ select.ctl{appearance:auto;padding-right:6px}
       <p>Every eye on the world — regulations, disclosed breaches and supply-chain exposure by country and sector. Hover a dot to expand it; click to pin.</p>
     </div>
     <div class="asof">
-      <div>Curated <strong id="asof"></strong> · <span id="breach-asof">breaches loading…</span></div>
       <div class="sample-flag" id="feed-flag">Breach feed shows sample data — see notes</div>
     </div>
   </header>
@@ -584,8 +583,7 @@ const REGULATIONS = [
   {id:'kz-pdl',name:'Kazakhstan Personal Data Law & Information Security rules',countries:['KZ'],sectors:ALL,authority:'MDDIAI',effective:'2013 (amended 2023)',reporting:'1 business day',status:'in force',summary:'Data localisation and breach notification obligations.',obligations:['Localisation','Breach notification']},
 ];
 
-// DATA_AS_OF is when the regulation and supply-chain datasets were last hand-curated.
-// It deliberately does NOT track the breach feed, which rebuilds every six hours � see renderFeedFlag().
+// DATA_AS_OF anchors the bundled sample records only (see fromSample); it is not displayed.
 // ---- Breach feed. SAMPLE DATA: illustrative, anonymised entries generated to demonstrate the dashboard.
 // Replace this array (or the loadBreaches() adapter below) with a live feed: regulator disclosure registers
 // (HHS OCR breach portal, SEC EDGAR 8-K Item 1.05, ICO, OAIC, CNIL…), ransomware leak-site trackers, or a TI vendor API.
@@ -695,7 +693,6 @@ const SUPPLY = [
 'use strict';
 const $ = s => document.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-const fmtDate = d => new Date(d + 'T00:00:00').toLocaleDateString(undefined, {day:'numeric', month:'short', year:'numeric'});
 const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 // ---- data normalisation ----------------------------------------------
@@ -743,19 +740,15 @@ const SOURCE_LABEL = {sec:'SEC EDGAR · Form 8-K Item 1.05', hhs:'HHS OCR breach
 const SOURCE_SHORT = {sec:'SEC 8-K', hhs:'HHS OCR', rl:'ransomware.live'};
 const SOURCE_ORDER = {sec:0, hhs:1, rl:2};
 function renderFeedFlag(){
-  const f = $('#feed-flag'), n = $('#note-breaches'), ba = $('#breach-asof');
+  const f = $("#feed-flag"), n = $("#note-breaches");
   if (feed.mode === 'live') {
     const ago = Math.max(0, Math.round((Date.now() - feed.generated.getTime()) / 36e5));
-    // The breach half of the header reports the feed's own build time and window,
-    // never DATA_AS_OF — the two datasets refresh on completely different cadences.
-    ba.textContent = `breaches refreshed ${ago === 0 ? 'under an hour' : ago + ' h'} ago · window ≤ ${feed.windowDays || 60} days`;
     const src = feed.sources.slice().sort((a, b) => (SOURCE_ORDER[a.id] ?? 9) - (SOURCE_ORDER[b.id] ?? 9)).map(s => `${SOURCE_SHORT[s.id] || s.id} ${s.ok ? s.count.toLocaleString() : 'unavailable'}`).join(' · ');
     $('#caveats').hidden = false;
     f.textContent = `Live feed · updated ${ago === 0 ? 'under an hour' : ago + ' h'} ago · ${src}`; f.dataset.mode = 'live';
     n.replaceChildren(el('strong', null, 'Breaches'), el('span', null, ' — live from three public sources, refreshed every six hours by a GitHub Action: SEC EDGAR (Form 8-K Item 1.05 material-incident disclosures by US public companies), the HHS OCR breach portal (HIPAA breaches affecting 500+ individuals, as reported by the covered entity and still under investigation) and ransomware.live (victims posted on ransomware leak sites). Sector is derived from SIC codes, HHS entity types and leak-site tags; country from the filing or the leak-site record. Records without a recognised country appear in the list but not on the map.'));
   } else {
     f.textContent = 'Breach feed shows sample data — see notes'; f.dataset.mode = 'sample';
-    ba.textContent = 'breaches: sample records · window ≤ 60 days';
   }
 }
 
@@ -1023,7 +1016,6 @@ function onFilterChange(closeDetail = true){
 }
 function render(){ buildRecency(); fit(); renderStats(); renderList(); syncCountryChips(); syncWindow(); }
 
-$("#asof").textContent = fmtDate(DATA_AS_OF) + " (regulations & supply chain)";
 const ro = new ResizeObserver(() => { fit(); }); ro.observe($('#mapcard'));
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { buildRecency(); computeDots(); positionDots(); renderList(); });
 new MutationObserver(() => { buildRecency(); computeDots(); positionDots(); renderList(); }).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
