@@ -8,39 +8,67 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preload" as="image" href="assets/landing.jpg">
 <style>
-  /* Landing page — plain black, name, Enter, contact.
-     Standalone styles; the rest of the site uses assets/site.css. */
+  /* Landing page — full-bleed photo, name, Enter, contact.
+     Standalone styles; the rest of the site uses assets/site.css.
+     Swap the picture by replacing assets/landing.jpg. */
   :root{color-scheme:dark}
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:#000;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-  .landing{position:relative;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 24px 72px}
-  .content{text-align:center;max-width:min(560px,90vw)}
+  body{margin:0;background:#070B10;color:#fff;font-family:"IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .landing{position:relative;min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:32px 24px 72px;overflow:hidden}
+  .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%}
+  /* Scrim: a soft pool of shade behind the centred text, plus a little top and bottom,
+     so the type stays legible over the bright water and snow without dulling the photo. */
+  .scrim{position:absolute;inset:0;background:
+      radial-gradient(ellipse 62% 48% at 50% 48%, rgba(5,8,12,.80) 0%, rgba(5,8,12,.55) 45%, rgba(5,8,12,.12) 78%, rgba(5,8,12,0) 100%),
+      linear-gradient(to bottom, rgba(5,8,12,.45) 0%, rgba(5,8,12,0) 22%, rgba(5,8,12,0) 72%, rgba(5,8,12,.55) 100%)}
+  .content{position:relative;text-align:center;max-width:min(560px,90vw)}
   .name{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-weight:500;
-      font-size:clamp(22px,4.4vw,38px);letter-spacing:.14em;margin:0 0 10px;white-space:nowrap}
-  .name .slash{opacity:.45}
+      font-size:clamp(22px,4.4vw,38px);letter-spacing:.14em;margin:0 0 10px;white-space:nowrap;
+      text-shadow:0 2px 24px rgba(0,0,0,.8),0 1px 4px rgba(0,0,0,.6)}
+  .name .slash{opacity:.5}
   .name .first{color:#fff}
   .name .last{color:#7FE0E8}   /* teal — the site accent */
-  .tagline{margin:0 0 36px;font-size:clamp(15px,1.7vw,18px);font-weight:400;letter-spacing:.03em;color:rgba(255,255,255,.72)}
+  .tagline{margin:0 0 36px;font-size:clamp(15px,1.7vw,18px);font-weight:400;letter-spacing:.03em;
+      color:rgba(255,255,255,.88);text-shadow:0 1px 14px rgba(0,0,0,.75)}
   .actions{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap}
-  .enter{display:inline-block;padding:13px 34px;border:1.5px solid rgba(255,255,255,.9);color:#fff;text-decoration:none;
+  .enter{display:inline-block;padding:13px 34px;border:1.5px solid rgba(255,255,255,.92);color:#fff;text-decoration:none;
       font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;
-      transition:background .2s,color .2s,transform .2s}
-  .enter:hover,.enter:focus-visible{background:#fff;color:#000;outline:none;transform:translateY(-1px)}
-  .contact{color:rgba(255,255,255,.78);text-decoration:none;font-family:"IBM Plex Mono",ui-monospace,monospace;
-      font-size:13px;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.28);
-      padding-bottom:3px;transition:color .2s,border-color .2s}
+      background:rgba(5,8,12,.28);backdrop-filter:blur(3px);transition:background .2s,color .2s,transform .2s}
+  .enter:hover,.enter:focus-visible{background:#fff;color:#070B10;outline:none;transform:translateY(-1px)}
+  .contact{color:rgba(255,255,255,.9);text-decoration:none;font-family:"IBM Plex Mono",ui-monospace,monospace;
+      font-size:13px;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.4);
+      padding-bottom:3px;text-shadow:0 1px 12px rgba(0,0,0,.7);transition:color .2s,border-color .2s}
   .contact:hover,.contact:focus-visible{color:#fff;border-color:#fff;outline:none}
-  .foot{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:12px;letter-spacing:.06em;color:rgba(255,255,255,.4)}
+  .foot{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-size:12px;letter-spacing:.06em;
+      color:rgba(255,255,255,.6);text-shadow:0 1px 10px rgba(0,0,0,.7)}
   .foot a{color:inherit;text-decoration:none}
-  .foot a:hover{color:rgba(255,255,255,.7)}
-  @media (max-width:520px){.name{font-size:clamp(18px,6.4vw,26px);letter-spacing:.1em}}
+  .foot a:hover{color:#fff}
+  /* Photo credit, bottom right. Page text rather than burnt into the JPEG, so it stays
+     crisp at any size — restyle or delete this block and the <p class="credit"> to remove. */
+  .credit{position:absolute;right:16px;bottom:14px;margin:0;font-family:"IBM Plex Mono",ui-monospace,monospace;
+      font-size:11px;letter-spacing:.07em;color:rgba(255,255,255,.62);text-shadow:0 1px 10px rgba(0,0,0,.85);
+      pointer-events:none;user-select:none}
+  /* Below this the centred footer and the right-aligned credit would collide, so lift the credit above it. */
+  @media (max-width:820px){.credit{right:50%;transform:translateX(50%);bottom:40px;text-align:center}}
+  @media (max-width:520px){.credit{font-size:10px}}
+  @media (max-width:520px){
+    .photo{object-position:50% 40%}
+    .name{font-size:clamp(18px,6.4vw,26px);letter-spacing:.1em}
+    .scrim{background:
+      radial-gradient(ellipse 100% 42% at 50% 50%, rgba(5,8,12,.84) 0%, rgba(5,8,12,.6) 50%, rgba(5,8,12,.2) 85%, rgba(5,8,12,0) 100%),
+      linear-gradient(to bottom, rgba(5,8,12,.5) 0%, rgba(5,8,12,0) 25%, rgba(5,8,12,0) 70%, rgba(5,8,12,.6) 100%)}
+  }
   @media (prefers-reduced-motion:reduce){.enter{transition:none}}
 </style>
 </head>
 <body>
 <main class="landing">
+  <img class="photo" src="assets/landing.jpg" alt="" fetchpriority="high">
+  <div class="scrim" aria-hidden="true"></div>
+
   <div class="content">
     <h1 class="name"><span class="slash">\</span><span class="first">satya</span><span class="last">salyankar</span><span class="slash">\</span></h1>
     <p class="tagline">Resume · Tools</p>
@@ -51,6 +79,7 @@
   </div>
 
   <div class="foot"><a href="home/">satyajitsalyankar.com</a></div>
+  <p class="credit">Maroon Bells, Colorado · © Satya Salyankar</p>
 </main>
 </body>
 </html>
