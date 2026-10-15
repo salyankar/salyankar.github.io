@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Cloud Security Sandbox: six hands-on missions covering the CCSP domains. Fix misconfigured cloud environments, review code, investigate an incident and make the compliance call.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>html,body{margin:0}[hidden]{display:none!important}</style>
+<title>Cloud Security Sandbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: header + progress meter, mission rail on the left, one mission workspace on the right (rail becomes a strip on phones). */
+:root{
+  --bg:#f2f5f6; --surface:#ffffff; --surface-2:#e7edef; --line:#d1dade; --line-soft:#e2e8ea;
+  --ink:#0e1a1f; --ink-2:#44545b; --ink-3:#66767d;
+  --accent:#0b6b83; --accent-soft:#dcedf1; --accent-line:#a9cfd9; --on-accent:#ffffff;
+  --ok:#1d7340; --ok-bg:#e0f1e6; --on-ok:#ffffff;
+  --bad:#b3261e; --bad-bg:#fbe4e1;
+  --warn:#8f5a00; --warn-bg:#fbf0d9;
+  --c-cust:#0b6b83; --c-cust-bg:#dcedf1; --c-prov:#6a4bbd; --c-prov-bg:#ece6fa; --c-shared:#9a5b00; --c-shared-bg:#fbefd9;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0c1417; --surface:#121d21; --surface-2:#1a272c; --line:#2a3a40; --line-soft:#1f2d32;
+    --ink:#e8f0f2; --ink-2:#adbcc1; --ink-3:#84959b;
+    --accent:#4fb3cc; --accent-soft:#12303a; --accent-line:#235665; --on-accent:#06181d;
+    --ok:#62c286; --ok-bg:#14301f; --on-ok:#06180d;
+    --bad:#f07a70; --bad-bg:#3a1a18;
+    --warn:#e6ad4a; --warn-bg:#352812;
+    --c-cust:#4fb3cc; --c-cust-bg:#12303a; --c-prov:#a993ee; --c-prov-bg:#271f42; --c-shared:#e6ad4a; --c-shared-bg:#352812;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0c1417; --surface:#121d21; --surface-2:#1a272c; --line:#2a3a40; --line-soft:#1f2d32;
+  --ink:#e8f0f2; --ink-2:#adbcc1; --ink-3:#84959b;
+  --accent:#4fb3cc; --accent-soft:#12303a; --accent-line:#235665; --on-accent:#06181d;
+  --ok:#62c286; --ok-bg:#14301f; --on-ok:#06180d;
+  --bad:#f07a70; --bad-bg:#3a1a18;
+  --warn:#e6ad4a; --warn-bg:#352812;
+  --c-cust:#4fb3cc; --c-cust-bg:#12303a; --c-prov:#a993ee; --c-prov-bg:#271f42; --c-shared:#e6ad4a; --c-shared-bg:#352812;
+}
+</style>
+<style>
+/* Sandbox engine styles. Every color comes from tokens defined by the sandbox page (see cloud/head.html). */
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);padding-inline:16px;padding-block:0 48px;margin:0}
+.sb{max-width:1240px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.005em}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code,.mono{font-family:var(--mono)}
+.muted{color:var(--ink-3)}
+.sb-eyebrow{font:500 11px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+
+/* Top bar */
+.sb-top{display:flex;flex-wrap:wrap;gap:20px 32px;align-items:flex-end;justify-content:space-between;padding-block:28px 20px;border-bottom:1px solid var(--line)}
+.sb-brand{min-width:0;max-width:62ch;display:grid;gap:6px}
+.sb-brand h1{font-size:clamp(28px,4vw,40px);line-height:1.05}
+.sb-sub{margin:0;color:var(--ink-2)}
+.sb-meter{display:grid;gap:8px;min-width:220px}
+.sb-meter-row{display:flex;justify-content:space-between;gap:16px;font:500 12px/1 var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sb-meter-row b{color:var(--ink);font-weight:600}
+.sb-track{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px}
+.sb-track i{height:8px;border-radius:2px;background:var(--surface-2);border:1px solid var(--line)}
+.sb-track i.on{background:var(--ok);border-color:var(--ok)}
+.sb-track i.mid{background:var(--accent-soft);border-color:var(--accent)}
+
+/* Intro */
+.sb-intro{margin-top:18px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:6px}
+.sb-intro p{margin:0;max-width:80ch;min-width:0}
+
+/* Layout */
+.sb-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;margin-top:24px;align-items:start}
+.sb-rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);display:grid;gap:12px}
+.sb-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.sb-item{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;align-items:start;text-align:left;padding:10px 12px;background:transparent;border:1px solid transparent;border-radius:6px}
+.sb-item:hover{background:var(--surface)}
+.sb-item[aria-current="true"]{background:var(--surface);border-color:var(--line)}
+.sb-dno{grid-row:span 2;font:600 12px/1 var(--mono);width:30px;height:30px;display:grid;place-items:center;border-radius:4px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.sb-item.is-done .sb-dno{background:var(--ok);border-color:var(--ok);color:var(--on-ok)}
+.sb-item.is-going .sb-dno{border-color:var(--accent);color:var(--accent)}
+.sb-iname{font-weight:600;line-height:1.3}
+.sb-istate{font:500 11px/1.3 var(--mono);color:var(--ink-3);letter-spacing:.02em}
+.sb-item.is-done .sb-istate{color:var(--ok)}
+.sb-rail-foot{padding:8px 12px;font-size:13px}
+.sb-link{background:none;border:0;padding:0;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px}
+.sb-link:hover{color:var(--ink)}
+.sb-link.is-armed{color:var(--bad)}
+
+/* Mission */
+.sb-mission{display:grid;gap:22px;min-width:0}
+.sb-mhead{display:grid;gap:6px}
+.sb-mhead h2{font-size:clamp(24px,3vw,32px);line-height:1.1}
+.sb-brief{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px 32px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.sb-brief h3{font:600 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.sb-brief p{margin:0;max-width:68ch}
+.sb-obj{margin:0;padding-left:18px;display:grid;gap:4px}
+.sb-work{min-width:0}
+.sb-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-block:4px}
+.sb-btn{padding:9px 16px;border-radius:5px;border:1px solid var(--line);background:var(--surface);font-weight:600;font-size:14px}
+.sb-btn:hover{border-color:var(--ink-3)}
+.sb-btn:disabled{opacity:.5;cursor:default}
+.sb-btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.sb-btn.primary:hover{filter:brightness(1.08)}
+.sb-btn.ghost{background:transparent}
+.sb-btn.is-armed{border-color:var(--bad);color:var(--bad)}
+.sb-score{margin-left:auto;font:500 12px/1.3 var(--mono);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.sb-hints{display:grid;gap:8px}
+.sb-hint{margin:0;padding:10px 14px;border-left:3px solid var(--warn);background:var(--warn-bg);border-radius:0 4px 4px 0}
+.sb-hint b{font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--warn);margin-right:8px}
+
+/* Results */
+.sb-results:empty{display:none}
+.sb-results{display:grid;gap:16px;padding:18px 20px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.sb-rhead{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between}
+.sb-rhead h3{font-size:20px}
+.sb-rcount{font:500 13px/1 var(--mono);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.sb-win{padding:12px 16px;border-radius:5px;background:var(--ok-bg);color:var(--ok);font-weight:600;border:1px solid var(--ok)}
+.sb-rgroup{display:grid;gap:8px}
+.sb-rgroup h4{font:600 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sb-rlist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.sb-res{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:start;padding:10px 12px;border-radius:5px;background:var(--bg);border:1px solid var(--line-soft);animation:sb-in .35s ease both;animation-delay:calc(var(--i) * 70ms)}
+.sb-res b{display:block;line-height:1.35}
+.sb-res p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+.sb-pill{font:600 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:5px 6px;border-radius:3px}
+.sb-res.pass .sb-pill{background:var(--ok-bg);color:var(--ok)}
+.sb-res.fail .sb-pill{background:var(--bad-bg);color:var(--bad)}
+.sb-fix{margin:8px 0 0;padding:8px 10px;background:var(--surface-2);border-radius:4px;font:13px/1.45 var(--mono);white-space:pre-wrap;overflow-x:auto}
+.sb-tag{display:inline-block;margin-left:6px;font:500 10px/1 var(--mono);padding:3px 5px;border-radius:3px;background:var(--surface-2);color:var(--ink-2);vertical-align:2px}
+@keyframes sb-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sb-res{animation:none}}
+
+/* Debrief */
+.sb-debrief{display:grid;gap:14px;padding:20px;border-radius:6px;border:1px solid var(--accent-line);background:var(--accent-soft)}
+.sb-debrief h3{font-size:20px}
+.sb-debrief p{margin:0;max-width:72ch}
+.sb-terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:0}
+.sb-terms div{padding:10px 12px;background:var(--surface);border-radius:4px;border:1px solid var(--line-soft)}
+.sb-terms dt{font-weight:600}
+.sb-terms dd{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+.sb-exam{margin:0;padding-left:18px;display:grid;gap:4px}
+.sb-locked{padding:12px 16px;border:1px dashed var(--line);border-radius:6px;color:var(--ink-3);font-size:14px}
+.sb-next{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--line)}
+.sb-foot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+.sb-scroll{overflow-x:auto;max-width:100%}
+.sb-legend{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:13px;color:var(--ink-2);margin-bottom:10px}
+
+/* Kind: matrix */
+.mx{border-collapse:separate;border-spacing:4px;width:100%;min-width:520px}
+.mx th{text-align:left;font-weight:600;font-size:14px;vertical-align:bottom;padding:4px 6px}
+.mx thead th{font-family:var(--display);font-size:16px;text-align:center}
+.mx thead th small{display:block;font:400 12px/1.3 var(--sans);color:var(--ink-3)}
+.mx tbody th{font-weight:500;vertical-align:middle}
+.mx td{padding:0}
+.mx-cell,.mx-key{display:grid;place-items:center;font:600 14px/1 var(--mono);border-radius:4px;border:1px solid var(--line)}
+.mx-cell{width:100%;height:42px;background:var(--surface)}
+.mx-key{display:inline-grid;width:26px;height:22px;margin-right:4px;font-size:12px}
+.mx-none{color:var(--ink-3);border-style:dashed}
+.mx-C{background:var(--c-cust-bg);border-color:var(--c-cust);color:var(--c-cust)}
+.mx-P{background:var(--c-prov-bg);border-color:var(--c-prov);color:var(--c-prov)}
+.mx-S{background:var(--c-shared-bg);border-color:var(--c-shared);color:var(--c-shared)}
+.mx-cell.is-wrong{box-shadow:0 0 0 2px var(--bad)}
+
+/* Kind: config */
+.cf-diagram{margin-bottom:16px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.cf-diagram svg{display:block;width:100%;min-width:640px;height:auto}
+.cf-note{font:500 11px/1.3 var(--mono);color:var(--ink-3);margin:0 0 6px;letter-spacing:.03em}
+.cf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.cf-res{display:grid;gap:10px;align-content:start;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+.cf-res header{display:grid;gap:2px}
+.cf-type{font:500 10px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.cf-res h4{font-family:var(--mono);font-size:15px;font-weight:500}
+.cf-desc{margin:0;font-size:13px;color:var(--ink-2)}
+.cf-ctl{display:grid;gap:6px}
+.cf-lbl{font-size:13px;font-weight:600}
+.cf-opts{display:flex;flex-wrap:wrap;gap:6px}
+.cf-opt{padding:6px 10px;font-size:13px;line-height:1.3;text-align:left;border-radius:4px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2)}
+.cf-opt:hover{border-color:var(--ink-3)}
+.cf-opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
+.dg-zone{fill:none;stroke:var(--line);stroke-dasharray:4 4}
+.dg-zone-l{fill:var(--ink-3);font:500 11px var(--mono)}
+.dg-edge{stroke:var(--ink-3);stroke-width:1.5;fill:none}
+.dg-attack{stroke:var(--bad);stroke-width:2.5;stroke-dasharray:7 5;fill:none}
+.dg-node rect{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+.dg-node.ok rect{fill:var(--ok-bg);stroke:var(--ok)}
+.dg-node.bad rect{fill:var(--bad-bg);stroke:var(--bad)}
+.dg-t{fill:var(--ink);font:600 13px var(--sans)}
+.dg-s{fill:var(--ink-3);font:400 11px var(--mono)}
+.dg-a{fill:var(--bad);font:600 11px var(--mono)}
+
+/* Kind: code */
+.cd-file{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface);margin-bottom:12px}
+.cd-name{padding:8px 12px;font:500 13px var(--mono);background:var(--surface-2);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
+.cd-lines{overflow-x:auto;padding-block:4px}
+.cd-line{display:grid;grid-template-columns:40px minmax(max-content,1fr) 24px;align-items:center;width:100%;min-width:max-content;padding:1px 8px 1px 0;border:0;background:transparent;text-align:left;font:13px/1.6 var(--mono)}
+.cd-line:hover{background:var(--surface-2)}
+.cd-no{color:var(--ink-3);text-align:right;padding-right:12px;font-variant-numeric:tabular-nums}
+.cd-line code{white-space:pre;color:var(--ink)}
+.cd-flag{color:transparent;text-align:center}
+.cd-line[aria-pressed="true"]{background:var(--warn-bg)}
+.cd-line[aria-pressed="true"] .cd-flag{color:var(--warn)}
+.cd-line.is-found{background:var(--ok-bg)}
+.cd-line.is-found .cd-flag{color:var(--ok)}
+.cd-line.is-fp{background:var(--bad-bg)}
+.cd-line.is-fp .cd-flag{color:var(--bad)}
+.cd-c{color:var(--ink-3) !important}
+
+/* Kind: logs */
+.lg-qs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:16px}
+.lg-q{margin:0;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:grid;gap:8px;min-width:0}
+.lg-q legend{padding:0;font-weight:600;float:left;width:100%}
+.lg-q.pass{border-color:var(--ok)}
+.lg-q.fail{border-color:var(--bad)}
+.lg-num{width:120px;padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg);font-family:var(--mono)}
+.lg-tools{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-bottom:8px}
+.lg-tools label{font-weight:600;font-size:14px}
+.lg-tools input{flex:1 1 240px;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);font-family:var(--mono);font-size:13px}
+.lg-count{font:500 12px var(--mono);color:var(--ink-3)}
+.lg{border-collapse:collapse;width:100%;min-width:860px;font:12.5px/1.45 var(--mono);background:var(--surface)}
+.lg th{text-align:left;font-weight:600;color:var(--ink-2);padding:8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface-2)}
+.lg td{padding:6px 8px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.lg tr.is-fail td{color:var(--bad)}
+.lg-v{background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;border-bottom:1px dotted var(--ink-3)}
+.lg-v:hover{color:var(--accent);border-color:var(--accent)}
+.lg-wrap{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:6px}
+
+/* Kind: scenario */
+.sc-list{display:grid;gap:12px}
+.sc-card{padding:16px 18px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:grid;gap:10px}
+.sc-card.is-solved{border-color:var(--ok)}
+.sc-no{font:500 11px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.sc-card h4{font-size:18px}
+.sc-card p{margin:0;max-width:75ch}
+.sc-choices{display:grid;gap:6px}
+.sc-choice,.lg-opt{text-align:left;padding:9px 12px;border-radius:5px;border:1px solid var(--line);background:var(--bg);line-height:1.4;font-size:14px}
+.sc-choice:hover:not(:disabled),.lg-opt:hover{border-color:var(--ink-3)}
+.sc-choice:disabled{cursor:default}
+.sc-choice.is-wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1px}
+.sc-choice.is-right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+.lg-opt[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+.lg-opts{display:grid;gap:6px}
+.sc-fb{margin:0;padding:10px 12px;border-radius:4px;font-size:14px}
+.sc-fb.ok{background:var(--ok-bg)}
+.sc-fb.no{background:var(--bad-bg)}
+
+@media (max-width:860px){
+  .sb-layout{grid-template-columns:minmax(0,1fr);gap:16px}
+  .sb-rail{position:static}
+  .sb-list{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .sb-list li{flex:0 0 200px}
+  .sb-item{border-color:var(--line);background:var(--surface)}
+  .sb-brief{grid-template-columns:minmax(0,1fr)}
+  .sb-res{grid-template-columns:minmax(0,1fr);gap:6px}
+  .sb-pill{justify-self:start}
+  .sb-score{margin-left:0;width:100%}
+}
+</style>
+<div id="app"></div>
+<script>
+/* Sandbox engine: the shared shell (mission list, briefing, hints, scoring, results, debrief, saved progress)
+   plus five reusable mission kinds. Each sandbox supplies only its missions and calls Sandbox.mount(). */
+(function () {
+  'use strict';
+
+  var ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ESC[c]; }); }
+
+  function makeStore(key) {
+    return {
+      load: function () { try { var s = localStorage.getItem(key); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
+      save: function (v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) { /* storage blocked: progress lasts for this visit only */ } }
+    };
+  }
+
+  // Labels for each result type: [group heading, pill when passing, pill when failing]
+  var TYPES = {
+    attack: ['Attacks', 'Blocked', 'Breached'],
+    business: ['Business must keep working', 'Working', 'Broken'],
+    compliance: ['Compliance', 'Met', 'Not met'],
+    detect: ['Detection', 'Ready', 'Blind'],
+    row: ['Responsibilities', 'Correct', 'Not yet'],
+    review: ['Findings', 'Found', 'Not yet'],
+    answer: ['Answers', 'Correct', 'Not yet']
+  };
+
+  var Sandbox = window.Sandbox = { kinds: {}, esc: esc };
+
+  Sandbox.mount = function (root, cfg) {
+    var store = makeStore(cfg.storageKey);
+    var byId = {};
+    cfg.missions.forEach(function (m) { byId[m.id] = m; });
+    var P = store.load();
+    if (!P || typeof P !== 'object' || !P.m) P = { m: {}, cur: cfg.missions[0].id, intro: true };
+    if (!byId[P.cur]) P.cur = cfg.missions[0].id;
+
+    function save() { store.save(P); }
+    function rec(id) { return P.m[id] || (P.m[id] = { done: false, best: 0, hints: 0, misses: 0, state: null, results: null }); }
+    function score(r) { return Math.max(30, 100 - 10 * r.hints - 5 * r.misses); }
+    function kindOf(m) { return Sandbox.kinds[m.kind]; }
+
+    root.innerHTML =
+      '<div class="sb">' +
+      '<header class="sb-top"><div class="sb-brand">' +
+      '<div class="sb-eyebrow">' + esc(cfg.eyebrow) + '</div><h1>' + esc(cfg.title) + '</h1>' +
+      '<p class="sb-sub">' + esc(cfg.subtitle) + '</p></div><div class="sb-meter" id="sb-meter"></div></header>' +
+      '<div class="sb-intro" id="sb-intro"><p>' + cfg.intro + '</p><button class="sb-btn" id="sb-intro-ok" type="button">Got it</button></div>' +
+      '<div class="sb-layout"><nav class="sb-rail" aria-label="Missions"><ol class="sb-list" id="sb-list"></ol>' +
+      '<div class="sb-rail-foot"><button class="sb-link" id="sb-wipe" type="button">Reset all progress</button></div></nav>' +
+      '<main class="sb-main" id="sb-main"></main></div>' +
+      '<footer class="sb-foot">' + esc(cfg.footer) + '</footer></div>';
+
+    var $ = function (id) { return document.getElementById(id); };
+    $('sb-intro').hidden = !P.intro;
+    $('sb-intro-ok').onclick = function () { P.intro = false; save(); $('sb-intro').hidden = true; };
+
+    armed($('sb-wipe'), 'Click again to erase everything', function () {
+      P = { m: {}, cur: cfg.missions[0].id, intro: false }; save(); renderAll();
+    });
+
+    // Two-click confirmation, since the viewer may block confirm() dialogs.
+    function armed(btn, prompt, fn) {
+      var label = btn.textContent, t = null;
+      btn.onclick = function () {
+        if (btn.classList.contains('is-armed')) { clearTimeout(t); btn.classList.remove('is-armed'); btn.textContent = label; fn(); return; }
+        btn.classList.add('is-armed'); btn.textContent = prompt;
+        t = setTimeout(function () { btn.classList.remove('is-armed'); btn.textContent = label; }, 3500);
+      };
+    }
+
+    function renderMeter() {
+      var done = 0, pts = 0, track = '';
+      cfg.missions.forEach(function (m) {
+        var r = P.m[m.id];
+        if (r && r.done) { done++; pts += r.best; }
+        track += '<i class="' + (r && r.done ? 'on' : (r && r.state ? 'mid' : '')) + '"></i>';
+      });
+      $('sb-meter').innerHTML =
+        '<div class="sb-meter-row"><span>Missions <b>' + done + ' / ' + cfg.missions.length + '</b></span><span>Score <b>' + pts + '</b> / ' + cfg.missions.length * 100 + '</span></div>' +
+        '<div class="sb-track" style="--n:' + cfg.missions.length + '" aria-hidden="true">' + track + '</div>';
+    }
+
+    function renderList() {
+      $('sb-list').innerHTML = cfg.missions.map(function (m) {
+        var r = P.m[m.id], st = r && r.done ? 'is-done' : (r && r.state ? 'is-going' : '');
+        var label = r && r.done ? 'Complete · best ' + r.best : (r && r.state ? 'In progress' : 'Not started');
+        return '<li><button type="button" class="sb-item ' + st + '" data-id="' + m.id + '" aria-current="' + (m.id === P.cur) + '">' +
+          '<span class="sb-dno">' + esc(m.tag) + '</span><span class="sb-iname">' + esc(m.title) + '</span><span class="sb-istate">' + label + '</span></button></li>';
+      }).join('');
+      $('sb-list').querySelectorAll('.sb-item').forEach(function (b) {
+        b.onclick = function () { P.cur = b.getAttribute('data-id'); save(); renderAll(); $('sb-main').scrollIntoView({ block: 'start', behavior: 'smooth' }); };
+      });
+    }
+
+    function renderAll() { renderMeter(); renderList(); renderMission(); }
+
+    function renderMission() {
+      var m = byId[P.cur], k = kindOf(m), r = rec(m.id), idx = cfg.missions.indexOf(m);
+      if (!r.state) r.state = k.init(m.data);
+      var prev = cfg.missions[idx - 1], next = cfg.missions[idx + 1];
+      $('sb-main').innerHTML =
+        '<article class="sb-mission">' +
+        '<div class="sb-mhead"><div class="sb-eyebrow">' + esc(m.domain) + '</div><h2>' + esc(m.title) + '</h2></div>' +
+        '<section class="sb-brief"><div><h3>Briefing</h3><p>' + m.brief + '</p></div>' +
+        '<div><h3>Objectives</h3><ul class="sb-obj">' + m.objectives.map(function (o) { return '<li>' + o + '</li>'; }).join('') + '</ul></div></section>' +
+        '<section class="sb-work" id="sb-work"></section>' +
+        '<div class="sb-bar">' +
+        (k.auto ? '' : '<button class="sb-btn primary" id="sb-run" type="button">' + esc(k.label) + '</button>') +
+        '<button class="sb-btn" id="sb-hint" type="button"></button>' +
+        '<button class="sb-btn ghost" id="sb-reset" type="button">' + (r.done ? 'Replay mission' : 'Reset mission') + '</button>' +
+        '<span class="sb-score" id="sb-score"></span></div>' +
+        '<div class="sb-hints" id="sb-hints"></div>' +
+        '<section class="sb-results" id="sb-results" aria-live="polite"></section>' +
+        '<section id="sb-debrief"></section>' +
+        '<nav class="sb-next" aria-label="Mission navigation">' +
+        (prev ? '<button class="sb-btn ghost" type="button" data-go="' + prev.id + '">← ' + esc(prev.title) + '</button>' : '<span></span>') +
+        (next ? '<button class="sb-btn ghost" type="button" data-go="' + next.id + '">' + esc(next.title) + ' →</button>' : '') +
+        '</nav></article>';
+
+      $('sb-main').querySelectorAll('[data-go]').forEach(function (b) {
+        b.onclick = function () { P.cur = b.getAttribute('data-go'); save(); renderAll(); $('sb-main').scrollIntoView({ block: 'start' }); };
+      });
+
+      var ctx = {
+        m: m, data: m.data, rec: r, el: $('sb-work'), esc: esc,
+        get state() { return r.state; },
+        save: function () { save(); renderMeter(); },
+        rerender: function () { k.render(ctx); },
+        penalize: function () { r.misses++; save(); renderScore(); },
+        showResults: function (list, quiet) { showResults(list, quiet); },
+        complete: function () { complete(); }
+      };
+
+      function renderScore() {
+        var left = m.hints.length - r.hints;
+        $('sb-hint').textContent = left > 0 ? 'Hint · ' + left + ' left (−10)' : 'No hints left';
+        $('sb-hint').disabled = left <= 0;
+        $('sb-score').textContent = (r.done ? 'Best ' + r.best + ' · ' : '') + 'This attempt: ' + score(r) + ' / 100';
+        $('sb-hints').innerHTML = m.hints.slice(0, r.hints).map(function (h, i) {
+          return '<p class="sb-hint"><b>Hint ' + (i + 1) + '</b>' + h + '</p>';
+        }).join('');
+      }
+
+      function showResults(list, quiet) {
+        if (!list) { $('sb-results').innerHTML = ''; return; }
+        var passed = list.filter(function (x) { return x.pass; }).length, order = [], groups = {}, i = 0;
+        list.forEach(function (x) { if (!groups[x.type]) { groups[x.type] = []; order.push(x.type); } groups[x.type].push(x); });
+        var all = passed === list.length;
+        $('sb-results').innerHTML =
+          '<div class="sb-rhead"><h3>' + esc(k.resultsTitle || 'Simulation results') + '</h3><span class="sb-rcount">' + passed + ' of ' + list.length + ' passing</span></div>' +
+          (all ? '<div class="sb-win">Mission complete. Score ' + score(r) + ' / 100.</div>' : '') +
+          order.map(function (t) {
+            var T = TYPES[t] || ['Results', 'Pass', 'Fail'];
+            return '<div class="sb-rgroup"><h4>' + T[0] + '</h4><ul class="sb-rlist">' + groups[t].map(function (x) {
+              return '<li class="sb-res ' + (x.pass ? 'pass' : 'fail') + '" style="--i:' + (quiet ? 0 : i++) + '">' +
+                '<span class="sb-pill">' + (x.pass ? T[1] : T[2]) + '</span><div><b>' + esc(x.name) + (x.tag ? '<span class="sb-tag">' + esc(x.tag) + '</span>' : '') + '</b>' +
+                '<p>' + x.msg + '</p>' + (x.fix ? '<pre class="sb-fix">' + esc(x.fix) + '</pre>' : '') + '</div></li>';
+            }).join('') + '</ul></div>';
+          }).join('');
+      }
+
+      function complete() {
+        var first = !r.done;
+        r.done = true; r.best = Math.max(r.best, score(r)); save();
+        renderMeter(); renderList(); renderScore(); renderDebrief();
+        $('sb-reset').textContent = 'Replay mission';
+        if (first) $('sb-debrief').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+
+      function renderDebrief() {
+        var d = m.debrief;
+        $('sb-debrief').className = r.done ? 'sb-debrief' : 'sb-locked';
+        $('sb-debrief').innerHTML = !r.done
+          ? 'The debrief, with the CCSP concepts behind this mission, unlocks when you complete it.'
+          : '<div class="sb-eyebrow">Debrief</div><h3>' + esc(d.title) + '</h3><p>' + d.summary + '</p>' +
+            '<dl class="sb-terms">' + d.terms.map(function (t) { return '<div><dt>' + t[0] + '</dt><dd>' + t[1] + '</dd></div>'; }).join('') + '</dl>' +
+            '<div><h4 class="sb-eyebrow" style="margin-bottom:8px">On the exam</h4><ul class="sb-exam">' + d.exam.map(function (e) { return '<li>' + e + '</li>'; }).join('') + '</ul></div>' +
+            (d.real ? '<p><b>In the real world.</b> ' + d.real + '</p>' : '');
+      }
+
+      $('sb-hint').onclick = function () {
+        if (r.hints < m.hints.length) { r.hints++; save(); renderScore(); }
+      };
+      if ($('sb-run')) $('sb-run').onclick = function () {
+        var list = k.evaluate(ctx);
+        r.results = list; save();
+        k.render(ctx);
+        showResults(list);
+        if (list.every(function (x) { return x.pass; })) complete();
+        else { r.misses++; save(); renderScore(); }
+        $('sb-results').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      };
+      armed($('sb-reset'), r.done ? 'Click again to start over' : 'Click again to reset', function () {
+        r.state = null; r.results = null;
+        if (r.done) { r.hints = 0; r.misses = 0; }
+        save(); renderAll();
+      });
+
+      k.render(ctx);
+      renderScore();
+      if (r.results && !k.auto) showResults(r.results, true);
+      if (k.auto && k.summary) showResults(k.summary(ctx), true);
+      renderDebrief();
+    }
+
+    renderAll();
+  };
+
+  /* ---------- Kind: matrix — assign an owner to every cell of a grid ---------- */
+  Sandbox.kinds.matrix = {
+    label: 'Check the matrix',
+    resultsTitle: 'Matrix review',
+    init: function (d) {
+      var cells = {};
+      d.rows.forEach(function (row) { cells[row.id] = d.cols.map(function () { return null; }); });
+      return { cells: cells, wrong: {} };
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state, order = d.opts.map(function (o) { return o.v; });
+      ctx.el.innerHTML =
+        '<div class="sb-legend">' + d.opts.map(function (o) { return '<span><span class="mx-key mx-' + o.v + '">' + o.v + '</span>' + esc(o.label) + '</span>'; }).join('') +
+        '<span class="muted">Click a cell to cycle through the options.</span></div>' +
+        '<div class="sb-scroll"><table class="mx"><thead><tr><th></th>' + d.cols.map(function (c) { return '<th scope="col">' + esc(c.name) + '<small>' + esc(c.sub) + '</small></th>'; }).join('') + '</tr></thead><tbody>' +
+        d.rows.map(function (row) {
+          return '<tr><th scope="row">' + esc(row.label) + '</th>' + d.cols.map(function (c, i) {
+            var v = s.cells[row.id][i], bad = (s.wrong[row.id] || []).indexOf(i) >= 0;
+            return '<td><button type="button" class="mx-cell mx-' + (v || 'none') + (bad ? ' is-wrong' : '') + '" data-r="' + row.id + '" data-c="' + i + '" aria-label="' + esc(row.label + ', ' + c.name + ': ' + (v ? d.opts[order.indexOf(v)].label : 'not set')) + '">' + (v || '?') + '</button></td>';
+          }).join('') + '</tr>';
+        }).join('') + '</tbody></table></div>';
+      ctx.el.querySelectorAll('.mx-cell').forEach(function (b) {
+        b.onclick = function () {
+          var rid = b.getAttribute('data-r'), ci = +b.getAttribute('data-c'), cur = s.cells[rid][ci];
+          s.cells[rid][ci] = order[(order.indexOf(cur) + 1) % order.length];
+          if (s.wrong[rid]) s.wrong[rid] = s.wrong[rid].filter(function (x) { return x !== ci; });
+          ctx.save(); ctx.rerender();
+          var again = ctx.el.querySelector('[data-r="' + rid + '"][data-c="' + ci + '"]'); if (again) again.focus();
+        };
+      });
+    },
+    evaluate: function (ctx) {
+      var d = ctx.data, s = ctx.state;
+      return d.rows.map(function (row) {
+        var vals = s.cells[row.id], bad = [];
+        d.cols.forEach(function (c, i) { if (row.accept[i].indexOf(vals[i]) < 0) bad.push(i); });
+        s.wrong[row.id] = bad;
+        var blank = vals.some(function (v) { return !v; });
+        return { type: 'row', name: row.label, pass: !bad.length,
+          msg: bad.length ? (blank ? 'Some cells are still empty. ' : '') + 'Look again at ' + bad.map(function (i) { return d.cols[i].name; }).join(', ') + '. ' + row.risk : row.why };
+      });
+    }
+  };
+
+  /* ---------- Kind: config — change settings on resources, then simulate attacks and business checks ---------- */
+  Sandbox.kinds.config = {
+    label: 'Run simulation',
+    init: function (d) {
+      var v = {};
+      d.resources.forEach(function (res) { res.controls.forEach(function (c) { v[c.id] = c.def; }); });
+      return { v: v };
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state, R = null;
+      if (ctx.rec.results) { R = {}; ctx.rec.results.forEach(function (x) { R[x.id] = x.pass; }); }
+      ctx.el.innerHTML =
+        (d.diagram ? '<div class="cf-diagram"><p class="cf-note">' + (R ? 'Map shows the last simulation run' : 'Run the simulation to light up the map') + '</p><div class="sb-scroll" id="cf-dg">' + d.diagram(s.v, R) + '</div></div>' : '') +
+        '<div class="cf-grid">' + d.resources.map(function (res) {
+          return '<section class="cf-res"><header><span class="cf-type">' + esc(res.type) + '</span><h4>' + esc(res.name) + '</h4></header>' +
+            (res.desc ? '<p class="cf-desc">' + res.desc + '</p>' : '') +
+            res.controls.map(function (c) {
+              return '<div class="cf-ctl"><div class="cf-lbl" id="lbl-' + c.id + '">' + esc(c.label) + '</div><div class="cf-opts" role="radiogroup" aria-labelledby="lbl-' + c.id + '">' +
+                c.options.map(function (o) {
+                  return '<button type="button" role="radio" class="cf-opt" data-c="' + c.id + '" data-v="' + o[0] + '" aria-checked="' + (s.v[c.id] === o[0]) + '">' + esc(o[1]) + '</button>';
+                }).join('') + '</div></div>';
+            }).join('') + '</section>';
+        }).join('') + '</div>';
+      ctx.el.querySelectorAll('.cf-opt').forEach(function (b) {
+        b.onclick = function () {
+          var c = b.getAttribute('data-c');
+          s.v[c] = b.getAttribute('data-v');
+          ctx.el.querySelectorAll('.cf-opt[data-c="' + c + '"]').forEach(function (o) { o.setAttribute('aria-checked', o === b); });
+          if (d.diagram) ctx.el.querySelector('#cf-dg').innerHTML = d.diagram(s.v, R);
+          ctx.save();
+        };
+      });
+    },
+    evaluate: function (ctx) {
+      var v = ctx.state.v;
+      return ctx.data.checks.map(function (c) {
+        var ok = !!c.test(v);
+        return { id: c.id, type: c.type, name: c.name, pass: ok, msg: ok ? c.ok : c.fail };
+      });
+    }
+  };
+
+  /* ---------- Kind: code — flag the risky lines in a code review ---------- */
+  Sandbox.kinds.code = {
+    label: 'Submit review',
+    resultsTitle: 'Review results',
+    init: function () { return { flags: [], found: [], fp: [] }; },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state, foundLines = {};
+      d.findings.forEach(function (f) { if (s.found.indexOf(f.id) >= 0) f.at.forEach(function (k) { foundLines[k] = 1; }); });
+      ctx.el.innerHTML = '<p class="sb-legend">Click a line to flag it (⚑). Click again to unflag. Flags: <b id="cd-n">' + s.flags.length + '</b></p>' +
+        d.files.map(function (f) {
+          return '<div class="cd-file"><div class="cd-name"><span>' + esc(f.name) + '</span><span class="muted">' + esc(f.note || '') + '</span></div><div class="cd-lines">' +
+            f.lines.map(function (t, i) {
+              var key = f.name + ':' + (i + 1), on = s.flags.indexOf(key) >= 0;
+              var cls = foundLines[key] && on ? ' is-found' : (s.fp.indexOf(key) >= 0 && on ? ' is-fp' : '');
+              var isComment = /^\s*(#|\/\/)/.test(t);
+              return '<button type="button" class="cd-line' + cls + '" data-k="' + key + '" aria-pressed="' + on + '" aria-label="' + esc(f.name + ' line ' + (i + 1)) + '">' +
+                '<span class="cd-no">' + (i + 1) + '</span><code' + (isComment ? ' class="cd-c"' : '') + '>' + (esc(t) || ' ') + '</code><span class="cd-flag" aria-hidden="true">⚑</span></button>';
+            }).join('') + '</div></div>';
+        }).join('');
+      ctx.el.querySelectorAll('.cd-line').forEach(function (b) {
+        b.onclick = function () {
+          var k = b.getAttribute('data-k'), i = s.flags.indexOf(k);
+          if (i >= 0) s.flags.splice(i, 1); else s.flags.push(k);
+          b.setAttribute('aria-pressed', i < 0);
+          if (i >= 0) b.classList.remove('is-found', 'is-fp');
+          ctx.el.querySelector('#cd-n').textContent = s.flags.length;
+          ctx.save();
+        };
+      });
+    },
+    evaluate: function (ctx) {
+      var d = ctx.data, s = ctx.state, all = {}, out = [];
+      s.found = []; s.fp = [];
+      d.findings.forEach(function (f) {
+        f.at.forEach(function (k) { all[k] = 1; });
+        var hit = f.at.some(function (k) { return s.flags.indexOf(k) >= 0; });
+        if (hit) s.found.push(f.id);
+        out.push(hit ? { type: 'review', name: f.title, tag: f.tag, pass: true, msg: f.why, fix: f.fix }
+                     : { type: 'review', name: 'Something is still unflagged', pass: false, msg: f.clue });
+      });
+      s.flags.filter(function (k) { return !all[k]; }).forEach(function (k) {
+        s.fp.push(k);
+        out.push({ type: 'review', name: k.replace(':', ', line ') + ' is a false positive', pass: false, msg: (d.decoys[k] || 'Nothing risky on this line.') + ' Unflag it.' });
+      });
+      return out;
+    }
+  };
+
+  /* ---------- Kind: logs — investigate an event log and answer questions ---------- */
+  Sandbox.kinds.logs = {
+    label: 'Check answers',
+    resultsTitle: 'Investigation review',
+    init: function () { return { filter: '', answers: {}, marks: {} }; },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state;
+      ctx.el.innerHTML =
+        '<div class="lg-qs">' + d.questions.map(function (q, i) {
+          var a = s.answers[q.id], mk = s.marks[q.id];
+          return '<fieldset class="lg-q' + (mk === true ? ' pass' : mk === false ? ' fail' : '') + '"><legend>' + (i + 1) + '. ' + esc(q.q) + '</legend>' +
+            (q.options
+              ? '<div class="lg-opts" role="radiogroup" aria-label="' + esc(q.q) + '">' + q.options.map(function (o) {
+                  return '<button type="button" role="radio" class="lg-opt" data-q="' + q.id + '" data-v="' + esc(o) + '" aria-checked="' + (a === o) + '">' + esc(o) + '</button>';
+                }).join('') + '</div>'
+              : '<input class="lg-num" id="lg-a-' + q.id + '" data-q="' + q.id + '" inputmode="numeric" value="' + esc(a || '') + '" aria-label="' + esc(q.q) + '">') +
+            '</fieldset>';
+        }).join('') + '</div>' +
+        '<div class="lg-tools"><label for="lg-filter">Filter events</label><input id="lg-filter" type="search" autocomplete="off" placeholder="Try a user, an IP or an action. Words must all match." value="' + esc(s.filter) + '">' +
+        '<button class="sb-btn ghost" type="button" id="lg-clear">Clear</button><span class="lg-count" id="lg-count"></span></div>' +
+        '<div class="lg-wrap"><table class="lg"><thead><tr>' + d.cols.map(function (c) { return '<th scope="col">' + esc(c.label) + '</th>'; }).join('') + '</tr></thead><tbody id="lg-body"></tbody></table></div>' +
+        '<p class="muted" style="font-size:13px;margin:8px 0 0">Tip: click any value in the table to filter by it.</p>';
+
+      function draw() {
+        var words = s.filter.toLowerCase().split(/\s+/).filter(Boolean), shown = 0;
+        var html = d.rows.filter(function (row) {
+          var hay = d.cols.map(function (c) { return row[c.k]; }).join(' ').toLowerCase();
+          return words.every(function (w) { return hay.indexOf(w) >= 0; });
+        }).map(function (row) {
+          shown++;
+          return '<tr' + (row.result && row.result !== 'Success' ? ' class="is-fail"' : '') + '>' + d.cols.map(function (c) {
+            var v = row[c.k] == null ? '' : row[c.k];
+            return '<td>' + (c.click ? '<button type="button" class="lg-v">' + esc(v) + '</button>' : esc(v)) + '</td>';
+          }).join('') + '</tr>';
+        }).join('');
+        ctx.el.querySelector('#lg-body').innerHTML = html || '<tr><td colspan="' + d.cols.length + '" class="muted">No events match that filter.</td></tr>';
+        ctx.el.querySelector('#lg-count').textContent = 'Showing ' + shown + ' of ' + d.rows.length + ' events';
+        ctx.el.querySelectorAll('.lg-v').forEach(function (b) {
+          b.onclick = function () { s.filter = b.textContent; ctx.el.querySelector('#lg-filter').value = s.filter; ctx.save(); draw(); };
+        });
+      }
+      var f = ctx.el.querySelector('#lg-filter');
+      f.oninput = function () { s.filter = f.value; ctx.save(); draw(); };
+      ctx.el.querySelector('#lg-clear').onclick = function () { s.filter = ''; f.value = ''; ctx.save(); draw(); f.focus(); };
+      ctx.el.querySelectorAll('.lg-opt').forEach(function (b) {
+        b.onclick = function () {
+          var q = b.getAttribute('data-q');
+          s.answers[q] = b.getAttribute('data-v'); delete s.marks[q];
+          ctx.el.querySelectorAll('.lg-opt[data-q="' + q + '"]').forEach(function (o) { o.setAttribute('aria-checked', o === b); });
+          b.closest('.lg-q').classList.remove('pass', 'fail');
+          ctx.save();
+        };
+      });
+      ctx.el.querySelectorAll('.lg-num').forEach(function (inp) {
+        inp.oninput = function () { s.answers[inp.getAttribute('data-q')] = inp.value; delete s.marks[inp.getAttribute('data-q')]; inp.closest('.lg-q').classList.remove('pass', 'fail'); ctx.save(); };
+      });
+      draw();
+    },
+    evaluate: function (ctx) {
+      var s = ctx.state;
+      return ctx.data.questions.map(function (q) {
+        var a = String(s.answers[q.id] == null ? '' : s.answers[q.id]).trim().toLowerCase();
+        var ok = a === String(q.answer).toLowerCase();
+        s.marks[q.id] = ok;
+        return { type: 'answer', name: q.short, pass: ok, msg: ok ? q.ok : (a ? q.clue : 'Not answered yet. ' + q.clue) };
+      });
+    }
+  };
+
+  /* ---------- Kind: scenario — decision cases with immediate feedback ---------- */
+  Sandbox.kinds.scenario = {
+    auto: true,
+    resultsTitle: 'Case file',
+    init: function () { return { tried: {}, solved: {} }; },
+    summary: function (ctx) {
+      var s = ctx.state;
+      return ctx.data.cards.map(function (c) {
+        return { type: 'answer', name: c.title, pass: !!s.solved[c.id], msg: s.solved[c.id] ? c.lesson : 'Open case.' };
+      });
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state;
+      ctx.el.innerHTML = '<div class="sc-list">' + d.cards.map(function (c, i) {
+        var tried = s.tried[c.id] || [], solved = !!s.solved[c.id], last = tried[tried.length - 1];
+        var fb = last == null ? '' : '<p class="sc-fb ' + (c.choices[last].ok ? 'ok' : 'no') + '">' + c.choices[last].fb + '</p>';
+        return '<section class="sc-card' + (solved ? ' is-solved' : '') + '"><div class="sc-no">Case ' + (i + 1) + ' of ' + d.cards.length + (solved ? ' · resolved' : '') + '</div>' +
+          '<h4>' + esc(c.title) + '</h4><p>' + c.situation + '</p><div class="sc-choices">' + c.choices.map(function (ch, j) {
+            var cls = tried.indexOf(j) >= 0 ? (ch.ok ? ' is-right' : ' is-wrong') : '';
+            return '<button type="button" class="sc-choice' + cls + '" data-c="' + c.id + '" data-j="' + j + '"' + (solved || tried.indexOf(j) >= 0 ? ' disabled' : '') + '>' + esc(ch.t) + '</button>';
+          }).join('') + '</div>' + fb + '</section>';
+      }).join('') + '</div>';
+      ctx.el.querySelectorAll('.sc-choice').forEach(function (b) {
+        b.onclick = function () {
+          var cid = b.getAttribute('data-c'), j = +b.getAttribute('data-j');
+          var card = d.cards.filter(function (c) { return c.id === cid; })[0];
+          (s.tried[cid] = s.tried[cid] || []).push(j);
+          if (card.choices[j].ok) s.solved[cid] = true; else ctx.penalize();
+          ctx.save(); ctx.rerender();
+          ctx.showResults(Sandbox.kinds.scenario.summary(ctx), true);
+          var sec = ctx.el.querySelector('[data-c="' + cid + '"]'); if (sec) sec.closest('.sc-card').scrollIntoView({ block: 'nearest' });
+          if (card.choices[j].ok && d.cards.every(function (c) { return s.solved[c.id]; })) ctx.complete();
+        };
+      });
+    }
+  };
+})();
+</script>
+<script>
+/* Cloud Security Sandbox — six missions, one per CCSP domain. Fictional companies, people, keys and IPs. */
+(function () {
+  'use strict';
+
+  /* ---------------- Mission 3 network map ---------------- */
+  function infraDiagram(v, R) {
+    function st(ids) { if (!R || !ids.length) return ''; return ids.some(function (id) { return R[id] === false; }) ? 'bad' : 'ok'; }
+    function node(x, y, w, title, sub, ids) {
+      return '<g class="dg-node ' + st(ids) + '"><rect x="' + (x - w / 2) + '" y="' + (y - 26) + '" width="' + w + '" height="52" rx="6"></rect>' +
+        '<text class="dg-t" x="' + x + '" y="' + (y - 4) + '" text-anchor="middle">' + title + '</text>' +
+        '<text class="dg-s" x="' + x + '" y="' + (y + 14) + '" text-anchor="middle">' + sub + '</text></g>';
+    }
+    var lbl = {
+      role: { admin: 'role: admin *:*', storage: 'role: read all storage', config: 'role: config only' },
+      dbIn: { internet: '5432 ← internet', vpc: '5432 ← whole VPC', web: '5432 ← web tier', none: 'no inbound' },
+      bastion: { open: 'SSH ← internet, pwd', vpn: 'SSH ← VPN, key+MFA', ssm: 'session manager', off: 'disabled' },
+      bucket: { public: 'public read', private: 'private' }
+    };
+    var atk = '';
+    if (R && R['db-exposed'] === false) atk += '<path class="dg-attack" d="M75,186 C150,330 560,330 610,186"></path><text class="dg-a" x="330" y="312">scan → database</text>';
+    if (R && R['ssh-web'] === false) atk += '<path class="dg-attack" d="M90,134 C160,30 380,30 440,134"></path><text class="dg-a" x="230" y="44">SSH → web</text>';
+    if (R && R['public-backups'] === false) atk += '<path class="dg-attack" d="M60,134 C120,-10 700,-10 760,224"></path><text class="dg-a" x="560" y="20">download backups</text>';
+    return '<svg viewBox="0 0 830 330" role="img" aria-label="Network map: internet, load balancer, jump box, web VMs, database and backup bucket">' +
+      '<rect class="dg-zone" x="170" y="50" width="525" height="240" rx="8"></rect><text class="dg-zone-l" x="182" y="282">VPC 10.0.0.0/16</text>' +
+      '<rect class="dg-zone" x="535" y="90" width="150" height="140" rx="6"></rect><text class="dg-zone-l" x="545" y="108">' + (v.dbNet === 'private' ? 'private subnet' : 'public subnet') + '</text>' +
+      '<path class="dg-edge" d="M140,160 L205,100"></path><path class="dg-edge" d="M140,160 L195,220"></path>' +
+      '<path class="dg-edge" d="M335,100 L365,150"></path><path class="dg-edge" d="M345,220 L365,170"></path>' +
+      '<path class="dg-edge" d="M515,160 L545,160"></path><path class="dg-edge" d="M480,186 C560,290 680,290 700,262"></path>' +
+      node(75, 160, 130, 'Internet', 'users, attackers', []) +
+      node(270, 100, 130, 'Load balancer', 'WAF ' + (v.waf === 'on' ? 'on' : 'off'), ['waf']) +
+      node(270, 220, 150, 'Jump box', lbl.bastion[v.bastion], ['bastion']) +
+      node(440, 160, 150, 'Web VMs', lbl.role[v.role], ['ssh-web', 'ssrf', 'blast']) +
+      node(610, 160, 130, 'orders DB', lbl.dbIn[v.dbIn], ['db-exposed', 'lateral']) +
+      node(760, 250, 136, 'backups bucket', lbl.bucket[v.bucketAcl] + (v.objLock === 'on' ? ', locked' : ''), ['public-backups', 'ransom']) +
+      atk + '</svg>';
+  }
+
+  var missions = [
+    /* ================= Domain 1 ================= */
+    {
+      id: 'm1-shared', tag: 'D1', kind: 'matrix',
+      domain: 'Domain 1 · Cloud Concepts, Architecture & Design',
+      title: 'Who patches what?',
+      brief: 'Northwind Health is moving three workloads to the cloud: a patient portal on rented virtual machines (IaaS), an appointments API on a managed app platform (PaaS), and staff email on a SaaS suite. Before go-live the CISO wants a responsibility matrix, because every gap in it is a control nobody runs.',
+      objectives: ['Mark each duty as Customer, Provider or Shared for all three service models.', 'Get every row right. Wrong cells show what goes unprotected.'],
+      hints: [
+        'Work up the stack. The provider takes over more layers as you move from IaaS to PaaS to SaaS, and the customer keeps the layers above that line.',
+        'In PaaS the provider runs the operating system and the runtime, but the code you deploy is still yours.',
+        'Two rows are the customer’s in every model, because no contract can hand them off: who owns and classifies the data, and the devices people use to reach the service.'
+      ],
+      data: {
+        cols: [{ name: 'IaaS', sub: 'portal VMs' }, { name: 'PaaS', sub: 'appointments API' }, { name: 'SaaS', sub: 'staff email' }],
+        opts: [{ v: 'C', label: 'Customer' }, { v: 'P', label: 'Provider' }, { v: 'S', label: 'Shared' }],
+        rows: [
+          { id: 'phys', label: 'Physical data center security', accept: [['P'], ['P'], ['P']],
+            why: 'You never touch the building in any model. The provider proves this control through audits such as SOC 2 and ISO/IEC 27001.',
+            risk: 'You can’t guard a data center you can’t enter. If you think you own this, you’ll spend audit time on the wrong thing.' },
+          { id: 'hyper', label: 'Hypervisor and host hardware', accept: [['P'], ['P'], ['P']],
+            why: 'Even in IaaS your VMs sit on the provider’s hypervisor. Isolating tenants from each other is the provider’s job.',
+            risk: 'The hypervisor is below your VM. You can’t patch it, so expect the provider to, and check that they do.' },
+          { id: 'os', label: 'Guest operating system patching', accept: [['C'], ['P'], ['P']],
+            why: 'In IaaS you own the VM from the OS up. In PaaS and SaaS the provider runs the OS for you.',
+            risk: 'If the IaaS VMs are marked Provider, nobody patches them, and a known OpenSSL flaw stays open on the patient portal for months.' },
+          { id: 'runtime', label: 'Runtime and middleware (web server, language runtime)', accept: [['C'], ['P'], ['P']],
+            why: 'The runtime is the main thing PaaS manages for you. In IaaS you install and patch it yourself.',
+            risk: 'Someone is assumed to be patching the web server and runtime who isn’t.' },
+          { id: 'app', label: 'Application code and its vulnerabilities', accept: [['C'], ['C'], ['P']],
+            why: 'Code you write is yours in IaaS and PaaS. In SaaS you buy the finished application, so its code is the provider’s.',
+            risk: 'Your own API code is never the provider’s problem. A SQL injection flaw in it is still a Northwind breach.' },
+          { id: 'net', label: 'Network traffic rules (firewalls, security groups)', accept: [['C'], ['C', 'S'], ['P', 'S']],
+            why: 'In IaaS you write every rule. In PaaS you set access restrictions on a network the provider runs. In SaaS the provider runs the network, apart from options like IP allow-lists.',
+            risk: 'In IaaS the default rules are whatever you write. If you assume the provider locks them down, port 22 stays open to the internet.' },
+          { id: 'iam', label: 'Who gets an account, and enforcing MFA', accept: [['C', 'S'], ['C', 'S'], ['C', 'S']],
+            why: 'The provider supplies the identity features, but deciding who gets access, and turning on MFA, is always the customer’s call.',
+            risk: 'Provider-run SaaS still breaches when a leaver’s account stays active or MFA is never switched on.' },
+          { id: 'data', label: 'Data classification and accountability for the data', accept: [['C'], ['C'], ['C']],
+            why: 'Responsibility can be shared, but accountability for the data stays with you, the data owner (or controller, in GDPR terms), in every model.',
+            risk: 'The provider stores the data but doesn’t know it holds patient records. Only the data owner can classify it and answer to the regulator.' },
+          { id: 'endpoint', label: 'Laptops and phones used to reach the service', accept: [['C'], ['C'], ['C']],
+            why: 'The endpoint sits on your side of the line in every model. A stolen, unencrypted laptop is your incident.',
+            risk: 'No provider manages the clinic’s laptops. Malware on one of them reaches all three services.' }
+        ]
+      },
+      debrief: {
+        title: 'The shared responsibility model',
+        summary: 'The line between provider and customer moves up the stack as you go from IaaS to PaaS to SaaS, but it never moves past your data, your identities or your endpoints. Most real cloud breaches happen on the customer’s side of that line.',
+        terms: [
+          ['IaaS / PaaS / SaaS', 'The three service models in NIST SP 800-145 and ISO/IEC 17788: rented infrastructure, a managed platform, and a finished application.'],
+          ['Responsibility vs accountability', 'You can hand a task to the provider. You can’t hand off accountability for the data.'],
+          ['Deployment models', 'Public, private, community, hybrid and multi-cloud. Each changes who shares the infrastructure with you.'],
+          ['Cloud reference roles', 'Cloud service customer, provider and partner (auditor, broker), per ISO/IEC 17789.']
+        ],
+        exam: [
+          'If a question asks who is ultimately accountable for data in the cloud, the answer is the customer (data owner) in every model.',
+          'The customer controls the most in IaaS and the least in SaaS. Expect questions that walk up the stack.',
+          'Provider security is verified through third-party attestations (SOC 2, ISO/IEC 27001, CSA STAR), not by your own site visits.'
+        ],
+        real: 'Gartner predicted that through 2025, 99% of cloud security failures would be the customer’s fault. The usual causes are misconfiguration and unmanaged identities, not breaches of the provider itself.'
+      }
+    },
+
+    /* ================= Domain 2 ================= */
+    {
+      id: 'm2-data', tag: 'D2', kind: 'config',
+      domain: 'Domain 2 · Cloud Data Security',
+      title: 'Protect the orders table',
+      brief: 'Lumen Retail is moving its orders data to the cloud. Billing must be able to charge returning customers again, Support verifies callers by the last four digits of their card, and Analytics wants a copy in a separate account for sales reports. Today everything is stored in plain text and copied as-is. Choose how each copy is protected.',
+      objectives: ['Stop every simulated attack.', 'Keep billing, support and analytics working.', 'Meet the PCI DSS and key-custody requirements.'],
+      hints: [
+        'Encryption at rest with a provider-managed key only helps if someone steals the physical disk. Anyone who can read the database through the service sees plaintext.',
+        'Billing needs a value it can turn back into the real card number, so hashing and masking won’t work. Tokenization takes card data out of most of your systems, and that is what shrinks PCI DSS scope.',
+        'Analytics needs amounts and a stable customer ID, not real names or emails. Pseudonymize or hash the identifier and drop the rest.'
+      ],
+      data: {
+        resources: [
+          { type: 'Database', name: 'orders-prod', desc: 'Production orders: name, email, card number (PAN), amount, date.',
+            controls: [
+              { id: 'enc', label: 'Encryption at rest', def: 'none', options: [['none', 'None'], ['provider', 'Provider-managed key'], ['cmk', 'Customer-managed key in provider KMS'], ['hsm', 'Customer key in your own HSM (HYOK)']] },
+              { id: 'keyUse', label: 'Who may use the decryption key', def: 'any', options: [['any', 'Any role in the account'], ['billing', 'Billing service role only']] },
+              { id: 'pan', label: 'How the card number is stored', def: 'plain', options: [['plain', 'Plain text'], ['encrypted', 'Encrypted column'], ['token', 'Tokenized (vault holds real PAN)'], ['hash', 'Hashed'], ['mask', 'Masked, last 4 kept']] }
+            ] },
+          { type: 'App view', name: 'support-console', desc: 'What a support agent sees on a customer record.',
+            controls: [
+              { id: 'support', label: 'Card number on screen', def: 'full', options: [['full', 'Full number'], ['last4', 'Last 4 only (masked)'], ['hidden', 'Hidden']] }
+            ] },
+          { type: 'Data copy', name: 'sales-analytics', desc: 'Nightly copy into the analytics account.',
+            controls: [
+              { id: 'aName', label: 'Customer name', def: 'keep', options: [['keep', 'Keep'], ['pseudo', 'Pseudonymize (stable ID)'], ['remove', 'Remove']] },
+              { id: 'aEmail', label: 'Email', def: 'keep', options: [['keep', 'Keep'], ['hash', 'Salted hash'], ['remove', 'Remove']] },
+              { id: 'aCard', label: 'Card number', def: 'keep', options: [['keep', 'Keep'], ['last4', 'Last 4 only'], ['remove', 'Remove']] },
+              { id: 'aAmount', label: 'Amount and date', def: 'keep', options: [['keep', 'Keep'], ['remove', 'Remove']] }
+            ] }
+        ],
+        checks: [
+          { id: 'disk', type: 'attack', name: 'A backup drive goes missing from the data center',
+            test: function (v) { return v.enc !== 'none'; },
+            ok: 'The drive is encrypted, so it’s useless without the key. This is the one threat that provider-managed encryption at rest fully covers.',
+            fail: 'The drive holds 2.1 million orders in plain text.' },
+          { id: 'sqli', type: 'attack', name: 'SQL injection dumps the orders table through the app',
+            test: function (v) { return v.pan === 'token' || v.pan === 'encrypted'; },
+            ok: 'The attacker gets tokens or ciphertext. Storage-level encryption alone wouldn’t have helped, because the database decrypts on read.',
+            fail: 'The database decrypts transparently for the app, so the dump contains real card numbers. Encryption at rest doesn’t stop attacks that come through the application.' },
+          { id: 'snapshot', type: 'attack', name: 'A stolen developer login copies a database snapshot to another account',
+            test: function (v) { return (v.enc === 'cmk' || v.enc === 'hsm') && v.keyUse === 'billing'; },
+            ok: 'The snapshot is encrypted under a key whose policy only lets the billing role use it. The copy can’t be opened.',
+            fail: 'With no encryption, a provider-managed key, or a key any role can use, the developer’s access is enough to restore and read the snapshot. Key policy is an access control.' },
+          { id: 'analytics', type: 'attack', name: 'The analytics account is breached',
+            test: function (v) { return v.aName !== 'keep' && v.aEmail !== 'keep' && v.aCard !== 'keep'; },
+            ok: 'The attacker gets amounts, dates and pseudonymous IDs. There’s no direct identifier or card data to sell.',
+            fail: 'The analytics copy still holds real names, emails or card numbers, so a breach of a reporting account becomes a reportable personal data breach.' },
+          { id: 'phish', type: 'attack', name: 'A support agent is phished and their session hijacked',
+            test: function (v) { return v.support !== 'full'; },
+            ok: 'The agent’s screen only ever showed the last four digits.',
+            fail: 'The attacker reads full card numbers from the support console. Masking limits what each role can see.' },
+          { id: 'billing', type: 'business', name: 'Billing charges returning customers',
+            test: function (v) { return v.pan === 'token' || v.pan === 'encrypted'; },
+            ok: 'Billing sends the token (or decrypts the column) and the payment goes through.',
+            fail: 'Hashing and masking are one-way. Billing can’t get the card number back, so repeat orders fail.' },
+          { id: 'support-ok', type: 'business', name: 'Support verifies callers by the last 4 digits',
+            test: function (v) { return v.support !== 'hidden'; },
+            ok: 'Agents can still check the last four digits.',
+            fail: 'With the card hidden completely, agents can’t verify anyone and the support queue stalls.' },
+          { id: 'reports', type: 'business', name: 'Analytics reports revenue and the repeat-customer rate',
+            test: function (v) { return v.aAmount === 'keep' && (v.aName !== 'remove' || v.aEmail !== 'remove'); },
+            ok: 'Amounts are there, and a stable pseudonymous ID lets analysts count repeat customers without knowing who they are.',
+            fail: 'The report needs amounts plus at least one stable customer identifier, which can be pseudonymous.' },
+          { id: 'pci', type: 'compliance', name: 'PCI DSS: keep cardholder data in as few systems as possible',
+            test: function (v) { return v.pan === 'token' && v.aCard !== 'keep'; },
+            ok: 'Real card numbers live only in the token vault. The database, analytics and support tools drop out of most of the PCI audit scope.',
+            fail: 'Every system that stores, processes or transmits the PAN is in PCI scope. Tokenize it and keep it out of analytics.' },
+          { id: 'custody', type: 'compliance', name: 'Partner bank: keys must stay outside the cloud provider',
+            test: function (v) { return v.enc === 'hsm'; },
+            ok: 'Keys stay in an HSM you control (hold your own key). The provider stores only ciphertext and can’t decrypt it, even under a court order.',
+            fail: 'Provider-managed keys and the provider’s own KMS both leave key custody with the provider. The bank requires a key you hold yourself.' }
+        ]
+      },
+      debrief: {
+        title: 'Data security is key management plus the right obfuscation',
+        summary: 'Encryption is only as strong as the controls around its keys, and encryption at rest with a provider-managed key stops very few attacks. The rest of the work is fitting each data use to the least-revealing technique that still lets the business function.',
+        terms: [
+          ['Cloud data lifecycle', 'Create → Store → Use → Share → Archive → Destroy (CSA). Controls differ at each phase.'],
+          ['Tokenization', 'Replace the value with a random token. The real value sits in a vault, and the token can be mapped back. This is the main way to shrink PCI DSS scope.'],
+          ['Masking', 'Hide part of a value for display (last 4 digits). Masking for display is reversible by whoever holds the source data, but static masking for test data is not.'],
+          ['Anonymization vs pseudonymization', 'Anonymized data can’t be linked back to a person. Pseudonymized data can, so it is still personal data under GDPR.'],
+          ['Key management', 'KMS, HSM, BYOK and HYOK. Keep keys separate from the data they protect, and use key policies as access control.'],
+          ['DLP', 'Data loss prevention finds sensitive data in motion, at rest and in use, and blocks or alerts on it.']
+        ],
+        exam: [
+          'If a question asks what most reduces PCI DSS scope, the answer is tokenization.',
+          'The best place to store encryption keys is apart from the data and, for the most control, outside the provider, in an HSM you manage.',
+          'Hashing is one-way and suits integrity checks and password storage. It can’t be used when the original value is needed again.',
+          'Data discovery and classification come before choosing controls. You can’t protect what you haven’t found.'
+        ],
+        real: 'Many “encrypted at rest” breaches leak plaintext anyway, because the attacker came through the application or a valid credential, where the platform decrypts transparently. That is why PCI DSS pushes tokenization, and why key policies matter as much as the cipher.'
+      }
+    },
+
+    /* ================= Domain 3 ================= */
+    {
+      id: 'm3-infra', tag: 'D3', kind: 'config',
+      domain: 'Domain 3 · Cloud Platform & Infrastructure Security',
+      title: 'Break the attack path',
+      brief: 'Lumen Retail’s shop runs as a three-tier app: load balancer, web VMs and a Postgres database, plus a jump box for admins and a bucket of nightly backups. A red team just got in six different ways. Lock it down, but the shop must stay open, the web tier must reach the database, and admins must still be able to patch.',
+      objectives: ['Make every red-team attack fail.', 'Keep the shop, the database link and admin access working.', 'Turn on the logging an investigator would need.'],
+      hints: [
+        'Start with the internet edge. Nothing except the load balancer should accept connections from 0.0.0.0/0.',
+        'An SSRF bug that reaches the metadata service hands the attacker the VM’s role credentials. IMDSv2 blocks that step. A least-privilege role limits the damage when credentials leak some other way.',
+        'Stolen admin keys can delete anything that is merely private. Backups need to be immutable, using object lock or WORM storage.'
+      ],
+      data: {
+        diagram: infraDiagram,
+        resources: [
+          { type: 'Load balancer', name: 'lb-public', desc: 'Terminates HTTPS for the shop.',
+            controls: [{ id: 'waf', label: 'Web application firewall', def: 'off', options: [['off', 'Off'], ['on', 'On, managed rules']] }] },
+          { type: 'Security group', name: 'sg-web', desc: 'Firewall for the web VMs.',
+            controls: [
+              { id: 'webIn', label: 'Web traffic allowed from', def: 'all', options: [['all', 'Internet, all ports'], ['lb', 'Load balancer only, port 443'], ['closed', 'Nothing']] },
+              { id: 'webSsh', label: 'SSH (22) allowed from', def: 'internet', options: [['internet', 'Internet'], ['bastion', 'Jump box only'], ['closed', 'Nothing']] }
+            ] },
+          { type: 'Compute', name: 'web-vms', desc: 'The shop’s application servers.',
+            controls: [
+              { id: 'role', label: 'Attached IAM role', def: 'admin', options: [['admin', 'AdministratorAccess (*:*)'], ['storage', 'Read all storage'], ['config', 'Read its config bucket only']] },
+              { id: 'imds', label: 'Instance metadata service', def: 'v1', options: [['v1', 'v1, any request'], ['v2', 'v2, session token required']] }
+            ] },
+          { type: 'Database', name: 'orders-db', desc: 'Postgres holding customer orders.',
+            controls: [
+              { id: 'dbNet', label: 'Placement', def: 'public', options: [['public', 'Public subnet, public IP'], ['private', 'Private subnet, no public IP']] },
+              { id: 'dbIn', label: 'Port 5432 allowed from', def: 'internet', options: [['internet', 'Internet'], ['vpc', 'Whole VPC'], ['web', 'Web tier only'], ['none', 'Nothing']] }
+            ] },
+          { type: 'Admin access', name: 'jump-box', desc: 'How admins reach the servers.',
+            controls: [{ id: 'bastion', label: 'Access method', def: 'open', options: [['open', 'SSH from internet, password'], ['vpn', 'SSH from VPN, key + MFA'], ['ssm', 'Session manager, no open ports'], ['off', 'Disabled']] }] },
+          { type: 'Storage', name: 'backups-nightly', desc: 'Nightly database dumps.',
+            controls: [
+              { id: 'bucketAcl', label: 'Access', def: 'public', options: [['public', 'Public read'], ['private', 'Private to the account']] },
+              { id: 'objLock', label: 'Object lock (immutable for 30 days)', def: 'off', options: [['off', 'Off'], ['on', 'On']] }
+            ] },
+          { type: 'Logging', name: 'audit-trail', desc: 'Control-plane audit log and VPC flow logs.',
+            controls: [{ id: 'audit', label: 'Audit and flow logging', def: 'off', options: [['off', 'Off'], ['on', 'On, sent to a separate log account']] }] }
+        ],
+        checks: [
+          { id: 'db-exposed', type: 'attack', name: 'Internet-wide scan finds the database',
+            test: function (v) { return v.dbNet === 'private' && v.dbIn !== 'internet'; },
+            ok: 'No public IP and no internet rule. Scanners never see Postgres.',
+            fail: 'Search engines like Shodan list exposed Postgres within hours, and bots start guessing passwords on 5432.' },
+          { id: 'bastion', type: 'attack', name: 'Password spraying against the jump box',
+            test: function (v) { return v.bastion !== 'open'; },
+            ok: 'There is no internet-facing password login to spray.',
+            fail: 'A bot tried leaked passwords against SSH and got in with a reused admin password.' },
+          { id: 'ssh-web', type: 'attack', name: 'Direct SSH into the web servers',
+            test: function (v) { return v.webSsh !== 'internet' && v.webIn !== 'all'; },
+            ok: 'Port 22 is closed to the internet. The web VMs only accept 443 from the load balancer.',
+            fail: 'Port 22 on the web VMs is reachable from the internet, through the SSH rule or the allow-all-ports rule.' },
+          { id: 'ssrf', type: 'attack', name: 'SSRF: the app is tricked into fetching cloud credentials from the metadata service',
+            test: function (v) { return v.imds === 'v2'; },
+            ok: 'IMDSv2 needs a session token from a PUT request, which a simple SSRF can’t send. The credential theft fails.',
+            fail: 'The attacker asked the app to fetch http://169.254.169.254/… and got the VM’s role credentials back. This is the pattern behind the 2019 Capital One breach.' },
+          { id: 'blast', type: 'attack', name: 'Assume breach: the web role’s credentials leak through a vulnerable library',
+            test: function (v) { return v.role === 'config'; },
+            ok: 'The stolen role can read one config bucket and nothing else. The blast radius is small.',
+            fail: 'Admin or read-all-storage rights let the attacker reach every bucket in the account. Least privilege decides how bad a leak gets.' },
+          { id: 'lateral', type: 'attack', name: 'A compromised test VM in the same VPC pivots to the database',
+            test: function (v) { return v.dbIn === 'web' || v.dbIn === 'none'; },
+            ok: 'Microsegmentation means only the web tier’s security group can reach 5432.',
+            fail: 'A rule for the whole VPC trusts every machine in it. The flat network lets the attacker move sideways.' },
+          { id: 'waf', type: 'attack', name: 'Automated SQL injection scanner hits the login form',
+            test: function (v) { return v.waf === 'on'; },
+            ok: 'Managed WAF rules drop the payloads. This is a compensating control, and the code still needs fixing (Mission 4).',
+            fail: 'Nothing inspects HTTP traffic before it reaches the app.' },
+          { id: 'public-backups', type: 'attack', name: 'Anyone on the internet downloads the nightly backups',
+            test: function (v) { return v.bucketAcl === 'private'; },
+            ok: 'The bucket is private to the account.',
+            fail: 'Public-read buckets are found by automated tools within days. The full database dump is out.' },
+          { id: 'ransom', type: 'attack', name: 'Ransomware crew with stolen admin keys deletes your backups',
+            test: function (v) { return v.objLock === 'on'; },
+            ok: 'Object lock makes backups immutable for 30 days. Even an admin can’t delete them.',
+            fail: 'Private isn’t enough against a stolen admin key. The backups are deleted before the ransom note arrives.' },
+          { id: 'shop', type: 'business', name: 'Customers can shop over HTTPS',
+            test: function (v) { return v.webIn !== 'closed'; },
+            ok: 'HTTPS flows from the load balancer to the web tier.',
+            fail: 'With nothing allowed into the web tier, the shop is down. Availability is part of security too.' },
+          { id: 'app-db', type: 'business', name: 'The web tier can query the database',
+            test: function (v) { return v.dbIn !== 'none'; },
+            ok: 'The web tier reaches 5432.',
+            fail: 'With no inbound rule at all, the app can’t reach its own database.' },
+          { id: 'admin', type: 'business', name: 'Admins can still reach the servers to patch them',
+            test: function (v) { return v.bastion === 'ssm' || v.webSsh === 'internet' || (v.bastion !== 'off' && v.webSsh === 'bastion'); },
+            ok: 'Admins have a controlled path in.',
+            fail: 'There’s no admin path left. Use session manager, or allow SSH from the jump box and keep the jump box enabled.' },
+          { id: 'audit', type: 'detect', name: 'Investigators can reconstruct what happened',
+            test: function (v) { return v.audit === 'on'; },
+            ok: 'API calls and network flows are logged to a separate account that an attacker in production can’t erase.',
+            fail: 'With logging off, nobody can tell what an intruder touched, and breach-notification laws expect you to know.' }
+        ]
+      },
+      debrief: {
+        title: 'Defense in depth for cloud infrastructure',
+        summary: 'No single setting stopped everything. You layered network controls (segmentation, private subnets), identity controls (least privilege, no password SSH), platform features (IMDSv2, object lock) and detection, and kept the business running.',
+        terms: [
+          ['Management plane', 'The cloud provider’s console and API. Whoever controls it controls everything, so it needs MFA, least privilege and logging.'],
+          ['Microsegmentation', 'Rules per workload or security group instead of trusting the whole network. This stops lateral movement.'],
+          ['Bastion / jump host', 'One hardened entry point for admins. A session manager with no open ports is the modern version.'],
+          ['Immutable backups', 'Object lock or WORM storage protects recovery data from ransomware and malicious insiders.'],
+          ['Zero trust', 'Never trust by network location. Verify identity, device and context on every request.']
+        ],
+        exam: [
+          'The management plane is the most critical asset in a cloud deployment. Protect it first.',
+          'Security groups are stateful and attached to instances. Network ACLs are stateless and apply to subnets.',
+          'In IaaS, hardening the guest OS, network rules and identities is the customer’s job (Mission 1).',
+          'BCDR in the cloud means backups in a separate account or region, with immutability and tested restores.'
+        ],
+        real: 'Capital One (2019): a misconfigured WAF allowed SSRF, the metadata service handed over role credentials, and an over-privileged role let the attacker read S3 buckets holding about 100 million customer records. Code Spaces (2014): an attacker with console access deleted the company’s data and backups, and the business shut down.'
+      }
+    },
+
+    /* ================= Domain 4 ================= */
+    {
+      id: 'm4-app', tag: 'D4', kind: 'code',
+      domain: 'Domain 4 · Cloud Application Security',
+      title: 'Review before merge',
+      brief: 'A developer opened a pull request that adds an order-lookup API and the infrastructure-as-code to deploy it. You’re the security reviewer. Flag every line that would put Lumen Retail at risk, without flagging safe lines. Nine issues are hidden across the two files.',
+      objectives: ['Flag all nine risky lines or blocks.', 'Leave the safe lines unflagged. Each false flag sends the PR back.'],
+      hints: [
+        'Infrastructure-as-code: look for secrets, anything public, “all ports”, and storage without encryption.',
+        'App code: look for user input that ends up in a SQL string or a URL the server fetches.',
+        'Two of the app’s issues are configuration and cryptography, not input handling. Check how passwords are hashed and how the app is started.'
+      ],
+      data: {
+        files: [
+          { name: 'main.tf', note: 'Terraform', lines: [
+            'provider "aws" {',
+            '  region     = "eu-west-1"',
+            '  access_key = "AKIAIOSFODNN7EXAMPLE"',
+            '  secret_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"',
+            '}',
+            '',
+            'resource "aws_s3_bucket" "uploads" {',
+            '  bucket = "lumen-customer-uploads"',
+            '}',
+            '',
+            'resource "aws_s3_bucket_acl" "uploads" {',
+            '  bucket = aws_s3_bucket.uploads.id',
+            '  acl    = "public-read"',
+            '}',
+            '',
+            'resource "aws_security_group" "api" {',
+            '  ingress {',
+            '    from_port   = 0',
+            '    to_port     = 65535',
+            '    protocol    = "tcp"',
+            '    cidr_blocks = ["0.0.0.0/0"]',
+            '  }',
+            '}',
+            '',
+            'resource "aws_db_instance" "orders" {',
+            '  engine              = "postgres"',
+            '  instance_class      = "db.t3.medium"',
+            '  publicly_accessible = true',
+            '  storage_encrypted   = false',
+            '}'
+          ] },
+          { name: 'app.py', note: 'Python / Flask', lines: [
+            'import os, sqlite3, hashlib, requests',
+            'from flask import Flask, request',
+            '',
+            'app = Flask(__name__)',
+            'app.config["DEBUG"] = True',
+            '',
+            '@app.route("/order")',
+            'def order():',
+            '    oid = request.args.get("id")',
+            '    q = f"SELECT * FROM orders WHERE id = \'{oid}\'"',
+            '    return str(db().execute(q).fetchall())',
+            '',
+            '@app.route("/preview")',
+            'def preview():',
+            '    url = request.args.get("url")',
+            '    return requests.get(url, timeout=5).text',
+            '',
+            'def save_user(name, password):',
+            '    pw = hashlib.md5(password.encode()).hexdigest()',
+            '    db().execute("INSERT INTO users VALUES (?, ?)", (name, pw))',
+            '',
+            'def db():',
+            '    # path comes from the deployment environment',
+            '    return sqlite3.connect(os.environ["DB_PATH"])'
+          ] }
+        ],
+        findings: [
+          { id: 'secrets', at: ['main.tf:3', 'main.tf:4'], title: 'Hard-coded cloud access keys', tag: 'Secrets management',
+            why: 'Keys committed to Git live forever in history, and bots scan public repositories for them within minutes. This is how the incident in Mission 5 starts.',
+            fix: '# Remove the keys. Let Terraform use the pipeline\'s short-lived\n# role credentials (OIDC) or a secrets manager.\nprovider "aws" {\n  region = "eu-west-1"\n}',
+            clue: 'Something in main.tf would let anyone who reads the repo act as you in the cloud account.' },
+          { id: 'public', at: ['main.tf:13'], title: 'Customer uploads bucket is public', tag: 'Misconfiguration · A05',
+            why: 'Public-read exposes every customer upload to the internet. Block public access at the account level too.',
+            fix: 'resource "aws_s3_bucket_public_access_block" "uploads" {\n  bucket                  = aws_s3_bucket.uploads.id\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}',
+            clue: 'One storage setting in main.tf exposes customer files to everyone.' },
+          { id: 'ports', at: ['main.tf:18', 'main.tf:19', 'main.tf:21'], title: 'Every TCP port open to the internet', tag: 'Misconfiguration · A05',
+            why: 'The API only needs 443, and only from the load balancer. Port range 0–65535 from 0.0.0.0/0 exposes SSH, databases and debug ports.',
+            fix: 'ingress {\n  from_port       = 443\n  to_port         = 443\n  protocol        = "tcp"\n  security_groups = [aws_security_group.lb.id]\n}',
+            clue: 'A firewall rule in main.tf allows far more than an HTTPS API needs.' },
+          { id: 'dbpublic', at: ['main.tf:28'], title: 'Database reachable from the internet', tag: 'Misconfiguration · A05',
+            why: 'A database should never have a public endpoint. Put it in a private subnet.',
+            fix: 'publicly_accessible = false',
+            clue: 'The database resource has a networking setting that should be the opposite.' },
+          { id: 'dbenc', at: ['main.tf:29'], title: 'Database storage not encrypted', tag: 'Cryptographic failures · A02',
+            why: 'Encryption at rest is a baseline requirement for PCI DSS and most frameworks. Use a customer-managed KMS key (Mission 2).',
+            fix: 'storage_encrypted = true\nkms_key_id        = aws_kms_key.orders.arn',
+            clue: 'The database resource is missing protection for data at rest.' },
+          { id: 'debug', at: ['app.py:5'], title: 'Debug mode on in production', tag: 'Misconfiguration · A05',
+            why: 'The Flask debugger shows stack traces and offers an interactive console that can run code on the server.',
+            fix: 'app.config["DEBUG"] = os.environ.get("FLASK_DEBUG") == "1"  # off by default',
+            clue: 'One line in app.py is fine on a laptop but dangerous in production.' },
+          { id: 'sqli', at: ['app.py:10', 'app.py:11'], title: 'SQL injection in /order', tag: 'Injection · A03',
+            why: 'The id parameter goes straight into the SQL string, so ?id=\' OR \'1\'=\'1 returns every order.',
+            fix: 'q = "SELECT * FROM orders WHERE id = ?"\nreturn str(db().execute(q, (oid,)).fetchall())',
+            clue: 'User input in /order reaches the database without being separated from the query.' },
+          { id: 'ssrf', at: ['app.py:15', 'app.py:16'], title: 'Server-side request forgery in /preview', tag: 'SSRF · A10',
+            why: 'The server fetches any URL a user supplies, including http://169.254.169.254/, the metadata service from Mission 3.',
+            fix: 'ALLOWED = {"images.lumen.example"}\nhost = urlparse(url).hostname\nif urlparse(url).scheme != "https" or host not in ALLOWED:\n    abort(400)',
+            clue: 'One endpoint lets the user decide which address the server connects to.' },
+          { id: 'md5', at: ['app.py:19'], title: 'Passwords hashed with unsalted MD5', tag: 'Cryptographic failures · A02',
+            why: 'MD5 is fast and unsalted, so leaked hashes crack in seconds. Use a slow, salted algorithm such as bcrypt, scrypt or Argon2.',
+            fix: 'from argon2 import PasswordHasher\npw = PasswordHasher().hash(password)',
+            clue: 'Look at how user passwords are stored.' }
+        ],
+        decoys: {
+          'app.py:20': 'This query uses parameters (?), which is the correct defense against SQL injection.',
+          'app.py:24': 'Reading the path from an environment variable keeps configuration out of code, which is good practice.',
+          'app.py:23': 'This is a comment.',
+          'main.tf:2': 'Choosing a region is fine. An EU region suits GDPR data residency.',
+          'main.tf:8': 'A bucket name is not sensitive.',
+          'main.tf:12': 'This only links the ACL to the bucket. The risky value is elsewhere.',
+          'main.tf:26': 'The engine choice isn’t a security issue.',
+          'main.tf:27': 'Instance size isn’t a security issue.',
+          'main.tf:20': 'The protocol line alone is fine. The port range and source are the problem.',
+          'app.py:1': 'Imports are fine. What matters is how they are used.',
+          'app.py:9': 'Reading the parameter is fine. The problem is what happens to it next.'
+        }
+      },
+      debrief: {
+        title: 'Shift security left into the pipeline',
+        summary: 'Every issue you found was cheap to fix in review and expensive in production. Cloud application security means scanning infrastructure-as-code as well as application code, keeping secrets out of repositories, and building these checks into the delivery pipeline.',
+        terms: [
+          ['SAST / DAST / SCA', 'Static analysis of source code, dynamic testing of the running app, and software composition analysis of open-source dependencies.'],
+          ['IaC scanning', 'Tools such as Checkov, tfsec or KICS catch public buckets and open ports before deployment.'],
+          ['Secrets management', 'Vaults, short-lived credentials and OIDC federation instead of keys in code or config files.'],
+          ['OWASP Top 10', 'A02 cryptographic failures, A03 injection, A05 security misconfiguration and A10 SSRF all appear in this pull request.'],
+          ['Secure SDLC', 'Requirements → design (threat modeling) → coding → testing → deployment → operations, with security at each step.']
+        ],
+        exam: [
+          'Expect questions on where testing fits: SAST happens early with access to source code (white-box), DAST tests the running app (black-box).',
+          'Threat modeling methods: STRIDE (spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege), DREAD and PASTA.',
+          'API security, supply-chain security (SBOMs, signed artifacts) and WAFs as compensating controls are all in scope for Domain 4.'
+        ],
+        real: 'Credential leaks through public repositories are one of the most common ways cloud accounts get hijacked. GitHub’s secret scanning flags millions of leaked secrets every year, and attackers’ bots often find them first.'
+      }
+    },
+
+    /* ================= Domain 5 ================= */
+    {
+      id: 'm5-ops', tag: 'D5', kind: 'logs',
+      domain: 'Domain 5 · Cloud Security Operations',
+      title: 'Midnight in the audit log',
+      brief: 'At 02:14 UTC an alert fired: an unusual number of downloads from the bucket lumen-customer-exports. You’re the on-call responder. Use the cloud audit log to work out how the attacker got in, what they did, and what to do first.',
+      objectives: ['Answer all six questions from the evidence in the log.', 'Choose a first containment step that doesn’t destroy evidence.'],
+      hints: [
+        'Filter by the attacker’s IP once you find it. Look for a known identity used from an address it has never used before.',
+        'Persistence means a way back in that survives you changing the first stolen key. Look for Create… actions.',
+        'Count only successful GetObject calls. Responders keep accounts they disable, because those accounts are evidence.'
+      ],
+      data: {
+        cols: [
+          { k: 'time', label: 'Time (UTC)' }, { k: 'identity', label: 'Identity', click: true }, { k: 'ip', label: 'Source IP', click: true },
+          { k: 'action', label: 'Action', click: true }, { k: 'target', label: 'Resource' }, { k: 'result', label: 'Result', click: true }
+        ],
+        rows: [
+          { time: '23:02:11', identity: 'alice', ip: '203.0.113.10', action: 'ConsoleLogin', target: 'MFA: yes', result: 'Success' },
+          { time: '23:05:40', identity: 'alice', ip: '203.0.113.10', action: 'DescribeInstances', target: 'eu-west-1', result: 'Success' },
+          { time: '23:31:02', identity: 'ci-deploy', ip: '198.51.100.23', action: 'PutObject', target: 'lumen-artifacts/build-2291.zip', result: 'Success' },
+          { time: '23:31:09', identity: 'ci-deploy', ip: '198.51.100.23', action: 'UpdateFunctionCode', target: 'fn-order-api', result: 'Success' },
+          { time: '23:48:55', identity: 'bob', ip: '203.0.113.44', action: 'AssumeRole', target: 'role/readonly-audit', result: 'Success' },
+          { time: '00:12:30', identity: 'export-job', ip: '10.0.4.17', action: 'PutObject', target: 'lumen-customer-exports/2026-10-14.csv', result: 'Success' },
+          { time: '00:40:13', identity: 'bob', ip: '203.0.113.44', action: 'GetObject', target: 'lumen-reports/q3-summary.pdf', result: 'Success' },
+          { time: '01:52:07', identity: 'ci-deploy', ip: '185.220.101.47', action: 'GetCallerIdentity', target: '-', result: 'Success' },
+          { time: '01:52:41', identity: 'ci-deploy', ip: '185.220.101.47', action: 'ListBuckets', target: '-', result: 'Success' },
+          { time: '01:53:15', identity: 'ci-deploy', ip: '185.220.101.47', action: 'ListAttachedUserPolicies', target: 'user/ci-deploy', result: 'Success' },
+          { time: '01:54:02', identity: 'ci-deploy', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-14.csv', result: 'AccessDenied' },
+          { time: '01:56:30', identity: 'ci-deploy', ip: '185.220.101.47', action: 'CreateUser', target: 'user/backup-svc', result: 'Success' },
+          { time: '01:56:52', identity: 'ci-deploy', ip: '185.220.101.47', action: 'AttachUserPolicy', target: 'user/backup-svc ← AdministratorAccess', result: 'Success' },
+          { time: '01:57:20', identity: 'ci-deploy', ip: '185.220.101.47', action: 'CreateAccessKey', target: 'user/backup-svc', result: 'Success' },
+          { time: '01:58:44', identity: 'backup-svc', ip: '185.220.101.47', action: 'StopLogging', target: 'trail/org-audit', result: 'AccessDenied (org policy)' },
+          { time: '01:59:10', identity: 'backup-svc', ip: '185.220.101.47', action: 'DeleteTrail', target: 'trail/org-audit', result: 'AccessDenied (org policy)' },
+          { time: '02:01:03', identity: 'alice', ip: '203.0.113.10', action: 'ConsoleLogout', target: '-', result: 'Success' },
+          { time: '02:05:12', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-09.csv', result: 'Success' },
+          { time: '02:05:58', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-10.csv', result: 'Success' },
+          { time: '02:06:40', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-11.csv', result: 'Success' },
+          { time: '02:07:31', identity: 'ci-deploy', ip: '198.51.100.23', action: 'PutObject', target: 'lumen-artifacts/build-2292.zip', result: 'Success' },
+          { time: '02:08:05', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-12.csv', result: 'Success' },
+          { time: '02:09:47', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-13.csv', result: 'Success' },
+          { time: '02:10:20', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/archive-2025.zip', result: 'AccessDenied (KMS)' },
+          { time: '02:11:36', identity: 'backup-svc', ip: '185.220.101.47', action: 'GetObject', target: 'lumen-customer-exports/2026-10-14.csv', result: 'Success' },
+          { time: '02:13:58', identity: 'backup-svc', ip: '185.220.101.47', action: 'ListObjects', target: 'lumen-customer-exports', result: 'Success' },
+          { time: '02:14:02', identity: 'guard-detector', ip: '-', action: 'Finding', target: 'Exfiltration: unusual S3 GetObject volume', result: 'Alert' }
+        ],
+        questions: [
+          { id: 'q1', short: 'Initial access', q: 'Which identity did the attacker use first?', options: ['alice', 'bob', 'ci-deploy', 'backup-svc', 'export-job'], answer: 'ci-deploy',
+            ok: 'ci-deploy normally calls from the CI runner, 198.51.100.23. At 01:52 it suddenly called from 185.220.101.47. Its key had leaked (see the hard-coded keys in Mission 4).',
+            clue: 'Look for a known identity that suddenly calls from an address it has never used.' },
+          { id: 'q2', short: 'Attacker IP', q: 'What is the attacker’s source IP?', options: ['203.0.113.10', '198.51.100.23', '185.220.101.47', '10.0.4.17', '203.0.113.44'], answer: '185.220.101.47',
+            ok: 'Every malicious call comes from 185.220.101.47. Use it to scope the incident: filter on it and see everything they touched.',
+            clue: 'Corporate users and the CI runner each have a stable IP. One address appears only after 01:52.' },
+          { id: 'q3', short: 'Persistence', q: 'What did the attacker set up to keep access?', options: ['A scheduled function', 'A new IAM user with admin rights and its own access key', 'A changed bucket policy', 'A new virtual machine'], answer: 'A new IAM user with admin rights and its own access key',
+            ok: 'CreateUser → AttachUserPolicy (AdministratorAccess) → CreateAccessKey. Revoking ci-deploy alone would leave this back door open.',
+            clue: 'Filter on Create to find the persistence steps.' },
+          { id: 'q4', short: 'What held', q: 'Which control stopped the attacker from hiding their tracks?', options: ['MFA on the console', 'An organization-level guardrail policy that denies StopLogging and DeleteTrail', 'The web application firewall', 'Object lock on the bucket'], answer: 'An organization-level guardrail policy that denies StopLogging and DeleteTrail',
+            ok: 'Even with AdministratorAccess, the org policy (SCP) denied StopLogging and DeleteTrail, so the audit trail survived. That is why you can investigate at all.',
+            clue: 'Filter on AccessDenied and read the reason in brackets.' },
+          { id: 'q5', short: 'Data taken', q: 'How many export files did the attacker download successfully?', answer: '6',
+            ok: 'Six daily CSVs (10-09 to 10-14). The 2025 archive was blocked by its KMS key policy. That count drives breach-notification scope.',
+            clue: 'Filter on GetObject and count the successes from the attacker’s IP. Leave out denied calls and other users.' },
+          { id: 'q6', short: 'First containment', q: 'What should you do first?', options: ['Delete both IAM users right away', 'Disable the access keys of both identities and attach a deny-all policy, keeping the users for evidence', 'Delete the exports bucket', 'Email all customers before investigating'], answer: 'Disable the access keys of both identities and attach a deny-all policy, keeping the users for evidence',
+            ok: 'Contain without destroying evidence. Disabling and denying stops the attacker but keeps the identities, keys and policies for forensics and chain of custody. Notification follows once you know the scope.',
+            clue: 'Containment should stop the attacker and keep the evidence.' }
+        ]
+      },
+      debrief: {
+        title: 'Detect, analyze, contain, and preserve evidence',
+        summary: 'You worked an incident end to end: an alert, scoping by IP, the attacker’s steps from initial access through persistence to exfiltration, a guardrail that held, and containment that kept the evidence. Without a tamper-proof audit trail, none of that would have been possible.',
+        terms: [
+          ['Incident response lifecycle', 'NIST SP 800-61: preparation → detection and analysis → containment, eradication and recovery → post-incident activity.'],
+          ['Chain of custody', 'A documented record of who handled evidence and when. In the cloud, you depend on provider logs and snapshots for it.'],
+          ['SIEM / SOAR', 'A SIEM pulls logs together and correlates them. SOAR automates the response, such as disabling a key when this alert fires.'],
+          ['Guardrails', 'Organization-wide preventive policies (SCPs, Azure Policy) that even an account admin can’t override.'],
+          ['ITIL operations', 'Incident, problem, change, release and configuration management, all listed in Domain 5.']
+        ],
+        exam: [
+          'Order matters: preserve evidence before you eradicate. Snapshot, then isolate, then clean up.',
+          'In multi-tenant cloud you usually can’t image physical hardware, so you rely on provider logs, snapshots and contract terms for forensic support.',
+          'Logs belong in a separate, write-once account so a compromised production account can’t erase them.',
+          'Know ISO/IEC 27037 (collecting digital evidence) and 27050 (eDiscovery) by name.'
+        ],
+        real: 'This storyline (a leaked CI key, an admin back-door user, then bulk downloads) mirrors many public incident reports. Teams that had org-level logging guardrails could reconstruct events in hours. Teams without them often never learned what was taken.'
+      }
+    },
+
+    /* ================= Domain 6 ================= */
+    {
+      id: 'm6-legal', tag: 'D6', kind: 'scenario',
+      domain: 'Domain 6 · Legal, Risk & Compliance',
+      title: 'The contract desk',
+      brief: 'You’re Lumen Retail’s cloud risk lead for a week. Six requests land on your desk from Legal, Procurement and the CISO. Each has one best answer. Wrong answers cost points, but you can try again and every answer explains itself.',
+      objectives: ['Resolve all six cases.', 'Read the feedback, including on wrong choices. That’s where the exam traps are.'],
+      hints: [
+        'An ISO certificate or a SOC report shows controls exist. It doesn’t make an international data transfer lawful.',
+        'GDPR gives 72 hours from becoming aware of a breach to tell the supervisory authority. For assurance on how controls performed over time, you want a Type II report.',
+        'You can’t degauss a provider’s disks, but you can destroy your keys.'
+      ],
+      data: {
+        cards: [
+          { id: 'transfer', title: 'Backups to another continent',
+            situation: 'The provider proposes storing backups of EU customer data in a US region to cut costs. Procurement says it’s fine because the provider is ISO/IEC 27001 certified.',
+            lesson: 'A cross-border transfer needs a lawful transfer mechanism, not just a certificate.',
+            choices: [
+              { t: 'Approve it. ISO 27001 certification covers it.', ok: false, fb: 'ISO 27001 certifies the provider’s security management system. It isn’t a GDPR transfer mechanism.' },
+              { t: 'Approve it only with a lawful transfer mechanism, such as the EU-US Data Privacy Framework or Standard Contractual Clauses, plus a transfer impact assessment.', ok: true, fb: 'Correct. GDPR Chapter V lets personal data leave the EEA only under adequacy, appropriate safeguards (SCCs, BCRs) or narrow exceptions. Record the decision.' },
+              { t: 'Approve it if the backups are encrypted. Encrypted data isn’t personal data.', ok: false, fb: 'Encrypted personal data is still personal data. Encryption is a strong safeguard, not an exemption.' },
+              { t: 'Reject all cloud use for EU data.', ok: false, fb: 'Too blunt. The risk can be managed with the right mechanism and controls, and an EU-only region is another option.' }
+            ] },
+          { id: 'notify', title: 'The 72-hour clock',
+            situation: 'At 09:00 on Monday your team confirms that EU customers’ personal data was exfiltrated (Mission 5). The CISO asks for the latest time you can notify the lead supervisory authority under GDPR.',
+            lesson: 'GDPR Article 33: notify the supervisory authority within 72 hours of becoming aware, where feasible.',
+            choices: [
+              { t: '09:00 Thursday, 72 hours after becoming aware.', ok: true, fb: 'Correct. The clock starts when you become aware, not when the breach happened. You may notify in phases if facts are still emerging.' },
+              { t: '09:00 Tuesday, 24 hours after becoming aware.', ok: false, fb: 'Some sector rules are faster, but GDPR’s general deadline for the authority is 72 hours.' },
+              { t: 'After the investigation is complete, however long that takes.', ok: false, fb: 'GDPR expects notification within 72 hours, even if incomplete, with details added in phases.' },
+              { t: '72 hours after the attacker first got in.', ok: false, fb: 'The clock runs from awareness, not intrusion. Logs that show earlier access do matter for scoping, though.' }
+            ] },
+          { id: 'hold', title: 'Legal hold in SaaS',
+            situation: 'Lumen Retail is being sued by a supplier. Legal says email from the procurement team is relevant. The SaaS mail platform auto-deletes messages after 90 days.',
+            lesson: 'Preserve electronically stored information as soon as litigation is reasonably anticipated.',
+            choices: [
+              { t: 'Ask the procurement team to forward relevant emails to Legal.', ok: false, fb: 'Self-collection is incomplete and can be challenged, and it doesn’t stop auto-deletion.' },
+              { t: 'Put the custodians’ mailboxes on legal hold in the SaaS platform, which suspends retention deletion, and record it.', ok: true, fb: 'Correct. A legal hold preserves the data in place and defensibly. Failing to preserve it can mean sanctions for spoliation.' },
+              { t: 'Export all company email to an external drive.', ok: false, fb: 'Overbroad, risky for privacy, and weak on chain of custody.' },
+              { t: 'Nothing yet. Wait for a court order.', ok: false, fb: 'The duty to preserve starts when litigation is reasonably anticipated, which is now.' }
+            ] },
+          { id: 'assurance', title: 'No auditors allowed',
+            situation: 'You want assurance on the provider’s security controls. They won’t allow customer on-site audits. Which report should you ask for?',
+            lesson: 'SOC 2 Type II reports on how well security controls operated over a period, usually under NDA.',
+            choices: [
+              { t: 'SOC 1 Type II', ok: false, fb: 'SOC 1 covers controls relevant to financial reporting (ICFR), not security in general.' },
+              { t: 'SOC 2 Type I', ok: false, fb: 'Type I covers control design at a single point in time. It says nothing about whether the controls worked over months.' },
+              { t: 'SOC 2 Type II, under NDA', ok: true, fb: 'Correct. It covers the Trust Services Criteria (security, availability, confidentiality, processing integrity, privacy) and operating effectiveness over a period, typically 6 to 12 months. Pair it with CSA STAR.' },
+              { t: 'SOC 3', ok: false, fb: 'SOC 3 is a short general-use summary with no detail on tests or exceptions. Good for marketing, weak for due diligence.' }
+            ] },
+          { id: 'sla', title: 'Did they breach the SLA?',
+            situation: 'The contract promises 99.9% monthly uptime. In a 30-day month the provider was down for 50 minutes. Finance asks whether Lumen is owed service credits.',
+            lesson: '99.9% of a 30-day month allows 43.2 minutes of downtime.',
+            choices: [
+              { t: 'No. 50 minutes is within 99.9%.', ok: false, fb: '30 days × 24 h × 60 min = 43,200 min. 0.1% of that is 43.2 minutes, so 50 minutes is over.' },
+              { t: 'Yes. 99.9% allows about 43 minutes, so the SLA was missed and credits are due if claimed per the contract.', ok: true, fb: 'Correct. Check the SLA’s definitions (what counts as downtime, exclusions, claim window). Credits are usually the only remedy.' },
+              { t: 'You can’t tell without the provider’s SOC 2 report.', ok: false, fb: 'This is simple arithmetic against the SLA. The SOC report covers controls, not this month’s uptime.' }
+            ] },
+          { id: 'exit', title: 'Leaving the provider',
+            situation: 'Lumen Retail is moving to another provider. The data is spread across multi-tenant storage, so you can’t physically destroy the disks. How do you make sure the data left behind is unrecoverable?',
+            lesson: 'Crypto-shredding: encrypt with keys you control, then destroy the keys.',
+            choices: [
+              { t: 'Ask the provider to degauss the drives.', ok: false, fb: 'Shared multi-tenant drives can’t be degaussed for one customer, and degaussing doesn’t work on SSDs.' },
+              { t: 'Delete the files and trust the provider.', ok: false, fb: 'Deleted data stays in snapshots, replicas and backups. You need proof, not trust.' },
+              { t: 'Crypto-shred: destroy the customer-managed keys after migrating, and get the contractual certificate of deletion.', ok: true, fb: 'Correct. Without the keys every remaining copy is unreadable ciphertext. This is why Mission 2’s customer-held keys pay off at exit. Portability and exit terms belong in the contract from day one.' },
+              { t: 'Overwrite the files with zeros.', ok: false, fb: 'Overwriting through the cloud API doesn’t guarantee the physical blocks, replicas or backups are overwritten.' }
+            ] }
+        ]
+      },
+      debrief: {
+        title: 'Law follows the data',
+        summary: 'Cloud makes jurisdiction, contracts and evidence harder: data crosses borders, providers hold the evidence, and assurance comes from reports rather than audits you run yourself. Your levers are contract terms, attestations and keys you control.',
+        terms: [
+          ['Data residency vs sovereignty', 'Residency is where data is stored. Sovereignty is which country’s laws apply to it (for example, the US CLOUD Act reaching US providers’ data abroad).'],
+          ['Transfer mechanisms', 'Adequacy decisions, SCCs, Binding Corporate Rules and the EU-US Data Privacy Framework.'],
+          ['eDiscovery', 'Identify, preserve, collect, process, review and produce ESI. See ISO/IEC 27050.'],
+          ['Audit reports', 'SOC 1 (financial), SOC 2 (security trust criteria; Type I is design, Type II is operating effectiveness), SOC 3 (public summary), ISO/IEC 27001 and 27017/27018, and CSA STAR.'],
+          ['Contracts', 'MSA, SLA, DPA, right to audit, breach notice, data location, exit and portability.']
+        ],
+        exam: [
+          'Data controller vs processor: the cloud customer is usually the controller, and the provider is a processor bound by a DPA.',
+          'For assurance about operating effectiveness, the answer is Type II.',
+          'Crypto-shredding is the accepted way to sanitize data in multi-tenant cloud.',
+          'Risk treatment options: avoid, mitigate, transfer (insurance, contracts) and accept. Cloud transfers responsibility, never accountability.'
+        ],
+        real: 'European regulators have fined companies heavily for unlawful transfers. In 2023, Meta was fined €1.2 billion over transfers of EU user data to the US, which is why transfer mechanisms appear in nearly every cloud contract review.'
+      }
+    }
+  ];
+
+  Sandbox.mount(document.getElementById('app'), {
+    storageKey: 'cloud-security-sandbox-v1',
+    eyebrow: 'Practice range · CCSP domains 1–6',
+    title: 'Cloud Security Sandbox',
+    subtitle: 'Six hands-on missions, one for each CCSP domain. Each one puts you in a broken cloud environment. Change the settings, run the simulation, and see whether the attacker gets in.',
+    intro: '<b>How it works.</b> Pick a mission, read the briefing, and work in the panel below it. Fix settings, flag code, read logs or make the call, then run it to see what holds. Hints cost 10 points and failed runs cost 5. Your progress stays in this browser, and nothing here connects to a real cloud.',
+    footer: 'Fictional companies, people, keys and IP addresses. Nothing here connects to a real cloud. Not affiliated with or endorsed by ISC2. CCSP is a registered mark of ISC2, Inc.',
+    missions: missions
+  });
+})();
+</script>
