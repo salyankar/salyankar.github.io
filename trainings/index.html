@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trainings · Satya Salyankar</title>
+<meta name="description" content="Hands-on cybersecurity trainings by Satya Salyankar, built with Claude. Learn by doing in browser-based sandboxes, starting with the Cloud Security Sandbox: six missions covering the CCSP domains.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/site.js"></script>
+<style>
+  /* ============ tile grid ============
+     Every training is a small tile; clicking one opens its full detail panel
+     directly beneath that row. Without JavaScript the panels simply all show. */
+  .tool-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px;margin-top:8px}
+  @media (max-width:560px){.tool-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+
+  .ttile{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);
+      border-radius:14px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+  .ttile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--line-strong)}
+  .ttile.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+
+  .ttile-expand{appearance:none;border:0;background:none;text-align:left;cursor:pointer;color:inherit;
+      font:inherit;padding:18px 18px 12px;display:flex;flex-direction:column;gap:9px;flex:1;position:relative}
+  .ttile-expand:focus-visible{outline:2px solid var(--focus);outline-offset:-3px}
+  .ttile .mark{width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent);
+      display:grid;place-items:center;font-size:20px;font-family:var(--mono)}
+  .ttile .tname{font-family:var(--display);font-weight:600;font-size:17.5px;line-height:1.2}
+  .ttile .tsum{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+  .ttile .chev{position:absolute;top:16px;right:16px;color:var(--ink-3);font-size:15px;transition:transform .2s,color .2s}
+  .ttile.on .chev{transform:rotate(180deg);color:var(--accent)}
+
+  .ttile-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:10px 18px 14px;border-top:1px solid var(--line);margin-top:auto}
+  .ttile-foot .tlaunch{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;color:var(--accent);
+      text-decoration:none;font-weight:500;white-space:nowrap}
+  .ttile-foot .tlaunch:hover{text-decoration:underline}
+  .ttile-foot .tver{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+
+  /* ============ detail panel ============ */
+  .tpanel{grid-column:1/-1;background:var(--surface);border:1px solid var(--accent);border-radius:16px;
+      padding:30px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;animation:open .22s ease-out}
+  @keyframes open{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  @media (max-width:820px){.tpanel{grid-template-columns:1fr;padding:22px;gap:24px}}
+  .tpanel h2{font-size:clamp(24px,3vw,31px);margin:0 0 4px}
+  .tpanel .tag-line{font-family:var(--mono);font-size:14px;color:var(--accent);margin:0 0 16px}
+  .tpanel .lede{font-size:16.5px;color:var(--ink-2);margin-bottom:22px}
+  .tpanel .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .tpanel .meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .tpanel .close{margin-left:auto}
+  .flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:20px 0 0;font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+  .flow em{font-style:normal;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:3px 9px;color:var(--ink-2)}
+  .flow i{font-style:normal;color:var(--line-strong)}
+  .caps{list-style:none;margin:0;padding:0;display:grid;gap:12px;align-content:start}
+  .caps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+  .caps .ic{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:17px}
+  .caps b{display:block;font-family:var(--display);font-weight:600;font-size:15.5px}
+  .caps span{font-size:14px;color:var(--ink-2);line-height:1.45}
+
+  /* Closing note: same measure as the intro blurb above, with a quieter last line. */
+  .built p{max-width:691px}    /* same measure as the intro blurb above: 64ch at 18px */
+  .built .note{font-size:14.5px;color:var(--ink-3);line-height:1.6}
+
+  /* Panels live in this holder until JavaScript moves the open one into the grid. */
+  .tool-details{display:grid;gap:22px;margin-top:22px}
+  .js-on .tool-details{display:none}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../" title="Back to the landing page"><span class="brand-mark">SS</span><span class="text">Satya Salyankar</span></a>
+    <nav class="nav" aria-label="Main">
+      <a href="../home/">Home</a>
+      <a href="../resume/">Resume</a>
+      <a href="../tools/">Tools</a>
+      <a href="./">Trainings</a>
+      <button class="theme-btn" type="button" aria-label="Toggle theme">☾</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-head wrap">
+    <div class="eyebrow">Cybersecurity trainings</div>
+    <h1>Trainings</h1>
+    <p>
+      Hands-on practice ranges for people who learn by doing. Each one drops you into a broken
+      environment, lets you change things and shows what an attacker does next. Every acronym
+      explains itself as you go. Like the tools, they run entirely in your browser.
+    </p>
+  </div>
+
+  <section class="wrap" aria-label="Trainings">
+    <!-- ===================== TILES =====================
+         To add a training: save it as trainings/<slug>/index.html, then copy one tile below and one
+         matching .tpanel further down. The button's aria-controls must equal the panel's id. -->
+    <div class="tool-tiles" id="tiles">
+
+      <div class="ttile" data-tool="cloud-security-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-cloud-security-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">☁</span>
+          <span class="tname">Cloud Security Sandbox</span>
+          <span class="tsum">Six hands-on missions across the CCSP domains. Break things, then fix them.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="cloud-security-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================== DETAIL PANELS =====================
+         These hold the full write-up for each training. JavaScript hides them and moves the open one
+         into the tile grid; with JavaScript off they all stay visible here. -->
+    <div class="tool-details" id="details">
+
+      <section class="tpanel" id="panel-cloud-security-sandbox" data-tool="cloud-security-sandbox" role="region" aria-labelledby="sandbox-h">
+        <div>
+          <h2 id="sandbox-h">Cloud Security Sandbox</h2>
+          <p class="tag-line">Learn cloud security by breaking it.</p>
+          <p class="lede">
+            A practice range for the CCSP domains, built for people who learn by doing. Each mission
+            puts you in a broken cloud environment: a misconfigured network, an exposed database, a
+            risky pull request, a live incident, a contract decision. Change the settings, run the
+            simulation, and see which attacks get through and what breaks for the business.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="cloud-security-sandbox/" target="_blank" rel="noopener">Open Cloud Security Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Briefing</em><i>→</i><em>Change settings</em><i>→</i><em>Run the attacker</em><i>→</i><em>Fix what failed</em><i>→</i><em>Debrief</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic">◇</span><div><b>Shared responsibility</b><span>Fill in who owns each layer across IaaS, PaaS and SaaS, and see what goes unprotected when the line is drawn wrong.</span></div></li>
+          <li><span class="ic">⚿</span><div><b>Data and keys</b><span>Choose encryption, key custody, tokenization and masking for a payments dataset without breaking billing or analytics.</span></div></li>
+          <li><span class="ic">◍</span><div><b>Attack paths</b><span>Lock down a three-tier app on a live network map: SSRF, exposed databases, lateral movement and ransomware against your backups.</span></div></li>
+          <li><span class="ic">⚑</span><div><b>Code review</b><span>Flag the hidden flaws in a Terraform and Flask pull request. False positives count against you.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Incident response</b><span>Investigate a cloud audit log and trace the attacker from a leaked key through persistence to exfiltration.</span></div></li>
+          <li><span class="ic">§</span><div><b>Legal and compliance</b><span>Data transfers, the GDPR 72-hour clock, legal holds, SOC reports, SLA math and crypto-shredding. Every mission ends with a debrief mapped to the exam.</span></div></li>
+        </ul>
+      </section>
+
+    </div>
+  </section>
+
+  <section class="section wrap built">
+    <h2>How these are built</h2>
+    <p>
+      Each training follows one exam or discipline, so the missions map to what you would be
+      tested on. I design the scenarios with Claude, play through every mission myself, and keep
+      the companies, keys and logs fictional so you can break things without breaking anything real.
+    </p>
+    <p class="note">
+      Your progress is saved in your own browser. Nothing connects to a real cloud or sends data anywhere.
+      More sandboxes for other security domains are on the way. If there's one you'd like to see, <a href="../home/#elsewhere">get in touch</a>.
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="yr">2026</span> Satya Salyankar</span>
+    <span>Built by hand with help from Claude · <a href="https://pages.github.com/">Hosted on GitHub Pages</a> · <a href="https://github.com/salyankar/salyankar.github.io">Source</a></span>
+  </div>
+</footer>
+
+<script>
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* Tile grid: one panel open at a time, inserted after the last tile in the clicked tile's row.
+   The panels are real markup, so with JavaScript off the page still shows every word. */
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js-on');            // hides the plain panel holder
+
+  var grid = document.getElementById('tiles');
+  var store = document.getElementById('details');
+  var tiles = Array.prototype.slice.call(grid.querySelectorAll('.ttile'));
+  var open = null;
+
+  function panelFor(slug) { return document.getElementById('panel-' + slug); }
+  function tileFor(slug) { return grid.querySelector('.ttile[data-tool="' + slug + '"]'); }
+
+  function close() {
+    if (!open) return;
+    var p = panelFor(open);
+    if (p) { p.hidden = true; store.appendChild(p); }      // park it back in the holder
+    var t = tileFor(open);
+    if (t) { t.classList.remove('on'); t.querySelector('.ttile-expand').setAttribute('aria-expanded', 'false'); }
+    open = null;
+    if (history.replaceState) history.replaceState(null, '', location.pathname);
+  }
+
+  function show(slug, scroll) {
+    var tile = tileFor(slug), panel = panelFor(slug);
+    if (!tile || !panel) return;
+    if (open === slug) { close(); return; }
+    close();
+
+    // Find the last tile sharing this tile's row, so the panel opens under the whole row.
+    var top = tile.offsetTop, last = tile;
+    for (var i = tiles.indexOf(tile) + 1; i < tiles.length && tiles[i].offsetTop === top; i++) last = tiles[i];
+
+    last.insertAdjacentElement('afterend', panel);
+    panel.hidden = false;
+    tile.classList.add('on');
+    tile.querySelector('.ttile-expand').setAttribute('aria-expanded', 'true');
+    open = slug;
+
+    if (!panel.querySelector('.close')) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn small close'; b.textContent = 'Close';
+      b.addEventListener('click', function () { close(); tile.querySelector('.ttile-expand').focus(); });
+      panel.querySelector('.row').appendChild(b);
+    }
+    if (history.replaceState) history.replaceState(null, '', '#' + slug);
+    if (scroll) setTimeout(function () { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 30);
+  }
+
+  // Park every panel out of sight to begin with.
+  tiles.forEach(function (t) {
+    var slug = t.dataset.tool, p = panelFor(slug);
+    if (p) p.hidden = true;
+    t.querySelector('.ttile-expand').addEventListener('click', function () { show(slug, true); });
+  });
+
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && open) close(); });
+
+  // Keep the panel under the right row when the grid reflows.
+  var rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(function () { if (open) { var s = open; close(); show(s, false); } }, 150);
+  });
+
+  // Deep link: /tools/#argus-atlas opens that tool.
+  var start = location.hash.replace('#', '');
+  if (start && tileFor(start)) show(start, true);
+})();
+</script>
+</body>
+</html>
