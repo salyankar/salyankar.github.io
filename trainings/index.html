@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trainings · Satya Salyankar</title>
-<meta name="description" content="Hands-on cybersecurity trainings by Satya Salyankar, built with Claude. Learn by doing in browser-based sandboxes, starting with the Cloud Security Sandbox: six missions covering the CCSP domains.">
+<meta name="description" content="Hands-on cybersecurity trainings by Satya Salyankar, built with Claude. Browser-based sandboxes for cloud security (CCSP), cyber GRC (CRISC and CISA), incident response and tabletop exercises, application security, data protection, and OT security across hospitals, oil and gas, power and manufacturing.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -105,10 +105,75 @@
           <span class="chev" aria-hidden="true">⌄</span>
           <span class="mark" aria-hidden="true">☁</span>
           <span class="tname">Cloud Security Sandbox</span>
-          <span class="tsum">Six hands-on missions across the CCSP domains. Break things, then fix them.</span>
+          <span class="tsum">Six missions across the CCSP domains. Break things, then fix them.</span>
         </button>
         <div class="ttile-foot">
           <a class="tlaunch" href="cloud-security-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+      <div class="ttile" data-tool="cyber-grc-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-cyber-grc-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">§</span>
+          <span class="tname">Cyber GRC Sandbox</span>
+          <span class="tsum">Governance, risk and audit, built on CRISC and CISA concepts.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="cyber-grc-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+      <div class="ttile" data-tool="incident-response-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-incident-response-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">⚑</span>
+          <span class="tname">Incident Response Sandbox</span>
+          <span class="tsum">Roles, the response lifecycle and a full ransomware tabletop with timed injects.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="incident-response-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+      <div class="ttile" data-tool="application-security-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-application-security-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">⟨⟩</span>
+          <span class="tname">Application Security Sandbox</span>
+          <span class="tsum">The secure development lifecycle, from threat modeling to supply chain.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="application-security-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+      <div class="ttile" data-tool="data-protection-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-data-protection-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">⚿</span>
+          <span class="tname">Data Protection Sandbox</span>
+          <span class="tsum">Classification, high value assets, protection controls and monitoring.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="data-protection-sandbox/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
+      <div class="ttile" data-tool="ot-security-sandbox">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-ot-security-sandbox">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">⚙</span>
+          <span class="tname">OT Security Sandbox</span>
+          <span class="tsum">Clickable maps of a hospital, refinery, power grid and factory.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="ot-security-sandbox/" target="_blank" rel="noopener">Open ↗</a>
           <span class="tver">v1</span>
         </div>
       </div>
@@ -149,6 +214,146 @@
         </ul>
       </section>
 
+      <section class="tpanel" id="panel-cyber-grc-sandbox" data-tool="cyber-grc-sandbox" role="region" aria-labelledby="grc-h">
+        <div>
+          <h2 id="grc-h">Cyber GRC Sandbox</h2>
+          <p class="tag-line">Risk decisions and audit judgment, practiced.</p>
+          <p class="lede">
+            Governance, risk and compliance built on CRISC and CISA concepts. Draw the lines of
+            responsibility at a bank, untangle the risk vocabulary, score and treat a risk register on
+            a live heat map, classify controls, test a real IT general control against evidence, and
+            run an audit engagement from planning to follow-up.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="cyber-grc-sandbox/" target="_blank" rel="noopener">Open Cyber GRC Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Governance</em><i>→</i><em>Assess risk</em><i>→</i><em>Treat risk</em><i>→</i><em>Controls</em><i>→</i><em>Audit</em>
+          </div>
+        </div>
+        <ul class="caps">
+          <li><span class="ic">▤</span><div><b>Three lines model</b><span>Place twelve activities with the board, management, risk and compliance, internal audit or external assurance.</span></div></li>
+          <li><span class="ic">◎</span><div><b>Risk language</b><span>Appetite vs tolerance, inherent vs residual, KRIs vs KPIs, risk owners, scenarios and ALE.</span></div></li>
+          <li><span class="ic">▦</span><div><b>Heat map</b><span>Score five risks against defined scales and appetite, then choose to accept, mitigate, transfer or avoid each one.</span></div></li>
+          <li><span class="ic">⛨</span><div><b>Control types</b><span>Preventive, detective, corrective, deterrent, directive and compensating, with the edge cases.</span></div></li>
+          <li><span class="ic">⚲</span><div><b>Audit the leavers</b><span>Test an access-removal control against twenty records, count exceptions by business day, and escalate the one that matters.</span></div></li>
+          <li><span class="ic">§</span><div><b>Audit engagement</b><span>Risk-based planning, independence, sampling, compliance vs substantive testing, reporting and follow-up.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-incident-response-sandbox" data-tool="incident-response-sandbox" role="region" aria-labelledby="ir-h">
+        <div>
+          <h2 id="ir-h">Incident Response Sandbox</h2>
+          <p class="tag-line">An incident is a business event. Run it like one.</p>
+          <p class="lede">
+            Who leads what when ransomware hits: cyber, IT, legal, communications, executives, risk,
+            internal audit, regulators, law enforcement and the insurer. Order the response lifecycle,
+            design a tabletop exercise, then play one: nine timed injects where you decide who to bring
+            in and what to do, with a facilitator debrief after every move.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="incident-response-sandbox/" target="_blank" rel="noopener">Open Incident Response Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Inject</em><i>→</i><em>Who’s in the room</em><i>→</i><em>Make the call</em><i>→</i><em>Facilitator debrief</em><i>→</i><em>Hot wash</em>
+          </div>
+        </div>
+        <ul class="caps">
+          <li><span class="ic">◉</span><div><b>Who leads this?</b><span>Thirteen decisions and tasks, from declaring the incident to deciding on a ransom, each matched to its owner.</span></div></li>
+          <li><span class="ic">↻</span><div><b>Lifecycle</b><span>Preparation, detection, containment, eradication, recovery and lessons learned, and why the order prevents reinfection.</span></div></li>
+          <li><span class="ic">✎</span><div><b>Design a tabletop</b><span>Objectives, participants, ground rules, well-written injects, facilitation and the after-action report.</span></div></li>
+          <li><span class="ic">⚑</span><div><b>“Operation Low Tide”</b><span>A full ransomware and data-theft tabletop across two weeks: media, SEC materiality, the FBI, the board and the hot wash.</span></div></li>
+          <li><span class="ic">◷</span><div><b>Notification clocks</b><span>GDPR, NIS2, SEC, NYDFS, HIPAA and DORA deadlines, and the moment each one starts.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-application-security-sandbox" data-tool="application-security-sandbox" role="region" aria-labelledby="appsec-h">
+        <div>
+          <h2 id="appsec-h">Application Security Sandbox</h2>
+          <p class="tag-line">Security at every stage, starting before the code.</p>
+          <p class="lede">
+            Follow one product, a telehealth app, through the secure development lifecycle. Map
+            security activities to each stage, learn threat modeling and apply STRIDE to a real data
+            flow diagram at the concept stage, triage SAST findings while developing, configure DAST
+            to verify, and harden the release pipeline against supply-chain attacks.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="application-security-sandbox/" target="_blank" rel="noopener">Open Application Security Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Concept</em><i>→</i><em>Design</em><i>→</i><em>Develop</em><i>→</i><em>Build</em><i>→</i><em>Verify</em><i>→</i><em>Release</em><i>→</i><em>Operate</em>
+          </div>
+        </div>
+        <ul class="caps">
+          <li><span class="ic">↦</span><div><b>Lifecycle map</b><span>Sixteen activities, from threat modeling and ASVS requirements to SBOMs, IAST and bug bounties, each placed at its stage.</span></div></li>
+          <li><span class="ic">◇</span><div><b>Threat modeling 101</b><span>The four questions, data flow diagrams, trust boundaries and STRIDE.</span></div></li>
+          <li><span class="ic">◍</span><div><b>Threat model the app</b><span>Choose a mitigation for every STRIDE threat on six diagram elements, and spot where a category doesn’t apply.</span></div></li>
+          <li><span class="ic">⚑</span><div><b>SAST triage</b><span>Real code, five findings: fix the true positives, suppress the noise, keep the gate trusted.</span></div></li>
+          <li><span class="ic">⌕</span><div><b>DAST setup</b><span>Authenticated multi-role scans, API specs, safe environments and rules of engagement.</span></div></li>
+          <li><span class="ic">⛓</span><div><b>Supply chain</b><span>MFA, branch protection, ephemeral runners, signing and SLSA, scoped dependencies, SBOMs and admission control.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-data-protection-sandbox" data-tool="data-protection-sandbox" role="region" aria-labelledby="data-h">
+        <div>
+          <h2 id="data-h">Data Protection Sandbox</h2>
+          <p class="tag-line">Find the crown jewels, then protect them.</p>
+          <p class="lede">
+            Classify an insurer’s data, learn how a high value asset (HVA) program works, rate a
+            candidate inventory with a scoring rubric, then turn on encryption, access, monitoring,
+            DLP and backup controls for a Tier 1 system. Finish by investigating a departing
+            employee’s data theft across DAM, DLP, CASB and UEBA alerts, and managing data from
+            collection to deletion.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="data-protection-sandbox/" target="_blank" rel="noopener">Open Data Protection Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Classify</em><i>→</i><em>Identify HVAs</em><i>→</i><em>Assess</em><i>→</i><em>Protect</em><i>→</i><em>Monitor</em><i>→</i><em>Delete</em>
+          </div>
+        </div>
+        <ul class="caps">
+          <li><span class="ic">▤</span><div><b>Classification</b><span>Thirteen data types across Public, Internal, Confidential and Restricted, classified by harm.</span></div></li>
+          <li><span class="ic">◆</span><div><b>HVA method</b><span>Identify, categorize, assess and remediate, based on CISA’s HVA program and MITRE’s crown jewels analysis.</span></div></li>
+          <li><span class="ic">▦</span><div><b>HVA inventory</b><span>Rate six candidates on sensitivity, criticality and dependency on a live board. Identity and backups make Tier 1.</span></div></li>
+          <li><span class="ic">⚿</span><div><b>Protection controls</b><span>TDE with customer-managed keys, TLS everywhere, PAM, least privilege, DAM, DLP, labels, masking and immutable backups.</span></div></li>
+          <li><span class="ic">⌕</span><div><b>Data-loss alerts</b><span>Separate the insider from the nightly job, and find the channel that got through.</span></div></li>
+          <li><span class="ic">↻</span><div><b>Privacy lifecycle</b><span>Minimization, retention, DSARs, AI training, shadow data and data ownership.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-ot-security-sandbox" data-tool="ot-security-sandbox" role="region" aria-labelledby="ot-h">
+        <div>
+          <h2 id="ot-h">OT Security Sandbox</h2>
+          <p class="tag-line">Where cyber meets the physical world.</p>
+          <p class="lede">
+            Operational technology across four sectors. Learn why OT isn’t IT, place systems on the
+            Purdue model, then explore clickable network maps of a hospital, a refinery and pipeline,
+            a power grid and a manufacturing plant. Click any component to see what it does, the risks
+            at that point and a real incident, then choose the control that matters most.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="ot-security-sandbox/" target="_blank" rel="noopener">Open OT Security Sandbox ↗</a>
+            <span class="meta">v1 · Oct 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Enterprise</em><i>→</i><em>DMZ</em><i>→</i><em>Operations</em><i>→</i><em>Supervisory</em><i>→</i><em>Control</em><i>→</i><em>Process</em>
+          </div>
+        </div>
+        <ul class="caps">
+          <li><span class="ic">⚠</span><div><b>OT is not IT</b><span>Safety first, passive monitoring, planned patching, zones and conduits, the air-gap myth and OT incident response.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Purdue model</b><span>Fourteen components from sensors to ERP, each placed at its level.</span></div></li>
+          <li><span class="ic">✚</span><div><b>Hospital</b><span>EHR, HL7 integration, PACS, CT scanners, infusion pumps, patient monitoring and building systems.</span></div></li>
+          <li><span class="ic">⛽</span><div><b>Oil and gas</b><span>IT/OT DMZ, engineering workstations, the safety system, pipeline SCADA and remote RTUs.</span></div></li>
+          <li><span class="ic">⚡</span><div><b>Power and utilities</b><span>The control center, NERC CIP remote access, substation protocols, protective relays and physical security.</span></div></li>
+          <li><span class="ic">⚙</span><div><b>Manufacturing</b><span>ERP and MES, vendor access, IIoT gateways, PLC logic integrity and robot-cell safety.</span></div></li>
+        </ul>
+      </section>
+
     </div>
   </section>
 
@@ -156,12 +361,13 @@
     <h2>How these are built</h2>
     <p>
       Each training follows one exam or discipline, so the missions map to what you would be
-      tested on. I design the scenarios with Claude, play through every mission myself, and keep
-      the companies, keys and logs fictional so you can break things without breaking anything real.
+      tested on. The scenarios are designed with Claude, and the companies, keys, logs and sites
+      are fictional, so you can break things without breaking anything real. Where a mission cites
+      a real incident, it’s a public one, summarized for learning.
     </p>
     <p class="note">
-      Your progress is saved in your own browser. Nothing connects to a real cloud or sends data anywhere.
-      More sandboxes for other security domains are on the way. If there's one you'd like to see, <a href="../home/#elsewhere">get in touch</a>.
+      Your progress is saved in your own browser. Nothing connects to real systems or sends data anywhere.
+      If there's a domain you'd like to see next, <a href="../home/#elsewhere">get in touch</a>.
     </p>
   </section>
 </main>

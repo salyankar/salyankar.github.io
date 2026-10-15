@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: header + progress meter, mission rail on the left, one mission workspace on the right (rail becomes a strip on phones). */
+/* Shared tokens for every sandbox. Layout: header + progress meter, mission rail on the left, one mission workspace on the right (rail becomes a strip on phones). Each sandbox overrides the accent in its accent.css. */
 :root{
   --bg:#f2f5f6; --surface:#ffffff; --surface-2:#e7edef; --line:#d1dade; --line-soft:#e2e8ea;
   --ink:#0e1a1f; --ink-2:#44545b; --ink-3:#66767d;
@@ -45,8 +45,10 @@
   --warn:#e6ad4a; --warn-bg:#352812;
   --c-cust:#4fb3cc; --c-cust-bg:#12303a; --c-prov:#a993ee; --c-prov-bg:#271f42; --c-shared:#e6ad4a; --c-shared-bg:#352812;
 }
-</style>
-<style>
+/* Cloud: petrol blue (same as the shared defaults) */
+:root{--accent:#0b6b83;--accent-soft:#dcedf1;--accent-line:#a9cfd9;--on-accent:#ffffff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:#4fb3cc;--accent-soft:#12303a;--accent-line:#235665;--on-accent:#06181d}}
+:root[data-theme="dark"]{--accent:#4fb3cc;--accent-soft:#12303a;--accent-line:#235665;--on-accent:#06181d}
 /* Sandbox engine styles. Every color comes from tokens defined by the sandbox page (see cloud/head.html). */
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);padding-inline:16px;padding-block:0 48px;margin:0}
@@ -290,11 +292,113 @@ code,.mono{font-family:var(--mono)}
 .sb-used-n{font:600 11px/1 var(--mono);padding:4px 6px;border-radius:3px;background:var(--accent-soft);color:var(--accent)}
 .sb-used-tip{font-weight:400;font-size:13px;color:var(--ink-3)}
 .sb-used .sb-gl-list{padding:0 16px 14px;max-height:340px}
+
+/* Kind: assign */
+.as-board{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:18px}
+.as-col{border:1px solid var(--line);border-radius:6px;background:var(--surface);min-width:0;display:grid;grid-template-rows:auto 1fr}
+.as-col header{padding:8px 10px;border-bottom:1px solid var(--line);background:var(--surface-2);display:grid;gap:1px;border-radius:6px 6px 0 0}
+.as-col header b{font-family:var(--display);font-size:15px;font-weight:600}
+.as-col header span{font-size:12px;color:var(--ink-3);line-height:1.3}
+.as-chips{display:flex;flex-wrap:wrap;gap:5px;padding:8px;align-content:flex-start;min-height:52px}
+.as-chip{font-size:12.5px;line-height:1.3;padding:4px 7px;border-radius:4px;background:var(--accent-soft);border:1px solid var(--accent-line)}
+.as-chip.is-wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.as-empty{font-size:12px;color:var(--ink-3);font-style:italic}
+.as-h{font-size:17px;margin-bottom:8px}
+.as-h .muted{font:500 12px var(--mono)}
+.as-items{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.as-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,240px);gap:8px 16px;align-items:center;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:5px}
+.as-item.is-wrong{border-color:var(--bad)}
+.as-item label{display:grid;gap:2px;min-width:0}
+.as-item label span{font-size:13px;color:var(--ink-2)}
+.as-item select{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+
+/* Kind: tabletop */
+.tt-roster{border:1px solid var(--line);border-radius:6px;background:var(--surface);margin-bottom:16px}
+.tt-roster summary{padding:12px 16px;font-weight:600;cursor:pointer}
+.tt-roster ul{list-style:none;margin:0;padding:0 16px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.tt-roster li{padding:8px 10px;background:var(--bg);border:1px solid var(--line-soft);border-radius:4px;display:grid;gap:2px;font-size:13.5px;line-height:1.4}
+.tt-roster li span{color:var(--ink-2)}
+.tt-line{list-style:none;margin:0;padding:0 0 0 18px;display:grid;gap:14px;border-left:2px solid var(--line)}
+.tt-inj{position:relative;padding:16px 18px;border:1px solid var(--line);border-radius:6px;background:var(--surface);display:grid;gap:10px}
+.tt-inj::before{content:"";position:absolute;left:-26px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.tt-inj.is-done{border-color:var(--ok)}
+.tt-inj.is-done::before{background:var(--ok);border-color:var(--ok)}
+.tt-time{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;font:500 11px/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.tt-time b{color:var(--accent);font-size:13px;font-weight:600}
+.tt-inj h4{font-size:19px}
+.tt-body p{margin:0 0 6px;max-width:75ch}
+.tt-art{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:4px;background:var(--bg);font-size:14px}
+.tt-art-h{padding:6px 12px;font:500 12px/1.3 var(--mono);color:var(--ink-2);border-bottom:1px solid var(--line-soft)}
+.tt-art-b{padding:10px 12px;white-space:pre-line}
+.tt-q{display:grid;gap:6px}
+.tt-lbl{font-weight:600;font-size:14px}
+.tt-roles{display:flex;flex-wrap:wrap;gap:6px}
+.tt-role{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:13px}
+.tt-role[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.tt-role:disabled,.lg-opt:disabled{cursor:default;opacity:.75}
+.tt-go{justify-self:start}
+.tt-fb{padding:10px 12px;border-radius:4px;font-size:14px}
+.tt-fb.ok{background:var(--ok-bg)}
+.tt-fb.no{background:var(--bad-bg)}
+.tt-fb p{margin:0 0 4px}
+.tt-fb ul{margin:0 0 4px;padding-left:18px}
+.tt-extra{color:var(--ink-2)}
+.tt-debrief{padding:10px 12px;border-radius:4px;background:var(--accent-soft);border:1px solid var(--accent-line);font-size:14px}
+.tt-debrief p{margin:0 0 4px}
+.tt-debrief ul{margin:0;padding-left:18px}
+.tt-dq{font-weight:600}
+.tt-end{margin:14px 0 0;padding:12px 16px;border-radius:6px;background:var(--ok-bg);color:var(--ink);font-weight:600}
+
+/* Kind: map */
+.mp-wrap{border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:12px}
+.mp-legend{margin:0 0 8px;font-size:13px;color:var(--ink-2)}
+.mp-legend span{color:var(--ink);margin-right:6px}
+.mp-svg{display:block;width:100%;min-width:760px;height:auto}
+.mp-zone rect{fill:var(--surface-2);stroke:var(--line)}
+.mp-zone.it rect{fill:var(--bg)}
+.mp-zone.dmz rect{fill:var(--warn-bg);stroke:var(--warn);stroke-dasharray:5 4}
+.mp-zone.safety rect{fill:var(--bad-bg);stroke:var(--bad);stroke-dasharray:3 3}
+.mp-zl{fill:var(--ink-2);font:600 12px var(--mono);letter-spacing:.04em}
+.mp-zs{fill:var(--ink-3);font:400 11px var(--sans)}
+.mp-link{stroke:var(--ink-3);stroke-width:1.5}
+.mp-link.remote{stroke:var(--warn);stroke-width:2;stroke-dasharray:6 4}
+.mp-link.wireless{stroke:var(--accent);stroke-dasharray:2 4;stroke-width:2}
+.mp-node rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.mp-node[data-n]{cursor:pointer}
+.mp-node[data-n]:hover rect,.mp-node[data-n]:focus rect{stroke:var(--accent);stroke-width:2}
+.mp-node:focus{outline:none}
+.mp-node:focus-visible rect{stroke:var(--accent);stroke-width:3}
+.mp-node.is-sel rect{stroke:var(--accent);stroke-width:3;fill:var(--accent-soft)}
+.mp-node.is-solved rect{fill:var(--ok-bg);stroke:var(--ok)}
+.mp-node.is-ctx rect{fill:var(--bg);stroke-dasharray:4 3}
+.mp-t{fill:var(--ink);font:600 12.5px var(--sans)}
+.mp-s{fill:var(--ink-3);font:400 10.5px var(--mono)}
+.mp-badge{fill:var(--bad-bg);stroke:var(--bad);stroke-width:1.5}
+.mp-node.is-solved .mp-badge{fill:var(--ok-bg);stroke:var(--ok)}
+.mp-bt{fill:var(--bad);font:700 11px var(--mono)}
+.mp-node.is-solved .mp-bt{fill:var(--ok)}
+.mp-detail{margin-top:12px;padding:16px 18px;border:1px solid var(--accent-line);border-radius:6px;background:var(--surface);display:grid;gap:10px}
+.mp-detail h4{font-size:20px}
+.mp-detail h5{font:600 11px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+.mp-detail p{margin:0;max-width:78ch}
+.mp-pick{color:var(--ink-3)}
+.mp-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.mp-risks{margin:0;padding-left:18px;display:grid;gap:4px}
+.mp-risks li::marker{color:var(--bad)}
+.mp-controls{padding:12px 14px;border-radius:5px;background:var(--ok-bg)}
+.mp-controls ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.mp-inc{margin-top:8px !important;font-size:14px}
+@media (max-width:860px){
+  .as-item{grid-template-columns:minmax(0,1fr)}
+  .mp-cols{grid-template-columns:minmax(0,1fr)}
+  .tt-line{padding-left:12px}
+  .tt-inj::before{left:-20px}
+}
 </style>
 <div id="app"></div>
 <script>
 /* Sandbox engine: the shared shell (mission list, briefing, hints, scoring, results, debrief, saved progress)
-   plus five reusable mission kinds. Each sandbox supplies only its missions and calls Sandbox.mount(). */
+   plus eight reusable mission kinds (matrix, config, code, logs, scenario, assign, tabletop, map). Each sandbox supplies only its missions and calls Sandbox.mount(). */
 (function () {
   'use strict';
 
@@ -316,7 +420,14 @@ code,.mono{font-family:var(--mono)}
     detect: ['Detection', 'Ready', 'Blind'],
     row: ['Responsibilities', 'Correct', 'Not yet'],
     review: ['Findings', 'Found', 'Not yet'],
-    answer: ['Answers', 'Correct', 'Not yet']
+    answer: ['Answers', 'Correct', 'Not yet'],
+    place: ['Placements', 'Correct', 'Not yet'],
+    move: ['Injects', 'Handled', 'Open'],
+    point: ['Points on the map', 'Secured', 'Open'],
+    risk: ['Risk decisions', 'Sound', 'Rethink'],
+    rating: ['Asset ratings', 'Correct', 'Not yet'],
+    threat: ['Threats', 'Mitigated', 'Open'],
+    gate: ['Release gates', 'Passing', 'Failing']
   };
 
   var Sandbox = window.Sandbox = { kinds: {}, esc: esc };
@@ -363,7 +474,7 @@ code,.mono{font-family:var(--mono)}
   }
 
   // Never wrap terms inside controls, code, headings of the shell or the glossary itself.
-  var NO_GLOSS = 'button, a, code, pre, svg, input, textarea, select, script, style, summary, .gl, .sb-eyebrow, .sb-pill, .sb-tag, .lg-wrap, .sb-gl-skip';
+  var NO_GLOSS = 'button, a, code, pre, svg, input, textarea, select, script, style, summary, .gl, .sb-eyebrow, .sb-pill, .sb-tag, .lg-wrap, .sb-gl-skip, .tt-time, .sc-no, .as-col header, .as-chip';
 
   function annotate(node, G) {
     if (!node || !G.re) return;
@@ -396,6 +507,19 @@ code,.mono{font-family:var(--mono)}
   }
 
   function stripTags(s) { return String(s || '').replace(/<[^>]+>/g, ' '); }
+
+  // Shows answer choices in a stable shuffled order (seeded by the question id), so the correct answer's
+  // position never forms a pattern. fn still receives each choice's original index, which state uses.
+  function mapMixed(list, seed, fn) {
+    var h = 2166136261, i, order = [];
+    for (i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+    for (i = 0; i < list.length; i++) order.push(i);
+    for (i = list.length - 1; i > 0; i--) {
+      h ^= h << 13; h ^= h >>> 17; h ^= h << 5;
+      var j = (h >>> 0) % (i + 1), t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    return order.map(function (k) { return fn(list[k], k); });
+  }
 
   Sandbox.mount = function (root, cfg) {
     var store = makeStore(cfg.storageKey);
@@ -851,6 +975,7 @@ code,.mono{font-family:var(--mono)}
       var s = ctx.state;
       return ctx.data.questions.map(function (q) {
         var a = String(s.answers[q.id] == null ? '' : s.answers[q.id]).trim().toLowerCase();
+        if (!q.options) a = a.replace(/^[\d,\s]+$/, function (m) { return m.replace(/[,\s]/g, ''); });   // "48,500" counts as 48500
         var ok = a === String(q.answer).toLowerCase();
         s.marks[q.id] = ok;
         return { type: 'answer', name: q.short, pass: ok, msg: ok ? q.ok : (a ? q.clue : 'Not answered yet. ' + q.clue) };
@@ -875,7 +1000,7 @@ code,.mono{font-family:var(--mono)}
         var tried = s.tried[c.id] || [], solved = !!s.solved[c.id], last = tried[tried.length - 1];
         var fb = last == null ? '' : '<p class="sc-fb ' + (c.choices[last].ok ? 'ok' : 'no') + '">' + c.choices[last].fb + '</p>';
         return '<section class="sc-card' + (solved ? ' is-solved' : '') + '"><div class="sc-no">Case ' + (i + 1) + ' of ' + d.cards.length + (solved ? ' · resolved' : '') + '</div>' +
-          '<h4>' + esc(c.title) + '</h4><p>' + c.situation + '</p><div class="sc-choices">' + c.choices.map(function (ch, j) {
+          '<h4>' + esc(c.title) + '</h4><p>' + c.situation + '</p><div class="sc-choices">' + mapMixed(c.choices, c.id, function (ch, j) {
             var cls = tried.indexOf(j) >= 0 ? (ch.ok ? ' is-right' : ' is-wrong') : '';
             return '<button type="button" class="sc-choice' + cls + '" data-c="' + c.id + '" data-j="' + j + '"' + (solved || tried.indexOf(j) >= 0 ? ' disabled' : '') + '>' + esc(ch.t) + '</button>';
           }).join('') + '</div>' + fb + '</section>';
@@ -890,6 +1015,215 @@ code,.mono{font-family:var(--mono)}
           ctx.showResults(Sandbox.kinds.scenario.summary(ctx), true);
           var sec = ctx.el.querySelector('[data-c="' + cid + '"]'); if (sec) sec.closest('.sc-card').scrollIntoView({ block: 'nearest' });
           if (card.choices[j].ok && d.cards.every(function (c) { return s.solved[c.id]; })) ctx.complete();
+        };
+      });
+    }
+  };
+
+  /* ---------- Kind: assign — sort items into columns (lifecycle stages, roles, levels, categories) ---------- */
+  Sandbox.kinds.assign = {
+    label: 'Check placements',
+    resultsTitle: 'Placement review',
+    init: function (d) {
+      var a = {};
+      d.items.forEach(function (it) { a[it.id] = ''; });
+      return { a: a, wrong: {} };
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state;
+      var left = d.items.filter(function (it) { return !s.a[it.id]; }).length;
+      ctx.el.innerHTML =
+        '<div class="as-board" style="--cols:' + d.buckets.length + '">' + d.buckets.map(function (b) {
+          var its = d.items.filter(function (it) { return s.a[it.id] === b.id; });
+          return '<section class="as-col"><header><b>' + esc(b.name) + '</b>' + (b.sub ? '<span>' + esc(b.sub) + '</span>' : '') + '</header><div class="as-chips">' +
+            (its.length ? its.map(function (it) { return '<span class="as-chip' + (s.wrong[it.id] ? ' is-wrong' : '') + '">' + esc(it.short || it.label) + '</span>'; }).join('')
+                        : '<span class="as-empty">Empty</span>') + '</div></section>';
+        }).join('') + '</div>' +
+        '<h4 class="as-h">' + esc(d.prompt || 'Place each item') + ' <span class="muted">· ' + left + ' of ' + d.items.length + ' left</span></h4>' +
+        '<ol class="as-items">' + d.items.map(function (it) {
+          return '<li class="as-item' + (s.wrong[it.id] ? ' is-wrong' : '') + '"><label for="as-' + it.id + '"><b>' + esc(it.label) + '</b>' + (it.detail ? '<span>' + it.detail + '</span>' : '') + '</label>' +
+            '<select id="as-' + it.id + '" data-i="' + it.id + '"><option value="">Choose…</option>' + d.buckets.map(function (b) {
+              return '<option value="' + b.id + '"' + (s.a[it.id] === b.id ? ' selected' : '') + '>' + esc(b.name) + '</option>';
+            }).join('') + '</select></li>';
+        }).join('') + '</ol>';
+      ctx.el.querySelectorAll('select[data-i]').forEach(function (sel) {
+        sel.onchange = function () {
+          var id = sel.getAttribute('data-i');
+          s.a[id] = sel.value; delete s.wrong[id];
+          ctx.save(); ctx.rerender();
+          var again = ctx.el.querySelector('#as-' + id); if (again) again.focus();
+        };
+      });
+    },
+    evaluate: function (ctx) {
+      var s = ctx.state;
+      return ctx.data.items.map(function (it) {
+        var v = s.a[it.id], ok = it.accept.indexOf(v) >= 0;
+        s.wrong[it.id] = !ok;
+        return { type: 'place', name: it.label, pass: ok, msg: ok ? it.why : (v ? it.hint : 'Not placed yet. ' + it.hint) };
+      });
+    }
+  };
+
+  /* ---------- Kind: tabletop — timed injects: pick who is in the room, make the call, get a facilitator debrief ---------- */
+  Sandbox.kinds.tabletop = {
+    auto: true,
+    resultsTitle: 'Exercise log',
+    init: function () { return { sel: {}, pick: {}, done: {}, fb: {} }; },
+    summary: function (ctx) {
+      var s = ctx.state;
+      return ctx.data.injects.map(function (inj) {
+        return { type: 'move', name: inj.time + ' · ' + inj.title, pass: !!s.done[inj.id], msg: s.done[inj.id] ? inj.lesson : 'Not handled yet.' };
+      });
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state, roleBy = {};
+      d.roles.forEach(function (r) { roleBy[r.id] = r; });
+      var open = -1;
+      d.injects.some(function (inj, i) { if (!s.done[inj.id]) { open = i; return true; } return false; });
+      var shown = open < 0 ? d.injects : d.injects.slice(0, open + 1);
+      ctx.el.innerHTML =
+        '<details class="tt-roster" open><summary>Your response team · ' + d.roles.length + ' roles</summary><ul>' + d.roles.map(function (r) {
+          return '<li><b>' + esc(r.name) + '</b><span>' + r.desc + '</span></li>';
+        }).join('') + '</ul></details>' +
+        '<ol class="tt-line">' + shown.map(function (inj, i) {
+          var done = !!s.done[inj.id], sel = s.sel[inj.id] || [], pick = s.pick[inj.id];
+          return '<li class="tt-inj' + (done ? ' is-done' : ' is-open') + '" id="tt-' + inj.id + '">' +
+            '<div class="tt-time"><span>Inject ' + (i + 1) + ' of ' + d.injects.length + '</span><b>' + esc(inj.time) + '</b></div>' +
+            '<h4>' + esc(inj.title) + '</h4><div class="tt-body">' + inj.body + '</div>' +
+            (inj.artifact ? '<div class="tt-art"><div class="tt-art-h">' + esc(inj.artifact.label) + '</div><div class="tt-art-b">' + inj.artifact.text + '</div></div>' : '') +
+            '<div class="tt-q"><div class="tt-lbl">' + esc(d.roleQ || 'Who needs to be in the room for this inject?') + '</div><div class="tt-roles">' + d.roles.map(function (r) {
+              return '<button type="button" class="tt-role" data-inj="' + inj.id + '" data-r="' + r.id + '" aria-pressed="' + (sel.indexOf(r.id) >= 0) + '"' + (done ? ' disabled' : '') + '>' + esc(r.short || r.name) + '</button>';
+            }).join('') + '</div></div>' +
+            '<div class="tt-q"><div class="tt-lbl">' + esc(inj.q) + '</div><div class="lg-opts" role="radiogroup" aria-label="' + esc(inj.q) + '">' + mapMixed(inj.choices, inj.id, function (c, j) {
+              return '<button type="button" role="radio" class="lg-opt" data-inj="' + inj.id + '" data-j="' + j + '" aria-checked="' + (pick === j) + '"' + (done ? ' disabled' : '') + '>' + esc(c.t) + '</button>';
+            }).join('') + '</div></div>' +
+            (done ? '' : '<button type="button" class="sb-btn primary tt-go" data-inj="' + inj.id + '">Make the move</button>') +
+            (s.fb[inj.id] ? '<div class="tt-fb ' + (done ? 'ok' : 'no') + '">' + s.fb[inj.id] + '</div>' : '') +
+            (done ? '<div class="tt-debrief"><p><b>Facilitator debrief.</b> ' + inj.lesson + '</p>' +
+              (inj.prompts ? '<p class="tt-dq">Questions a facilitator would put to the room:</p><ul>' + inj.prompts.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>' : '') + '</div>' : '') +
+            '</li>';
+        }).join('') + '</ol>' +
+        (open < 0 ? '<p class="tt-end">End of exercise. In a real tabletop, the hot wash starts now: what went well, what didn’t, and who owns each fix.</p>' : '');
+
+      ctx.el.querySelectorAll('.tt-role').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-inj'), r = b.getAttribute('data-r'), sel = s.sel[id] = s.sel[id] || [], k = sel.indexOf(r);
+          if (k >= 0) sel.splice(k, 1); else sel.push(r);
+          b.setAttribute('aria-pressed', k < 0); ctx.save();
+        };
+      });
+      ctx.el.querySelectorAll('.lg-opt[data-inj]').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-inj');
+          s.pick[id] = +b.getAttribute('data-j');
+          ctx.el.querySelectorAll('.lg-opt[data-inj="' + id + '"]').forEach(function (o) { o.setAttribute('aria-checked', o === b); });
+          ctx.save();
+        };
+      });
+      ctx.el.querySelectorAll('.tt-go').forEach(function (b) {
+        b.onclick = function () {
+          var id = b.getAttribute('data-inj'), inj = d.injects.filter(function (x) { return x.id === id; })[0];
+          var sel = s.sel[id] || [], pick = s.pick[id];
+          if (pick == null) { s.fb[id] = 'Choose the call before you make the move.'; ctx.save(); ctx.rerender(); return; }
+          var missing = inj.need.filter(function (r) { return sel.indexOf(r) < 0; });
+          var extra = sel.filter(function (r) { return inj.need.indexOf(r) < 0 && (inj.ok || []).indexOf(r) < 0; });
+          var ch = inj.choices[pick], parts = [];
+          if (missing.length) parts.push('<p><b>Missing from the room:</b></p><ul>' + missing.map(function (r) { return '<li><b>' + esc(roleBy[r].name) + '.</b> ' + inj.why[r] + '</li>'; }).join('') + '</ul>');
+          if (!ch.ok) parts.push('<p><b>The call:</b> ' + ch.fb + '</p>');
+          var extraNote = extra.length ? '<p class="tt-extra"><b>Not needed yet:</b> ' + extra.map(function (r) { return esc(roleBy[r].name); }).join(', ') + '. ' + (inj.extraNote || 'Keep them informed, but a crowded room slows decisions.') + '</p>' : '';
+          if (!missing.length && ch.ok) {
+            s.done[id] = true;
+            s.fb[id] = '<p><b>Good move.</b> ' + ch.fb + '</p>' + extraNote;
+          } else {
+            s.fb[id] = parts.join('') + extraNote;
+            ctx.penalize();
+          }
+          ctx.save(); ctx.rerender();
+          ctx.showResults(Sandbox.kinds.tabletop.summary(ctx), true);
+          var card = ctx.el.querySelector('#tt-' + id);
+          if (s.done[id]) {
+            var nxt = card && card.nextElementSibling;
+            (nxt || card).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          }
+          if (s.done[id] && d.injects.every(function (x) { return s.done[x.id]; })) ctx.complete();
+        };
+      });
+    }
+  };
+
+  /* ---------- Kind: map — explore an architecture diagram; each component has risks, a decision and controls ---------- */
+  Sandbox.kinds.map = {
+    auto: true,
+    resultsTitle: 'Map coverage',
+    init: function () { return { sel: null, tried: {}, solved: {} }; },
+    summary: function (ctx) {
+      var s = ctx.state;
+      return ctx.data.nodes.filter(function (n) { return n.q; }).map(function (n) {
+        return { type: 'point', name: n.label + ' · ' + n.level, pass: !!s.solved[n.id], msg: s.solved[n.id] ? n.controls[0] : 'Not secured yet.' };
+      });
+    },
+    render: function (ctx) {
+      var d = ctx.data, s = ctx.state, byId = {};
+      d.nodes.forEach(function (n) { byId[n.id] = n; });
+      var pts = d.nodes.filter(function (n) { return n.q; }), solvedN = pts.filter(function (n) { return s.solved[n.id]; }).length;
+      // Box width fits the longer of the label (12.5px) and the sub-label (10.5px mono).
+      var W = function (n) { return n.w || Math.max(120, Math.round(Math.max(n.label.length * 7.4, (n.sub || '').length * 6.4) + 22)); };
+      var svg = '<svg class="mp-svg" viewBox="0 0 ' + d.w + ' ' + d.h + '" role="group" aria-label="' + esc(d.title) + '">' +
+        d.zones.map(function (z) {
+          return '<g class="mp-zone ' + (z.cls || '') + '"><rect x="' + z.x + '" y="' + z.y + '" width="' + z.w + '" height="' + z.h + '" rx="6"></rect>' +
+            '<text class="mp-zl" x="' + (z.x + 10) + '" y="' + (z.y + 17) + '">' + esc(z.label) + '</text>' +
+            (z.sub ? '<text class="mp-zs" x="' + (z.x + 10) + '" y="' + (z.y + 31) + '">' + esc(z.sub) + '</text>' : '') + '</g>';
+        }).join('') +
+        d.links.map(function (l) {
+          var a = byId[l[0]], b = byId[l[1]];
+          return '<line class="mp-link ' + (l[2] || '') + '" x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y + '"></line>';
+        }).join('') +
+        d.nodes.map(function (n) {
+          var w = W(n), x = n.x - w / 2, y = n.y - 24;
+          var st = !n.q ? ' is-ctx' : (s.solved[n.id] ? ' is-solved' : ((s.tried[n.id] || []).length ? ' is-tried' : '')) + (s.sel === n.id ? ' is-sel' : '');
+          return '<g class="mp-node' + st + '"' + (n.q ? ' tabindex="0" role="button" data-n="' + n.id + '" aria-label="' + esc(n.label + ', ' + n.level + (s.solved[n.id] ? ', secured' : '')) + '"' : '') + '>' +
+            '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="48" rx="6"></rect>' +
+            '<text class="mp-t" x="' + n.x + '" y="' + (n.y - 3) + '" text-anchor="middle">' + esc(n.label) + '</text>' +
+            '<text class="mp-s" x="' + n.x + '" y="' + (n.y + 13) + '" text-anchor="middle">' + esc(n.sub || '') + '</text>' +
+            (n.q ? '<circle class="mp-badge" cx="' + (x + w - 2) + '" cy="' + y + '" r="10"></circle><text class="mp-bt" x="' + (x + w - 2) + '" y="' + (y + 4) + '" text-anchor="middle">' + (s.solved[n.id] ? '✓' : n.risks.length) + '</text>' : '') +
+            '</g>';
+        }).join('') + '</svg>';
+
+      var n = s.sel && byId[s.sel], detail;
+      if (!n) {
+        detail = '<p class="mp-pick">Select a component on the map to see what it does, where it is exposed and which control to put first.</p>';
+      } else {
+        var tried = s.tried[n.id] || [], solved = !!s.solved[n.id], last = tried[tried.length - 1];
+        detail = '<div class="sb-eyebrow">' + esc(n.level) + '</div><h4>' + esc(n.label) + '</h4><p>' + n.what + '</p>' +
+          '<div class="mp-cols"><div><h5>Key risks at this point</h5><ul class="mp-risks">' + n.risks.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul></div>' +
+          '<div><h5>' + esc(n.q) + '</h5><div class="sc-choices">' + mapMixed(n.choices, n.id, function (c, j) {
+            var cls = tried.indexOf(j) >= 0 ? (c.ok ? ' is-right' : ' is-wrong') : '';
+            return '<button type="button" class="sc-choice' + cls + '" data-j="' + j + '"' + (solved || tried.indexOf(j) >= 0 ? ' disabled' : '') + '>' + esc(c.t) + '</button>';
+          }).join('') + '</div>' +
+          (last != null ? '<p class="sc-fb ' + (n.choices[last].ok ? 'ok' : 'no') + '">' + n.choices[last].fb + '</p>' : '') + '</div></div>' +
+          (solved ? '<div class="mp-controls"><h5>Controls to focus on here</h5><ul>' + n.controls.map(function (c) { return '<li>' + c + '</li>'; }).join('') + '</ul>' +
+            (n.incident ? '<p class="mp-inc"><b>In the real world.</b> ' + n.incident + '</p>' : '') + '</div>' : '');
+      }
+
+      ctx.el.innerHTML =
+        '<div class="mp-wrap"><p class="mp-legend"><span><b>' + solvedN + ' of ' + pts.length + '</b> points secured.</span> Click any component. The badge counts its key risks, and turns to ✓ once you pick the right first control.' +
+        (d.legend ? ' ' + d.legend : '') + '</p><div class="sb-scroll">' + svg + '</div></div>' +
+        '<div class="mp-detail" id="mp-detail">' + detail + '</div>';
+
+      function choose(id) { s.sel = id; ctx.save(); ctx.rerender(); var el = ctx.el.querySelector('#mp-detail'); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      ctx.el.querySelectorAll('.mp-node[data-n]').forEach(function (g) {
+        g.addEventListener('click', function () { choose(g.getAttribute('data-n')); });
+        g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); choose(g.getAttribute('data-n')); } });
+      });
+      ctx.el.querySelectorAll('#mp-detail .sc-choice').forEach(function (b) {
+        b.onclick = function () {
+          var j = +b.getAttribute('data-j'), node = byId[s.sel];
+          (s.tried[node.id] = s.tried[node.id] || []).push(j);
+          if (node.choices[j].ok) s.solved[node.id] = true; else ctx.penalize();
+          ctx.save(); ctx.rerender();
+          ctx.showResults(Sandbox.kinds.map.summary(ctx), true);
+          if (node.choices[j].ok && pts.every(function (p) { return s.solved[p.id]; })) ctx.complete();
         };
       });
     }
@@ -961,7 +1295,7 @@ code,.mono{font-family:var(--mono)}
 
     /* ---------- Data security ---------- */
     ['PAN', 'Primary Account Number', 'The long number on a payment card.', 'It is the data PCI DSS exists to protect. Every system that stores, processes or transmits it falls under PCI audits.'],
-    ['PCI DSS', 'Payment Card Industry Data Security Standard', 'Security rules, set by the card brands, that every organization handling card data must follow.', 'Failing it can mean fines and losing the right to take card payments. Keeping card data in fewer systems makes compliance much easier.'],
+    ['PCI DSS', 'Payment Card Industry Data Security Standard', 'Security rules, set by the card brands, that every organization handling card data must follow.', 'Failing it can mean fines and losing the right to take card payments. Keeping card data in fewer systems makes compliance much easier.', ['PCI']],
     ['Encryption at rest', '', 'Encrypting stored data on disks, databases, snapshots and backups.', 'It protects against stolen media. If the platform decrypts automatically for anyone with access, it won’t stop attacks through the app or with valid credentials.', ['encryption at rest', 'encrypted at rest']],
     ['Plaintext', '', 'Data in readable form, not encrypted.', 'Anything stored or sent in plaintext can be read by whoever gets hold of it.', ['plaintext', 'plain text', 'Plain text']],
     ['Ciphertext', '', 'Encrypted data, unreadable without the right key.', 'Stolen ciphertext is useless to an attacker as long as the key stays safe.', ['ciphertext']],
@@ -969,7 +1303,7 @@ code,.mono{font-family:var(--mono)}
     ['HSM', 'Hardware Security Module', 'A tamper-resistant hardware device that generates and stores keys and does cryptographic work internally, so keys can’t be extracted.', 'The strongest protection for high-value keys, often required by banks and regulators (FIPS 140 validated).'],
     ['HYOK', 'Hold Your Own Key', 'Keys stay in a system you run, such as your own HSM, outside the cloud provider. The provider never holds the key.', 'The strongest separation: provider staff, or a legal demand served on the provider, can’t decrypt your data without you.'],
     ['BYOK', 'Bring Your Own Key', 'You generate a key in your own HSM and import it into the provider’s KMS.', 'Proves where the key came from and lets you revoke it, but the provider’s KMS then holds a copy. That is weaker separation than HYOK.'],
-    ['Customer-managed key', '', 'A key in the provider’s KMS that you create and control: you set its access policy and rotation, and you can disable or delete it.', 'Gives you control over who can decrypt, and lets you crypto-shred data by destroying the key.', ['customer-managed key', 'customer-managed keys', 'customer-held keys', 'Customer key']],
+    ['Customer-managed key', '', 'A key in the provider’s KMS that you create and control: you set its access policy and rotation, and you can disable or delete it.', 'Gives you control over who can decrypt, and lets you crypto-shred data by destroying the key.', ['customer-managed key', 'customer-managed keys', 'customer-held keys', 'Customer key', 'CMK']],
     ['Provider-managed key', '', 'A default encryption key created and controlled entirely by the cloud provider.', 'Easy and free, but data is decrypted automatically for anyone with access, so it mainly protects against physical theft of disks.', ['provider-managed key', 'provider-managed keys', 'Provider-managed keys']],
     ['Key policy', '', 'The access rules attached to an encryption key, listing which identities may use it to encrypt or decrypt.', 'A second lock: even someone who can read the encrypted data can’t open it without permission on the key.', ['key policy', 'key policies', 'KMS key policy']],
     ['Key custody', '', 'Who holds and controls the encryption keys.', 'Whoever holds the keys can read the data. Separating key custody from data custody is a core cloud principle.', ['key custody']],
@@ -1099,7 +1433,7 @@ code,.mono{font-family:var(--mono)}
     ['eDiscovery', 'Electronic discovery', 'Identifying, preserving, collecting, reviewing and producing electronic information for legal cases.', 'In SaaS and cloud, the data sits with the provider, so you need tools and contract terms to do it properly.'],
     ['ESI', 'Electronically Stored Information', 'Any digital information that may be evidence: email, chats, documents, logs.', 'Must be preserved once litigation is reasonably anticipated.'],
     ['Spoliation', '', 'Destroying or altering evidence relevant to legal proceedings.', 'Courts can sanction parties or assume the lost evidence was damaging.', ['spoliation']],
-    ['Custodian', '', 'In eDiscovery, a person whose data is relevant to a case.', 'Their mailboxes and files are what get placed on legal hold.', ['custodians']],
+    ['Legal custodian', '', 'In eDiscovery, a person whose data is relevant to a case.', 'Their mailboxes and files are what get placed on legal hold.', ['custodians']],
     ['ICFR', 'Internal Control over Financial Reporting', 'The controls that make sure a company’s financial statements are accurate.', 'SOC 1 reports are about these controls, not security in general.'],
     ['Trust Services Criteria', '', 'The AICPA criteria SOC 2 audits against: security, availability, processing integrity, confidentiality and privacy.', 'Defines what a SOC 2 report actually covers.'],
     ['NDA', 'Non-Disclosure Agreement', 'A contract promising to keep shared information confidential.', 'Providers usually share detailed audit reports only under NDA.'],
@@ -1117,7 +1451,276 @@ code,.mono{font-family:var(--mono)}
     ['Data sovereignty', '', 'Which country’s laws apply to data, which can differ from where it is stored.', 'A US provider may have to hand over data held in Europe under US law.', ['sovereignty']],
     ['CLOUD Act', 'Clarifying Lawful Overseas Use of Data Act (US, 2018)', 'A US law letting US authorities compel US-based providers to produce data they control, wherever it is stored.', 'Raises sovereignty concerns, and is a reason some organizations choose HYOK.'],
     ['Risk treatment', '', 'The four responses to a risk: avoid, mitigate, transfer (insurance, contracts) or accept.', 'Moving to the cloud transfers some responsibility, never accountability.', ['risk treatment']],
-    ['Due diligence', '', 'Investigating a provider’s security, finances and compliance before and during a contract.', 'Shows you took reasonable care, which matters to regulators after an incident.', ['due diligence']]
+    ['Due diligence', '', 'Investigating a provider’s security, finances and compliance before and during a contract.', 'Shows you took reasonable care, which matters to regulators after an incident.', ['due diligence']],
+
+    /* ---------- Governance, risk and audit ---------- */
+    ['CRISC', 'Certified in Risk and Information Systems Control', 'ISACA’s certification for IT risk professionals, covering governance, risk assessment, risk response and reporting, and technology and security.', 'It frames cyber risk in business terms that boards and executives can act on.'],
+    ['CISA', 'Certified Information Systems Auditor, or the Cybersecurity and Infrastructure Security Agency', 'Two different things share this acronym. In audit, it’s ISACA’s certification for IT auditors. In government, it’s the US federal agency that leads national cyber defense and publishes advisories, guidance and exercise packages.', 'Context tells you which is meant: “CISA concepts” in auditing means the certification, while “CISA advisory” means the agency.'],
+    ['ISACA', '', 'The global professional association behind the CISA, CRISC, CISM and CGEIT certifications and the COBIT framework.', 'Its standards (such as ITAF) define how IT audit and risk work is done.'],
+    ['IIA', 'Institute of Internal Auditors', 'The global professional body for internal auditors. It publishes the Three Lines Model and the Global Internal Audit Standards.', 'Defines how internal audit stays independent and adds value.', ['IIA Three Lines Model']],
+    ['Three Lines Model', '', 'The IIA’s 2020 model: management (first line) owns risk, risk and compliance (second line) oversee it, internal audit (third line) gives independent assurance, all under the governing body.', 'Clear roles stop risks falling between teams and keep assurance independent.', ['three lines', 'Three lines', 'three lines of defense']],
+    ['Governing body', '', 'The board of directors and its committees (risk, audit), accountable for overseeing the organization.', 'Sets direction and risk appetite, and holds management accountable.', ['governing body']],
+    ['First line', '', 'Management and operations: the people who run the business and own and manage its risks and controls day to day.', 'Risk is managed where decisions are made.', ['first line', 'first-line']],
+    ['Second line', '', 'Risk management and compliance functions that set frameworks and monitor and challenge the first line.', 'Gives specialist oversight without running the business’s controls.', ['second line', 'second-line']],
+    ['Third line', '', 'Internal audit: independent, objective assurance to the board on governance, risk and control.', 'Its independence is what makes its assurance credible.', ['third line']],
+    ['Risk appetite', '', 'The amount and type of risk an organization is willing to take in pursuit of its objectives, approved by the board.', 'Every risk decision is measured against it.', ['risk appetite', 'appetite']],
+    ['Risk tolerance', '', 'The acceptable deviation from risk appetite, for example how far over a limit you can go, for how long, and with whose approval.', 'Gives flexibility with clear escalation triggers.', ['risk tolerance', 'tolerance']],
+    ['Risk capacity', '', 'The maximum risk an organization can absorb before failing or breaching regulatory limits.', 'Appetite should sit well below capacity.', ['risk capacity', 'capacity']],
+    ['Inherent risk', '', 'The level of risk before any controls are applied.', 'Compared with residual risk, it shows how much the controls are worth.', ['inherent risk', 'inherent']],
+    ['Residual risk', '', 'The risk that remains after controls are applied.', 'This is what management must accept or treat further.', ['residual risk', 'residual']],
+    ['KRI', 'Key risk indicator', 'A metric that signals rising exposure, with thresholds that trigger action. Example: critical vulnerabilities open for more than 30 days.', 'Early warning, before a risk becomes an incident.', ['KRIs']],
+    ['KPI', 'Key performance indicator', 'A metric of progress toward a goal, such as training sessions delivered.', 'Shows activity and performance, but not necessarily risk.', ['KPIs']],
+    ['KCI', 'Key control indicator', 'A metric of how well a control is working, such as the pass rate of access reviews.', 'Shows control health, which affects residual risk.', ['KCIs']],
+    ['Risk owner', '', 'The person accountable for a risk, with the authority to decide its treatment. Usually a business leader.', 'Without an owner, nobody funds or decides the treatment.', ['risk owner']],
+    ['Risk register', '', 'The record of identified risks with owners, ratings, treatments, status and review dates.', 'The working tool for tracking and reporting risk.', ['risk register', 'register']],
+    ['Risk scenario', '', 'A description of a possible loss event: actor, threat type, event, asset or resource affected, and timing.', 'Turns vague worries (“cyber”) into something you can score, own and treat.', ['risk scenario', 'risk scenarios']],
+    ['ALE', 'Annualized loss expectancy', 'Expected yearly loss from a risk: ALE = SLE × ARO.', 'Lets you compare a control’s yearly cost with the loss it prevents.'],
+    ['SLE', 'Single loss expectancy', 'The cost of one occurrence of a loss event.', 'One input to ALE.'],
+    ['ARO', 'Annualized rate of occurrence', 'How many times a year an event is expected to happen.', 'The other input to ALE.'],
+    ['Heat map', '', 'A likelihood × impact grid used to visualize risks.', 'Quick to read, but only as consistent as its scales.', ['heat map']],
+    ['Control types', '', 'Controls by function: preventive (stop), detective (find), corrective (fix), deterrent (discourage), directive (instruct), compensating (substitute).', 'A balanced control set uses several functions in layers.', ['preventive', 'Preventive', 'detective', 'Detective', 'corrective', 'Corrective', 'deterrent', 'Deterrent', 'directive', 'Directive', 'compensating', 'Compensating']],
+    ['ITGC', 'IT general controls', 'Controls over access, change management, IT operations and development that every application relies on.', 'If ITGCs fail, auditors can’t rely on any application control built on them.', ['ITGCs', 'IT general control']],
+    ['SOX', 'Sarbanes-Oxley Act (US, 2002)', 'US law requiring public companies to maintain and attest to internal control over financial reporting.', 'Drives much of the IT audit work on access and change controls.'],
+    ['Segregation of duties', 'SoD', 'Splitting key steps of a process between different people so no one can both commit and hide an error or fraud.', 'A core control against fraud and mistakes.', ['segregation of duties', 'SoD']],
+    ['Audit charter', '', 'The document, approved by the audit committee, defining internal audit’s purpose, authority, independence and reporting lines.', 'Gives audit the mandate to access what it needs.', ['audit charter', 'charter']],
+    ['Audit committee', '', 'A board committee, usually of independent directors, overseeing financial reporting, internal controls and audit.', 'Internal audit reports to it, which protects audit’s independence.', ['audit committee']],
+    ['Audit universe', '', 'The full list of auditable areas in an organization.', 'Ranking it by risk produces the audit plan.', ['audit universe']],
+    ['Auditor independence', '', 'Freedom from conditions that threaten objectivity, in fact and in appearance, such as auditing your own work.', 'Without independence, assurance is worthless.', ['independence', 'self-review threat']],
+    ['Audit sampling', '', 'Testing a subset of a population. Statistical sampling (random selection, calculated size) supports projecting results; judgmental sampling doesn’t.', 'The method decides what conclusions you can draw.', ['sampling', 'statistical sampling', 'attribute sampling', 'judgmental sampling']],
+    ['Compliance testing', '', 'Testing whether a control operated as designed (a test of controls). Substantive testing checks the transactions or data themselves.', 'If controls fail compliance tests, auditors increase substantive testing.', ['compliance testing', 'substantive testing', 'Substantive testing', 'test of controls']],
+    ['Operating effectiveness', '', 'Whether a control worked consistently over a period. Design effectiveness asks whether it’s built to address the risk at all.', 'A well-designed control that isn’t operated still fails.', ['operating effectiveness', 'design effectiveness']],
+    ['CAATs', 'Computer-assisted audit techniques', 'Data analytics and tools that let auditors test whole populations.', 'More coverage than sampling, and often faster.'],
+    ['ITAF', 'IT Assurance Framework', 'ISACA’s standards and guidelines for IT audit and assurance work.', 'Sets the professional standard for how IS audits are run.'],
+    ['ERM', 'Enterprise risk management', 'Managing all types of risk consistently across the organization.', 'Puts cyber risk alongside financial, operational and strategic risk.'],
+    ['COSO', 'Committee of Sponsoring Organizations of the Treadway Commission', 'Publisher of the widely used Internal Control Framework and the ERM Framework.', 'The reference model for internal control in SOX audits.'],
+    ['ISO 31000', '', 'The international standard for risk management principles and process.', 'A common reference for building an ERM program.'],
+    ['FAIR', 'Factor Analysis of Information Risk', 'A model for quantifying cyber risk in financial terms.', 'Lets boards compare cyber risk with other business risks in dollars.'],
+    ['CRO', 'Chief Risk Officer', 'The executive who leads risk management, typically the head of the second line.', 'Provides independent risk oversight to executives and the board.'],
+    ['CAE', 'Chief Audit Executive', 'The head of internal audit.', 'Reports functionally to the audit committee to stay independent.'],
+    ['CEO', 'Chief Executive Officer', 'The top executive of the organization.', 'Ultimately accountable for business decisions, including those made during a crisis.'],
+    ['CFO', 'Chief Financial Officer', 'The executive responsible for finance and financial reporting.', 'Involved in materiality, disclosure and insurance decisions.'],
+    ['COO', 'Chief Operating Officer', 'The executive responsible for day-to-day operations.', 'Sets business recovery priorities during an outage.'],
+
+    /* ---------- Incident response ---------- */
+    ['Incident commander', '', 'The single person directing an incident response: setting priorities, assigning tasks and keeping the record.', 'One clear leader prevents conflicting orders.', ['incident commander']],
+    ['RACI', 'Responsible, Accountable, Consulted, Informed', 'A matrix that assigns each task’s roles.', 'Makes ownership explicit before an incident.'],
+    ['Out-of-band communications', '', 'Communication channels outside the compromised environment, such as separate phones and chat.', 'Attackers inside your email can read your response plans.', ['out-of-band']],
+    ['Legal privilege', '', 'Protection from disclosure that can apply to communications with lawyers, and to work done at their direction to give legal advice.', 'Can protect investigation reports from being used against you in litigation, depending on jurisdiction and setup.'],
+    ['PICERL', '', 'SANS’s incident response phases: Preparation, Identification, Containment, Eradication, Recovery, Lessons learned.', 'An ordered response prevents restoring systems while attackers are still inside.', ['SANS']],
+    ['IOC', 'Indicator of compromise', 'Evidence of an intrusion, such as malicious IPs, domains, file hashes or accounts.', 'Used to hunt, block and share threat information.', ['IOCs', 'indicators']],
+    ['Tabletop exercise', 'TTX', 'A discussion-based exercise where participants talk through their response to a scenario delivered in steps.', 'Tests plans and decision-making without touching production.', ['tabletop', 'Tabletop', 'tabletop exercise', 'TTX']],
+    ['Inject', '', 'A scripted piece of new information (an alert, call, email or news story) delivered at a set time in an exercise.', 'Drives the decisions the exercise is designed to test.', ['inject', 'injects', 'Injects']],
+    ['Hot wash', '', 'An immediate debrief at the end of an exercise or incident.', 'Captures lessons while memories are fresh.', ['hot wash']],
+    ['AAR/IP', 'After-action report and improvement plan', 'The written record of an exercise or incident: strengths, gaps, root causes and corrective actions with owners and dates.', 'Turns findings into tracked improvements.', ['after-action report', 'After-action report', 'AAR']],
+    ['HSEEP', 'Homeland Security Exercise and Evaluation Program', 'The US standard method for designing, running and evaluating exercises.', 'Gives exercises structure, from objectives through to improvement plans.'],
+    ['CTEP', 'CISA Tabletop Exercise Package', 'Free, ready-made exercise packages from the US agency CISA, with scenarios, injects and facilitator guides.', 'A quick way to run a professional tabletop.', ['CTEPs']],
+    ['Double extortion', '', 'Ransomware that both encrypts data and threatens to leak stolen copies.', 'Backups alone no longer remove the attacker’s leverage.', ['double extortion']],
+    ['Leak site', '', 'A website run by a ransomware group to publish stolen data and pressure victims.', 'A listing often means data theft before encryption, and it alerts the media.', ['leak site']],
+    ['OFAC', 'Office of Foreign Assets Control', 'The US Treasury office that enforces economic sanctions.', 'Paying ransom to a sanctioned group can violate sanctions law, even for victims.'],
+    ['Breach coach', '', 'A lawyer, often appointed through the cyber insurer, who coordinates the legal side of a breach response.', 'Keeps notifications, forensics and privilege on track.', ['breach coach']],
+    ['BIA', 'Business impact analysis', 'Analysis of which business processes matter most and how fast they must be restored.', 'Sets recovery priorities before a crisis, not during one.'],
+    ['RTO', 'Recovery time objective', 'The maximum acceptable time to restore a process or system after a disruption.', 'Drives backup, failover and recovery design.', ['RTOs', 'recovery time objectives']],
+    ['RPO', 'Recovery point objective', 'The maximum acceptable amount of data loss, measured in time.', 'Decides how often backups must run.'],
+    ['Materiality', '', 'Whether information would matter to a reasonable investor’s decisions.', 'Under SEC rules, a material cyber incident must be disclosed within four business days of the determination.', ['materiality', 'material']],
+    ['SEC', 'US Securities and Exchange Commission', 'The US regulator of securities markets and listed companies.', 'Requires listed companies to disclose material cyber incidents and describe their cyber risk management.'],
+    ['Form 8-K', '', 'The SEC filing for material events. Item 1.05 covers material cybersecurity incidents.', 'Due four business days after determining an incident is material.', ['8-K', 'Item 1.05']],
+    ['10-K', '', 'A listed company’s annual report to the SEC. Item 1C describes cybersecurity risk management and governance.', 'What was promised there will be compared with what happened in an incident.'],
+    ['Disclosure committee', '', 'Executives and counsel who decide what a listed company must disclose to investors.', 'Makes the materiality call that starts the SEC clock.', ['disclosure committee']],
+    ['FBI', 'Federal Bureau of Investigation', 'The US federal law enforcement agency that investigates cybercrime.', 'Can provide intelligence about attackers and sometimes decryption keys.'],
+    ['IC3', 'Internet Crime Complaint Center', 'The FBI’s portal for reporting cybercrime.', 'Reports help law enforcement track and disrupt criminal groups.'],
+    ['ISAC', 'Information Sharing and Analysis Center', 'Sector groups (finance, health, energy and others) that share threat information among members.', 'Shared indicators help peers block the same attackers.', ['ISACs']],
+    ['NIS2', 'Network and Information Security Directive 2', 'The EU directive setting cybersecurity and incident reporting duties for essential and important entities.', 'Requires a 24-hour early warning and a 72-hour notification for significant incidents.'],
+    ['DORA', 'Digital Operational Resilience Act', 'The EU regulation on ICT risk management, testing, incident reporting and third-party risk for financial entities.', 'Imposes some of the tightest incident reporting deadlines.'],
+    ['NYDFS', 'New York State Department of Financial Services', 'New York’s financial regulator. Its Part 500 rules set cybersecurity requirements.', 'Requires 72-hour incident notice and 24-hour notice of extortion payments.', ['Part 500']],
+    ['HIPAA', 'Health Insurance Portability and Accountability Act', 'US law protecting health information, including the Privacy, Security and Breach Notification Rules.', 'Sets security safeguards and breach notice deadlines for health data.'],
+    ['PHI', 'Protected health information', 'Identifiable health information covered by HIPAA.', 'Its exposure triggers HIPAA breach rules.'],
+    ['HHS', 'US Department of Health and Human Services', 'The US agency that enforces HIPAA and issues health-sector cyber guidance.', 'Receives breach reports and sets healthcare security expectations.'],
+    ['CSIRT', 'Computer Security Incident Response Team', 'A team, national or organizational, that handles cyber incidents.', 'Under NIS2, national CSIRTs receive incident reports.', ['CSIRTs']],
+    ['EDR', 'Endpoint detection and response', 'Software on laptops and servers that detects malicious behavior and can isolate the device.', 'Often the first to spot ransomware, and a fast containment tool.'],
+    ['MDR', 'Managed detection and response', 'An outsourced service that monitors and responds to threats around the clock.', 'Gives smaller teams 24/7 coverage.'],
+    ['C2', 'Command and control', 'The channel attackers use to control compromised systems remotely.', 'Blocking it cuts the attacker’s remote control.', ['command-and-control', 'command and control']],
+    ['PsExec', '', 'A legitimate Microsoft admin tool for running commands on remote Windows machines.', 'Attackers abuse it to spread ransomware across a network.'],
+    ['Infostealer', '', 'Malware that steals saved passwords, cookies and session tokens from a device.', 'A common source of the credentials used for initial access.', ['infostealer']],
+    ['Holding statement', '', 'A short, pre-approved public statement acknowledging an incident without speculating.', 'Buys time while facts are confirmed.', ['holding statement']],
+    ['ICT', 'Information and communications technology', 'Computing and communications systems in general.', 'The term EU regulations such as DORA use for technology risk.'],
+
+    /* ---------- Application security ---------- */
+    ['SSDF', 'Secure Software Development Framework (NIST SP 800-218)', 'NIST’s set of secure development practices: prepare, protect, produce well-secured software, and respond to vulnerabilities.', 'US federal software suppliers must attest to it.', ['NIST SSDF']],
+    ['OWASP SAMM', 'Software Assurance Maturity Model', 'An open model for assessing and improving a software security program.', 'Helps plan improvements step by step.', ['SAMM']],
+    ['BSIMM', 'Building Security In Maturity Model', 'A model built from observing real companies’ software security activities.', 'Lets you compare your program with peers.'],
+    ['OWASP ASVS', 'Application Security Verification Standard', 'Testable security requirements for web apps, in three levels of rigor.', 'Turns “make it secure” into checkable requirements.', ['ASVS']],
+    ['Secure by Design', '', 'A CISA-led initiative urging software makers to take ownership of security outcomes: secure defaults, MFA, memory-safe languages and transparency.', 'Shifts the security burden from customers to vendors.'],
+    ['Cyber Resilience Act', 'EU Cyber Resilience Act (CRA)', 'EU regulation (2024) requiring security across the lifecycle of products with digital elements, including vulnerability handling.', 'Makes secure development a legal obligation for products sold in the EU.', ['CRA', 'EU Cyber Resilience Act']],
+    ['DPIA', 'Data protection impact assessment', 'A GDPR-required assessment of high-risk processing before it starts. Also called a privacy impact assessment (PIA).', 'Finds privacy risks while the design can still change.', ['PIA', 'privacy impact assessment']],
+    ['IAST', 'Interactive Application Security Testing', 'Agents inside the running app observe code paths during functional tests to find vulnerabilities.', 'Accurate findings with code-level detail.'],
+    ['RASP', 'Runtime Application Self-Protection', 'Security built into the running app that detects and blocks attacks from within.', 'A last-line defense in production.'],
+    ['VDP', 'Vulnerability disclosure program', 'A published way for outside researchers to report vulnerabilities safely.', 'Gets flaws to you instead of to attackers. Bug bounties add rewards.', ['bug bounty', 'Bug bounty']],
+    ['Penetration test', '', 'Authorized, simulated attacks by skilled testers to find exploitable weaknesses.', 'Finds chained and logic flaws that tools miss.', ['pen test', 'Pen test', 'penetration testing']],
+    ['Threat Modeling Manifesto', '', 'A community statement of threat modeling values and principles, built around four questions.', 'A shared, tool-neutral starting point for teams.'],
+    ['LINDDUN', '', 'A privacy threat modeling method: Linking, Identifying, Non-repudiation, Detecting, Data disclosure, Unawareness, Non-compliance.', 'Complements STRIDE for privacy risks.'],
+    ['Attack tree', '', 'A diagram that breaks an attacker’s goal into the paths that could achieve it.', 'Helps reason about which defenses cut the most paths.', ['attack trees', 'Attack trees']],
+    ['Abuse case', '', 'A user story written from an attacker’s point of view.', 'Turns threats into test cases.', ['abuse case', 'abuse cases']],
+    ['Trust boundary', '', 'A line in a system where data passes between different levels of trust, such as from the internet into your API.', 'Threats concentrate here, so validate and authenticate at every crossing.', ['trust boundary', 'trust boundaries', 'Trust boundaries']],
+    ['DFD', 'Data flow diagram', 'A diagram of external entities, processes, data stores, data flows and trust boundaries.', 'The usual starting model for a threat model.', ['data flow diagram', 'Data flow diagram']],
+    ['External entity', '', 'In a DFD, something outside your control that interacts with the system, such as a user or partner.', 'Under STRIDE per element it faces spoofing and repudiation.', ['external entity', 'external entities', 'External entities']],
+    ['BOLA', 'Broken object-level authorization', 'An API returns a record without checking the caller may access that specific object, so changing an ID exposes others’ data.', 'Number one in the OWASP API Security Top 10.'],
+    ['Non-repudiation', '', 'Evidence strong enough that someone can’t credibly deny an action.', 'Achieved through signatures and tamper-evident audit logs.', ['non-repudiation']],
+    ['BAA', 'Business associate agreement', 'A HIPAA-required contract with vendors that create, receive or handle protected health information.', 'Without one, sharing PHI with a vendor breaks HIPAA.'],
+    ['Passkeys', '', 'Passwordless sign-in using public-key cryptography stored on the user’s device (FIDO2).', 'Resists phishing because there’s no password to steal.', ['passkeys', 'passkey']],
+    ['FIDO2', '', 'The open standard behind passkeys and hardware security keys.', 'The basis of phishing-resistant MFA.'],
+    ['HSTS', 'HTTP Strict Transport Security', 'A header that tells browsers to only use HTTPS for a site.', 'Prevents downgrade attacks to plain HTTP.'],
+    ['Certificate pinning', '', 'An app accepts only specific certificates or keys for its server.', 'Resists interception even with a rogue trusted certificate.', ['pinning']],
+    ['CVSS', 'Common Vulnerability Scoring System', 'A 0–10 score for the severity of known vulnerabilities.', 'Helps prioritize fixes, though it doesn’t reflect your specific context.'],
+    ['Source to sink', '', 'Tracing untrusted input (source) to a dangerous operation (sink) such as a query or HTML render.', 'How SAST decides whether a finding is exploitable.', ['source → sink', 'sink']],
+    ['False positive', '', 'A tool finding that isn’t a real issue. A false negative is a real issue the tool missed.', 'Too many false positives make teams ignore the tool.', ['false positive', 'false positives', 'False positives', 'false negative']],
+    ['Parameterized query', '', 'A database query whose structure is fixed, with user data passed separately.', 'The standard defense against SQL injection.', ['parameterized query', 'parameterized queries', 'Parameterized queries', 'Parameterised']],
+    ['CSPRNG', 'Cryptographically secure pseudo-random number generator', 'A random number generator designed to be unpredictable.', 'Required for tokens, keys and salts. Math.random() isn’t one.', ['cryptographic random']],
+    ['XSS', 'Cross-site scripting', 'Injecting script into pages viewed by other users.', 'Can steal sessions or act as the victim.', ['cross-site scripting', 'Cross-site scripting']],
+    ['IDE', 'Integrated development environment', 'The editor and tools developers write code in.', 'Security feedback in the IDE is the fastest fix loop.'],
+    ['OpenAPI', '', 'A machine-readable description of a REST API’s endpoints, parameters and authentication.', 'Gives scanners full coverage of endpoints no page links to.', ['OpenAPI spec']],
+    ['Rules of engagement', '', 'The written scope, timing, methods and permissions for security testing.', 'Testing outside it can be illegal.', ['rules of engagement']],
+    ['SLSA', 'Supply-chain Levels for Software Artifacts', 'A framework of increasing build integrity levels based on verifiable provenance.', 'Proves how and from what an artifact was built.'],
+    ['Sigstore', '', 'Open-source tooling (including cosign) for signing and verifying software artifacts.', 'Makes signing easy enough to do on every build.', ['cosign']],
+    ['CycloneDX', '', 'Standard formats for software bills of materials (CycloneDX from OWASP, SPDX from the Linux Foundation).', 'Lets tools exchange and search SBOMs.', ['SPDX']],
+    ['Dependency confusion', '', 'Tricking a build into pulling a public package that uses an internal package’s name.', 'Scoped names and private registries prevent it.', ['dependency confusion']],
+    ['Provenance', '', 'Verifiable records of where an artifact came from: source, builder and steps.', 'Lets you detect tampered builds.', ['provenance']],
+    ['Admission policy', '', 'Rules in a deployment platform (such as Kubernetes) that decide which workloads may run, for example only signed images.', 'Enforces supply-chain checks at the last step.', ['admission policy', 'admission control']],
+    ['Branch protection', '', 'Repository rules requiring pull requests, reviews and passing checks before code merges to main.', 'Stops one compromised account shipping code alone.', ['branch protection', 'protected branch']],
+    ['Push protection', '', 'Blocking commits that contain secrets before they reach the repository.', 'Prevents leaks instead of cleaning up after them.', ['push protection']],
+    ['Ephemeral runner', '', 'A fresh, isolated build environment created for one build and then destroyed.', 'Leaves no persistent foothold for attackers.', ['ephemeral runners', 'ephemeral']],
+    ['Log4Shell', '', 'A critical 2021 flaw in the Log4j Java logging library, present in countless applications.', 'Showed why you need SBOMs to know where a component is used.'],
+    ['SolarWinds', '', 'The 2020 supply-chain attack where a backdoor was inserted into SolarWinds Orion builds and shipped to thousands of customers.', 'The reference case for build system integrity.'],
+    ['xz Utils', '', 'An open-source compression library in which a long-trusted maintainer planted a backdoor, discovered in 2024.', 'A reminder that open-source trust can be manipulated over years.'],
+    ['Threat Dragon', '', 'OWASP’s free, open-source threat modeling tool.', 'An easy way for teams to draw DFDs and record threats.'],
+    ['mTLS', 'Mutual TLS', 'TLS where both client and server present certificates.', 'Authenticates services to each other, a core zero-trust control.'],
+
+    /* ---------- Data protection ---------- */
+    ['Special category data', '', 'Under GDPR: health, genetic, biometric, racial or ethnic origin, political opinions, religion, union membership, sex life or orientation.', 'Processing it needs stricter legal conditions.', ['special category', 'special categories']],
+    ['MNPI', 'Material non-public information', 'Unreleased information that could move a company’s share price.', 'Leaks enable insider trading and breach securities law.', ['material non-public information']],
+    ['Sensitivity labels', '', 'Metadata on files and emails marking their classification, often enforcing encryption and usage rights.', 'Lets tools and people treat data according to its sensitivity.', ['labels', 'labeling', 'Labeling', 'label']],
+    ['Data custodian', '', 'The person or team (often IT) that operates the controls on data as the owner directs.', 'Implements, but doesn’t decide, classification and access.', ['custodian', 'data custodian']],
+    ['HVA', 'High value asset', 'A system or data set whose compromise would seriously damage the organization or the people it serves.', 'Focuses the strongest protection where it matters most.', ['HVAs', 'high value asset', 'high value assets', 'High value assets']],
+    ['Crown jewels analysis', 'CJA', 'MITRE’s method for identifying the cyber assets most critical to a mission, and their dependencies.', 'Connects technical assets to business impact.', ['crown jewels analysis', 'crown jewels', 'CJA']],
+    ['OMB M-19-03', '', 'A US federal memorandum requiring agencies to identify, categorize and assess their high value assets.', 'The origin of the formal HVA program.'],
+    ['CMDB', 'Configuration management database', 'The inventory of IT assets and their relationships.', 'A key input for finding HVAs and their dependencies.'],
+    ['Enabling system', '', 'Infrastructure such as identity, backup or management tools that controls access to other critical systems.', 'Compromise it and you control everything behind it.', ['enabling system', 'enabling systems']],
+    ['TDE', 'Transparent data encryption', 'Database-level encryption of data files, applied automatically by the database.', 'With customer-managed keys, you control who can decrypt copies and backups.'],
+    ['PAM', 'Privileged access management', 'Vaulted admin credentials, just-in-time elevation and recorded sessions.', 'Removes standing admin power that attackers covet.'],
+    ['Just-in-time access', '', 'Granting elevated rights only when needed, for a limited time, often with approval.', 'No permanent admin accounts to steal.', ['just-in-time', 'Just-in-time', 'JIT']],
+    ['DAM', 'Database activity monitoring', 'Monitoring of database queries that alerts on unusual access such as bulk reads.', 'Catches misuse of valid credentials.'],
+    ['Rights management', '', 'Encryption and usage rights embedded in documents (such as Microsoft Purview Information Protection), which travel with the file.', 'Protects files even after they leave your systems.', ['rights management']],
+    ['Data masking', '', 'Replacing real values with realistic fakes, for testing, analytics or display.', 'Non-production copies hold nothing worth stealing.', ['data masking', 'synthetic data', 'Masked or synthetic data']],
+    ['Row-level security', '', 'Database filtering so each user sees only the rows they’re entitled to.', 'Enforces least privilege inside a single table.', ['row-level filters', 'row-level']],
+    ['UEBA', 'User and entity behavior analytics', 'Analytics that baseline normal behavior and score deviations, often using HR signals.', 'Spots insiders and compromised accounts acting abnormally.'],
+    ['CASB', 'Cloud access security broker', 'Visibility and control over the use of cloud apps, both sanctioned and unsanctioned.', 'Can block uploads of sensitive data to personal cloud storage.'],
+    ['DSPM', 'Data security posture management', 'Tools that discover and classify sensitive data across cloud stores.', 'Finds shadow data you didn’t know existed.'],
+    ['Insider threat', '', 'Risk from people with legitimate access who misuse it, maliciously or carelessly.', 'Their access is valid, so monitoring matters more than perimeter controls.', ['insider threat', 'insider', 'Insider']],
+    ['Shadow data', '', 'Sensitive data copied outside approved systems, such as spreadsheets on shared drives.', 'Unknown copies are unprotected copies.', ['shadow data']],
+    ['DSAR', 'Data subject access request', 'An individual’s request for a copy of their personal data (GDPR Article 15).', 'Must normally be answered within one month.', ['DSARs']],
+    ['ROPA', 'Record of processing activities', 'GDPR’s Article 30 inventory of personal data processing.', 'The backbone of a data map.', ['data map', 'Data map']],
+    ['DPO', 'Data protection officer', 'The GDPR role that advises on and monitors data protection compliance.', 'An independent voice on privacy risk.', ['data protection officer']],
+    ['Data minimization', '', 'Collecting only the personal data needed for a specified purpose.', 'Less data means less to breach.', ['data minimization', 'minimization', 'Minimization']],
+    ['Purpose limitation', '', 'Using personal data only for the purposes it was collected for, or compatible ones.', 'New uses such as AI training need assessment first.', ['purpose limitation']],
+    ['Retention schedule', '', 'Defined retention periods for each record type, followed by defensible deletion.', 'Balances legal minimums with storage limitation.', ['retention schedule', 'storage limitation']],
+    ['Privacy by design', '', 'Building privacy protections into systems from the start, with protective defaults (GDPR Article 25).', 'Cheaper and stronger than adding privacy later.', ['privacy by design']],
+    ['EU AI Act', '', 'The EU regulation on artificial intelligence, with risk-based obligations for AI systems.', 'Adds governance duties on top of privacy law for AI built on personal data.'],
+
+    /* ---------- Operational technology ---------- */
+    ['OT', 'Operational technology', 'Hardware and software that monitors and controls physical processes: plants, pipelines, grids, medical and building systems.', 'Failures can harm people and the environment, not just data.'],
+    ['ICS', 'Industrial control system', 'The control systems (PLCs, DCS, SCADA, safety systems) that run industrial processes.', 'Often decades old and built without security in mind.'],
+    ['IT/OT', '', 'The boundary and convergence between business IT and operational technology.', 'Most OT attacks cross from IT, so this boundary is critical.', ['IT/OT DMZ', 'IT-to-OT']],
+    ['Purdue model', 'Purdue Enterprise Reference Architecture', 'A layered model of industrial networks: L0 process, L1 control, L2 supervisory, L3 site operations, L3.5 DMZ, L4–5 enterprise.', 'A shared map for segmenting OT. Traffic between IT and OT ends in the DMZ.', ['Purdue', 'Purdue levels']],
+    ['PLC', 'Programmable logic controller', 'A rugged computer that runs control logic for machines and processes.', 'Whoever changes its logic changes what the physical process does.', ['PLCs']],
+    ['RTU', 'Remote terminal unit', 'A field controller that gathers data and executes commands at remote sites, reporting to SCADA.', 'Often reached over wide-area or cellular links.', ['RTUs']],
+    ['HMI', 'Human-machine interface', 'The screens operators use to monitor and control a process.', 'Control of the HMI means control of the process.', ['HMIs']],
+    ['SCADA', 'Supervisory control and data acquisition', 'Systems that supervise and control geographically spread assets such as pipelines and grids.', 'A central point that can command many sites.'],
+    ['DCS', 'Distributed control system', 'Process control for continuous plants such as refineries and power stations.', 'The operational core of a process plant.'],
+    ['SIS', 'Safety instrumented system', 'An independent automation layer that brings a process to a safe state when limits are exceeded.', 'The last barrier before a hazard, so it must stay independent of the control system.', ['safety instrumented system']],
+    ['Engineering workstation', 'EWS', 'The computer used to program PLCs, DCS and safety controllers.', 'Its compromise lets attackers change how the plant behaves.', ['engineering workstation', 'engineering workstations', 'Engineering workstations', 'EWS']],
+    ['Historian', '', 'A time-series database of process values used for operations and reporting.', 'Often bridges IT and OT, making it a common pivot point.', ['historian', 'historians']],
+    ['MES', 'Manufacturing execution system', 'The system that turns business orders into production work orders and tracks quality.', 'Losing it can stop production even when PLCs are fine.'],
+    ['DMZ', 'Demilitarized zone', 'A buffer network between two trust zones, such as IT and OT, where traffic ends and is inspected.', 'No direct connections between IT and OT.'],
+    ['IEC 62443', '', 'The international standards series for industrial automation and control system security.', 'Defines zones, conduits, security levels and requirements for operators and vendors.'],
+    ['Zones and conduits', '', 'IEC 62443’s design: group assets with shared security requirements into zones, and control the communication between zones through conduits.', 'Limits how far an attacker can move.', ['zones and conduits', 'conduits', 'conduit']],
+    ['Security level', 'SL', 'An IEC 62443 target strength (SL 1–4) for a zone, based on the attacker capability it must resist.', 'Matches defenses to the threat.', ['security levels', 'SL']],
+    ['NIST SP 800-82', '', 'NIST’s guide to OT security (Revision 3, 2023).', 'A widely used reference for securing industrial systems.'],
+    ['IEC 61511', '', 'The functional safety standard for safety instrumented systems in the process industries. IEC 61508 is the general functional safety standard, and IEC 62061 covers machinery.', 'Safety and security must be engineered together.', ['IEC 61508', 'IEC 62061']],
+    ['Modbus', '', 'A widely used industrial protocol with no built-in authentication.', 'Anyone who can reach a device can often send it commands.'],
+    ['DNP3', 'Distributed Network Protocol 3', 'An industrial protocol common in utilities and pipelines. DNP3 Secure Authentication adds authentication.', 'Unauthenticated DNP3 accepts commands from anyone on the path.', ['DNP3-SA', 'DNP3 Secure Authentication']],
+    ['IEC 61850', '', 'Grid communication standards: IEC 61850 for substation automation, IEC 60870-5-104 (IEC 104) for telecontrol.', 'Industroyer abused both to open breakers.', ['IEC 104', 'IEC 60870-5-104']],
+    ['EtherNet/IP', '', 'A common industrial Ethernet protocol in manufacturing.', 'Like most OT protocols, it trusts whoever can reach the device.'],
+    ['IED', 'Intelligent electronic device', 'A microprocessor-based device in a substation, such as a protective relay.', 'Its settings protect equipment and the grid.', ['IEDs']],
+    ['Protective relay', '', 'A device that detects faults and trips breakers in milliseconds.', 'Changed or disabled settings can damage equipment or cause outages.', ['protective relays', 'Protective relays']],
+    ['EMS', 'Energy management system', 'Control-center software that grid operators use to monitor and control generation and transmission.', 'Its compromise can mean control over breakers across a region.'],
+    ['NERC CIP', 'North American Electric Reliability Corporation Critical Infrastructure Protection', 'Mandatory cybersecurity and physical security standards for the bulk electric system (CIP-002 to CIP-014).', 'Each standard addresses a link in the chain, from remote access to supply chain to physical security.', ['CIP-002', 'CIP-005', 'CIP-007', 'CIP-010', 'CIP-013', 'CIP-014', 'NERC']],
+    ['Electronic security perimeter', 'ESP', 'Under NERC CIP, the logical border around networks of critical cyber systems.', 'All access across it must be controlled and monitored.', ['electronic security perimeter']],
+    ['Intermediate system', '', 'Under NERC CIP-005, a jump host that all interactive remote access must pass through.', 'Keeps remote users from connecting straight into control systems.', ['intermediate system', 'interactive remote access']],
+    ['Data diode', '', 'Hardware that physically allows data to flow in only one direction.', 'Lets OT data out without any path back in.', ['data diodes']],
+    ['Application allowlisting', '', 'Only approved programs may run on a system.', 'Very effective on OT systems, which rarely change.', ['application allowlisting']],
+    ['Keyswitch', '', 'A physical key on a controller selecting RUN (no changes) or PROGRAM (changes allowed).', 'Keeping it in RUN blocks remote reprogramming.', ['keyswitch', 'mode switch']],
+    ['IIoT', 'Industrial Internet of Things', 'Connected industrial sensors and gateways, often sending data to cloud analytics.', 'Can create internet paths that bypass the Purdue model.'],
+    ['Air gap', '', 'Physical isolation of a network from all others.', 'True air gaps are rare, and USB drives and vendor laptops cross them.', ['air gap', 'air-gapped', 'air gaps']],
+    ['Passive monitoring', '', 'Listening to network traffic to identify devices and threats without sending packets to them.', 'Safe for fragile OT devices that active scans can crash.', ['passive monitoring', 'OT monitoring', 'OT network monitoring']],
+    ['Stuxnet', '', 'Malware discovered in 2010 that spread by USB to engineering workstations and altered PLC logic to damage centrifuges.', 'Proved cyber attacks can cause physical destruction.'],
+    ['Triton', 'Also called Trisis', 'Malware (2017) that targeted Triconex safety controllers at a petrochemical plant.', 'The first known attack built to disable safety systems.', ['Trisis', 'Triton/Trisis']],
+    ['Industroyer', 'Also called CrashOverride', 'Malware that spoke grid protocols to open substation breakers in Kyiv in 2016. A new version, Industroyer2, appeared in 2022.', 'Showed grid attacks can be automated.', ['CrashOverride', 'Industroyer/CrashOverride', 'Industroyer2']],
+    ['BlackEnergy', '', 'Malware used in the 2015 Ukraine grid attack’s initial intrusion through spear-phishing.', 'The first stage of the first confirmed cyber-caused power outage.'],
+    ['Colonial Pipeline', '', 'A 2021 ransomware attack on a US fuel pipeline company’s IT systems that led to a precautionary pipeline shutdown.', 'Showed how IT incidents can halt physical operations.'],
+    ['NotPetya', '', 'Destructive malware (2017) disguised as ransomware that caused billions in damage worldwide.', 'Showed how flat networks let destruction spread to plants and ports.'],
+    ['WannaCry', '', 'A 2017 ransomware worm that spread through a Windows vulnerability and disrupted hospitals.', 'Highlighted the risk of unpatched legacy systems in healthcare.'],
+    ['LockerGoga', '', 'Ransomware that hit Norsk Hydro in 2019, forcing plants to switch to manual operation.', 'A model of transparent, resilient incident response.'],
+    ['Volt Typhoon', '', 'A state-sponsored group that US agencies say pre-positioned inside critical infrastructure networks.', 'A reason to hunt for quiet, long-term intrusions in OT.'],
+    ['TSA Security Directives', '', 'US Transportation Security Administration requirements for pipeline (and rail) cybersecurity, issued after Colonial Pipeline.', 'Mandate segmentation, access control, monitoring and tested incident plans.', ['TSA', 'TSA pipeline directives']],
+    ['API 1164', '', 'The American Petroleum Institute standard for pipeline control system cybersecurity.', 'Sector-specific guidance for pipeline operators.'],
+    ['FDA', 'US Food and Drug Administration', 'The US regulator for medical devices.', 'Sets cybersecurity requirements for devices before and after they reach the market.'],
+    ['Section 524B', '', 'The 2023 US law requiring new medical devices to include cybersecurity plans, SBOMs and update processes.', 'Raises the security baseline of new medical devices.', ['FDA Section 524B']],
+    ['MDS2', 'Manufacturer Disclosure Statement for Medical Device Security', 'A standard form describing a medical device’s security features.', 'Helps hospitals assess devices before buying them.'],
+    ['HICP', 'Health Industry Cybersecurity Practices (HHS 405(d))', 'US health-sector guidance on the top threats and the practices that address them.', 'A practical baseline for hospitals of every size.', ['405(d)', 'HHS 405(d)']],
+    ['DICOM', 'Digital Imaging and Communications in Medicine', 'The standard format and protocol for medical images.', 'Exposed DICOM servers have leaked millions of images.'],
+    ['HL7', 'Health Level Seven', 'Standards for exchanging clinical data. HL7 v2 messages often travel unencrypted.', 'Integration engines that move HL7 messages bridge many systems.', ['HL7 v2']],
+    ['FHIR', 'Fast Healthcare Interoperability Resources', 'HL7’s modern, API-based standard for health data exchange.', 'Needs strong API authorization (for example, SMART on FHIR).', ['SMART on FHIR']],
+    ['PACS', 'Picture archiving and communication system', 'The system that stores and serves medical images.', 'A common source of medical data exposure when reachable from the internet.'],
+    ['EHR', 'Electronic health record', 'The digital record of a patient’s care.', 'An EHR outage forces hospitals onto paper and can delay care.'],
+    ['WPA3-Enterprise', '', 'Wi-Fi security with per-device or per-user authentication (802.1X), stronger than shared passwords. WPA2-Enterprise is the older version.', 'Protects wireless medical devices from unauthorized access.', ['WPA2/WPA3-Enterprise', 'WPA2-Enterprise']],
+    ['Building automation', 'BAS', 'Systems that control HVAC, pressure, lighting and access in buildings.', 'In hospitals, they affect operating rooms and medicine storage.', ['building automation', 'BAS']],
+    ['APN', 'Access point name', 'A cellular network gateway. A private APN keeps device traffic off the public internet.', 'Secures cellular links to remote sites.', ['private APN']],
+    ['VLAN', 'Virtual LAN', 'A logically separated network segment on shared switches.', 'A common way to implement zones and segmentation.', ['VLANs']],
+    ['WAN', 'Wide area network', 'A network linking distant sites, such as a utility’s links to its substations.', 'Remote links cross shared or public infrastructure, so they need encryption and monitoring.'],
+    ['RDP', 'Remote Desktop Protocol', 'Microsoft’s protocol for remote control of Windows machines.', 'Exposed or unrestricted RDP is a leading way in for ransomware.'],
+    ['CT', 'Computed tomography', 'Medical imaging that builds cross-section images from X-rays. CT scanners are run by an attached control PC.', 'Expensive, regulated devices whose control PCs often run old operating systems.'],
+    ['MRI', 'Magnetic resonance imaging', 'Medical imaging using magnetic fields.', 'Like CT, often controlled by legacy, vendor-managed computers.'],
+    ['NHS', 'National Health Service', 'The UK’s public health system.', 'Its 2017 WannaCry disruption is a key healthcare cyber case study.'],
+
+    /* ---------- General terms ---------- */
+    ['Active Directory', 'AD', 'Microsoft’s directory service that manages Windows users, computers and permissions across an organization.', 'Whoever controls it (domain admin) controls almost everything, so attackers target it first.', ['AD', 'domain admin']],
+    ['SOC', 'Security operations center', 'The team, and tools, that monitor for and respond to security events around the clock.', 'Usually the first to see an attack. Not to be confused with SOC 1/2/3 audit reports.'],
+    ['ISO', 'International Organization for Standardization', 'The body that publishes international standards such as ISO/IEC 27001 and ISO 31000.', 'Its certifications show a program is audited against a recognized standard.'],
+    ['IR', 'Incident response', 'The organized approach to detecting, containing, eradicating and recovering from security incidents.', 'A practiced IR plan turns chaos into a process.'],
+    ['CSF', 'NIST Cybersecurity Framework', 'NIST’s framework of outcomes. Version 2.0 (2024) has six functions: Govern, Identify, Protect, Detect, Respond, Recover.', 'A common language for cyber programs, now used by NIST’s incident response guidance too.', ['CSF 2.0', 'NIST CSF']],
+    ['GRC', 'Governance, risk and compliance', 'The combined discipline of directing the organization, managing risk, and meeting legal and regulatory obligations.', 'Connects security work to business decisions and accountability.'],
+    ['ERP', 'Enterprise resource planning', 'Business software for orders, inventory, finance and HR.', 'Its outage can stop production even when plant systems are fine.'],
+    ['CRM', 'Customer relationship management', 'Software holding customer contacts, interactions and sales.', 'A large store of personal data that needs owners and access controls.'],
+    ['HR', 'Human resources', 'The function that manages employees, hiring and departures.', 'HR signals (joiners, movers, leavers) drive access changes and insider-threat monitoring.'],
+    ['IT', 'Information technology', 'Business computing: networks, servers, applications and end-user devices.', 'In OT contexts, “IT” means the business side of the IT/OT boundary.'],
+    ['PRA', 'Prudential Regulation Authority', 'The UK regulator of banks and insurers, part of the Bank of England.', 'Expects firms to have clear risk governance and operational resilience.'],
+    ['AI', 'Artificial intelligence', 'Systems that learn from data to make predictions or generate content, such as language models.', 'Training on personal data needs privacy safeguards, and AI tools can leak data entered into them.'],
+    ['MITRE', '', 'A US non-profit that runs federally funded research centers and publishes ATT&CK, CVE and crown jewels analysis.', 'Many standard security knowledge bases come from MITRE.'],
+    ['USB', 'Universal Serial Bus', 'The common port for removable drives and peripherals.', 'USB drives carry malware into secure networks and data out of them.'],
+    ['CSV', 'Comma-separated values', 'A simple spreadsheet-like text file format.', 'Bulk exports to CSV are a common step before data theft.', ['CSVs']],
+    ['DBA', 'Database administrator', 'The person who manages databases, often with full privileges.', 'DBA accounts are high-value targets, which is why PAM matters.', ['DBAs', 'dbadmin']],
+    ['DB', 'Database', 'An organized store of data, such as a SQL database.', 'Usually holds the most sensitive data in a system.'],
+    ['BTC', 'Bitcoin', 'The cryptocurrency most often demanded in ransomware attacks.', 'Payments are hard to reverse, and sanctions rules still apply.', ['Bitcoin']],
+    ['SSO', 'Single sign-on', 'One login, through a central identity provider, for many applications.', 'Centralizes MFA and makes offboarding instant.'],
+    ['REST', 'Representational State Transfer', 'The common style for web APIs, using standard HTTP methods.', 'REST endpoints are often hidden from crawlers, so test them through API specs.'],
+    ['QA', 'Quality assurance', 'Testing that software works as intended before release.', 'A natural place to run IAST and security tests.'],
+    ['UI', 'User interface', 'The screens and controls people use.', 'Security controls enforced only in the UI can be bypassed by calling the API directly.'],
+    ['HTML', 'HyperText Markup Language', 'The language of web pages.', 'Injecting HTML or script into pages is how XSS works.'],
+    ['PDF', 'Portable Document Format', 'A common document file format.', 'An emailed PDF report doesn’t track whether findings get fixed.'],
+    ['CAPTCHA', 'Completely Automated Public Turing test to tell Computers and Humans Apart', 'A challenge meant to block bots.', 'Slows automated abuse, but doesn’t stop credential theft or phishing.', ['CAPTCHAs']],
+    ['CCTV', 'Closed-circuit television', 'Security cameras recording to a private system.', 'Visible cameras deter, and recordings help detect and investigate.'],
+    ['TCP', 'Transmission Control Protocol', 'The core internet protocol for reliable connections, used with port numbers.', 'Firewall rules are usually written in terms of TCP ports.'],
+    ['PM', 'Product manager', 'The person who owns a product’s goals, roadmap and requirements.', 'A key partner for threat modeling: they decide what the product does and which risks are acceptable.'],
+    ['ID', 'Identifier', 'A value that identifies a record or person, such as a customer ID or government ID number.', 'Predictable IDs aren’t a security control. Authorization must be checked on every request.', ['IDs']]
   ];
 })();
 </script>
