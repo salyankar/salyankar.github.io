@@ -261,6 +261,35 @@ code,.mono{font-family:var(--mono)}
   .sb-pill{justify-self:start}
   .sb-score{margin-left:0;width:100%}
 }
+
+/* Glossary: dotted terms, definition card, full glossary panel and per-mission term list */
+.sb-side{display:grid;gap:10px;justify-items:end}
+.gl{border-bottom:1.5px dotted var(--accent);cursor:help;border-radius:1px}
+.gl:hover,.gl:focus-visible{color:var(--accent);background:var(--accent-soft)}
+.sb-pop{position:fixed;z-index:50;padding:12px 14px;background:var(--surface);color:var(--ink);border:1px solid var(--accent-line);border-radius:6px;box-shadow:0 10px 28px rgba(0,0,0,.22);font-size:14px;line-height:1.45;display:grid;gap:6px;pointer-events:none}
+.sb-pop p{margin:0}
+.gp-t{display:grid;gap:1px}
+.gp-t b{font:600 15px/1.2 var(--mono);color:var(--accent)}
+.gp-t span{font-size:12.5px;color:var(--ink-3)}
+.gp-why{color:var(--ink-2)}
+.gp-why b,.gi-why b{color:var(--ink);font-weight:600}
+.sb-gl{margin-top:18px;padding:18px 20px;background:var(--surface);border:1px solid var(--line);border-radius:6px;display:grid;gap:14px}
+.sb-gl-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.sb-gl-head h2{font-size:22px;margin-right:auto}
+.sb-gl-find{display:flex;align-items:center;gap:8px;flex:1 1 260px;min-width:0;max-width:420px}
+.sb-gl-find span{font-size:13px;font-weight:600;white-space:nowrap}
+.sb-gl-find input{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg)}
+.sb-gl-list{margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;max-height:460px;overflow-y:auto;padding-right:4px}
+.gi{padding:10px 12px;background:var(--bg);border:1px solid var(--line-soft);border-radius:4px;min-width:0}
+.gi dt b{font:600 14px var(--mono);color:var(--accent)}
+.gi dt span{font-size:12.5px;color:var(--ink-3)}
+.gi dd{margin:4px 0 0;font-size:13.5px;line-height:1.45}
+.gi-why{display:block;margin-top:4px;color:var(--ink-2)}
+.sb-used{border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.sb-used summary{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:12px 16px;cursor:pointer;font-weight:600}
+.sb-used-n{font:600 11px/1 var(--mono);padding:4px 6px;border-radius:3px;background:var(--accent-soft);color:var(--accent)}
+.sb-used-tip{font-weight:400;font-size:13px;color:var(--ink-3)}
+.sb-used .sb-gl-list{padding:0 16px 14px;max-height:340px}
 </style>
 <div id="app"></div>
 <script>
@@ -292,10 +321,87 @@ code,.mono{font-family:var(--mono)}
 
   var Sandbox = window.Sandbox = { kinds: {}, esc: esc };
 
+  /* ---------- Glossary: finds known terms in text so they can be explained in place ---------- */
+  function buildGlossary(rows) {
+    var list = [], byLower = {}, keys = [];
+    rows.forEach(function (r) {
+      var e = { id: r[0], term: r[0], full: r[1], what: r[2], why: r[3], cs: r[0] === r[0].toUpperCase() };
+      if (list.some(function (x) { return x.id === e.id; })) return;
+      e.exact = {};
+      [r[0]].concat(r[4] || []).forEach(function (k) {
+        var low = k.toLowerCase();
+        e.exact[k] = 1;
+        if (!byLower[low]) { byLower[low] = e; keys.push(k); }
+      });
+      list.push(e);
+    });
+    keys.sort(function (a, b) { return b.length - a.length; });
+    var body = keys.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&'); }).join('|');
+    var re = body ? new RegExp('(?<![\\w-])(' + body + ')(?![\\w-])', 'gi') : null;
+    function match(text) {
+      var e = byLower[text.toLowerCase()];
+      if (!e) return null;
+      return (e.cs && !e.exact[text]) ? null : e;
+    }
+    return {
+      list: list.slice().sort(function (a, b) { return a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }); }),
+      byId: list.reduce(function (o, e) { o[e.id] = e; return o; }, {}),
+      re: re, match: match,
+      find: function (text) {
+        var seen = {}, out = [], m;
+        if (!re) return out;
+        re.lastIndex = 0;
+        while ((m = re.exec(text))) { var e = match(m[0]); if (e && !seen[e.id]) { seen[e.id] = 1; out.push(e); } }
+        return out.sort(function (a, b) { return a.term.localeCompare(b.term, 'en', { sensitivity: 'base' }); });
+      }
+    };
+  }
+
+  function glossItem(e) {
+    return '<div class="gi"><dt><b>' + esc(e.term) + '</b>' + (e.full ? ' <span>' + esc(e.full) + '</span>' : '') + '</dt>' +
+      '<dd>' + esc(e.what) + '<span class="gi-why"><b>Why it matters:</b> ' + esc(e.why) + '</span></dd></div>';
+  }
+
+  // Never wrap terms inside controls, code, headings of the shell or the glossary itself.
+  var NO_GLOSS = 'button, a, code, pre, svg, input, textarea, select, script, style, summary, .gl, .sb-eyebrow, .sb-pill, .sb-tag, .lg-wrap, .sb-gl-skip';
+
+  function annotate(node, G) {
+    if (!node || !G.re) return;
+    var walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (t) {
+        if (!t.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        var p = t.parentElement;
+        return p && !p.closest(NO_GLOSS) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    var nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (t) {
+      var s = t.nodeValue, last = 0, frag = null, m;
+      G.re.lastIndex = 0;
+      while ((m = G.re.exec(s))) {
+        var e = G.match(m[0]);
+        if (!e) continue;
+        frag = frag || document.createDocumentFragment();
+        frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        var sp = document.createElement('span');
+        sp.className = 'gl'; sp.tabIndex = 0; sp.setAttribute('data-g', e.id);
+        sp.setAttribute('aria-describedby', 'sb-pop');
+        sp.textContent = m[0];
+        frag.appendChild(sp);
+        last = m.index + m[0].length;
+      }
+      if (frag) { frag.appendChild(document.createTextNode(s.slice(last))); t.parentNode.replaceChild(frag, t); }
+    });
+  }
+
+  function stripTags(s) { return String(s || '').replace(/<[^>]+>/g, ' '); }
+
   Sandbox.mount = function (root, cfg) {
     var store = makeStore(cfg.storageKey);
     var byId = {};
     cfg.missions.forEach(function (m) { byId[m.id] = m; });
+    var G = buildGlossary(cfg.glossary || []);
     var P = store.load();
     if (!P || typeof P !== 'object' || !P.m) P = { m: {}, cur: cfg.missions[0].id, intro: true };
     if (!byId[P.cur]) P.cur = cfg.missions[0].id;
@@ -309,14 +415,76 @@ code,.mono{font-family:var(--mono)}
       '<div class="sb">' +
       '<header class="sb-top"><div class="sb-brand">' +
       '<div class="sb-eyebrow">' + esc(cfg.eyebrow) + '</div><h1>' + esc(cfg.title) + '</h1>' +
-      '<p class="sb-sub">' + esc(cfg.subtitle) + '</p></div><div class="sb-meter" id="sb-meter"></div></header>' +
+      '<p class="sb-sub">' + esc(cfg.subtitle) + '</p></div>' +
+      '<div class="sb-side"><div class="sb-meter" id="sb-meter"></div>' +
+      (G.list.length ? '<button class="sb-btn" id="sb-gl-btn" type="button" aria-expanded="false" aria-controls="sb-gl">Glossary · ' + G.list.length + ' terms</button>' : '') +
+      '</div></header>' +
+      '<section class="sb-gl sb-gl-skip" id="sb-gl" hidden aria-label="Glossary"><div class="sb-gl-head"><h2>Glossary</h2>' +
+      '<label class="sb-gl-find"><span>Search terms</span><input id="sb-gl-q" type="search" autocomplete="off" placeholder="KMS, tokenization, SOC 2…"></label>' +
+      '<button class="sb-btn ghost" id="sb-gl-close" type="button">Close</button></div><dl class="sb-gl-list" id="sb-gl-list"></dl></section>' +
       '<div class="sb-intro" id="sb-intro"><p>' + cfg.intro + '</p><button class="sb-btn" id="sb-intro-ok" type="button">Got it</button></div>' +
       '<div class="sb-layout"><nav class="sb-rail" aria-label="Missions"><ol class="sb-list" id="sb-list"></ol>' +
       '<div class="sb-rail-foot"><button class="sb-link" id="sb-wipe" type="button">Reset all progress</button></div></nav>' +
       '<main class="sb-main" id="sb-main"></main></div>' +
-      '<footer class="sb-foot">' + esc(cfg.footer) + '</footer></div>';
+      '<footer class="sb-foot">' + esc(cfg.footer) + '</footer></div>' +
+      '<div class="sb-pop" id="sb-pop" role="tooltip" hidden></div>';
 
     var $ = function (id) { return document.getElementById(id); };
+
+    /* Glossary panel */
+    if ($('sb-gl-btn')) {
+      var drawGloss = function () {
+        var q = $('sb-gl-q').value.trim().toLowerCase();
+        var hits = G.list.filter(function (e) { return !q || (e.term + ' ' + e.full + ' ' + e.what).toLowerCase().indexOf(q) >= 0; });
+        $('sb-gl-list').innerHTML = hits.length ? hits.map(glossItem).join('') : '<p class="muted">No terms match “' + esc(q) + '”.</p>';
+      };
+      var setGloss = function (open) {
+        $('sb-gl').hidden = !open; $('sb-gl-btn').setAttribute('aria-expanded', open);
+        if (open) { drawGloss(); $('sb-gl-q').focus(); }
+      };
+      $('sb-gl-btn').onclick = function () { setGloss($('sb-gl').hidden); };
+      $('sb-gl-close').onclick = function () { setGloss(false); $('sb-gl-btn').focus(); };
+      $('sb-gl-q').oninput = drawGloss;
+    }
+
+    /* Definition card for dotted terms: hover or focus shows it, tap toggles it, Escape or scrolling hides it. */
+    var pop = $('sb-pop'), popFor = null;
+    function showPop(el) {
+      var e = G.byId[el.getAttribute('data-g')];
+      if (!e) return;
+      popFor = el;
+      pop.innerHTML = '<div class="gp-t"><b>' + esc(e.term) + '</b>' + (e.full ? '<span>' + esc(e.full) + '</span>' : '') + '</div>' +
+        '<p>' + esc(e.what) + '</p><p class="gp-why"><b>Why it matters for security:</b> ' + esc(e.why) + '</p>';
+      pop.hidden = false;
+      var r = el.getBoundingClientRect(), w = Math.min(340, window.innerWidth - 24);
+      pop.style.width = w + 'px';
+      pop.style.left = Math.max(12, Math.min(r.left, window.innerWidth - w - 12)) + 'px';
+      var top = r.bottom + 8, h = pop.offsetHeight;
+      if (top + h > window.innerHeight - 8 && r.top - h - 8 > 8) top = r.top - h - 8;
+      pop.style.top = top + 'px';
+    }
+    function hidePop() { pop.hidden = true; popFor = null; }
+    root.addEventListener('mouseover', function (ev) { var g = ev.target.closest && ev.target.closest('.gl'); if (g && g !== popFor) showPop(g); });
+    root.addEventListener('mouseout', function (ev) { var g = ev.target.closest && ev.target.closest('.gl'); if (g && !(ev.relatedTarget && g.contains(ev.relatedTarget))) hidePop(); });
+    root.addEventListener('focusin', function (ev) { if (ev.target.classList && ev.target.classList.contains('gl')) showPop(ev.target); });
+    root.addEventListener('focusout', function (ev) { if (ev.target.classList && ev.target.classList.contains('gl')) hidePop(); });
+    root.addEventListener('click', function (ev) {
+      var g = ev.target.closest && ev.target.closest('.gl');
+      if (g) { if (popFor === g && ev.pointerType !== 'mouse') hidePop(); else showPop(g); }
+      else if (!pop.contains(ev.target)) hidePop();
+    });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { hidePop(); if ($('sb-gl-btn') && !$('sb-gl').hidden && document.activeElement === $('sb-gl-q')) $('sb-gl-close').click(); } });
+    window.addEventListener('scroll', hidePop, { passive: true });
+
+    // Wrap known terms in whatever the mission renders (briefings, results, feedback, debriefs).
+    // Observer callbacks run before the browser paints, so the dotted terms never flash in late.
+    var mo = new MutationObserver(function () {
+      mo.disconnect();
+      annotate($('sb-main'), G);
+      mo.observe($('sb-main'), { childList: true, subtree: true });
+    });
+    annotate($('sb-intro'), G);
+    mo.observe($('sb-main'), { childList: true, subtree: true });
     $('sb-intro').hidden = !P.intro;
     $('sb-intro-ok').onclick = function () { P.intro = false; save(); $('sb-intro').hidden = true; };
 
@@ -360,6 +528,19 @@ code,.mono{font-family:var(--mono)}
 
     function renderAll() { renderMeter(); renderList(); renderMission(); }
 
+    // Every glossary term the mission uses anywhere, including inside buttons, options and code fixes.
+    var termCache = {};
+    function termsPanel(m) {
+      if (!G.list.length) return '';
+      var hits = termCache[m.id] || (termCache[m.id] = G.find([m.title, stripTags(m.brief), stripTags(m.objectives.join(' ')),
+        stripTags(m.hints.join(' ')), JSON.stringify(m.data), JSON.stringify(m.debrief)].join(' \n ')));
+      if (!hits.length) return '';
+      var open = P.termsOpen === true;
+      return '<details class="sb-used sb-gl-skip" id="sb-used"' + (open ? ' open' : '') + '><summary><span>Terms used in this mission</span><span class="sb-used-n">' + hits.length + '</span>' +
+        '<span class="sb-used-tip">Dotted words in the text open the same definitions.</span></summary>' +
+        '<dl class="sb-gl-list">' + hits.map(glossItem).join('') + '</dl></details>';
+    }
+
     function renderMission() {
       var m = byId[P.cur], k = kindOf(m), r = rec(m.id), idx = cfg.missions.indexOf(m);
       if (!r.state) r.state = k.init(m.data);
@@ -369,6 +550,7 @@ code,.mono{font-family:var(--mono)}
         '<div class="sb-mhead"><div class="sb-eyebrow">' + esc(m.domain) + '</div><h2>' + esc(m.title) + '</h2></div>' +
         '<section class="sb-brief"><div><h3>Briefing</h3><p>' + m.brief + '</p></div>' +
         '<div><h3>Objectives</h3><ul class="sb-obj">' + m.objectives.map(function (o) { return '<li>' + o + '</li>'; }).join('') + '</ul></div></section>' +
+        termsPanel(m) +
         '<section class="sb-work" id="sb-work"></section>' +
         '<div class="sb-bar">' +
         (k.auto ? '' : '<button class="sb-btn primary" id="sb-run" type="button">' + esc(k.label) + '</button>') +
@@ -383,6 +565,7 @@ code,.mono{font-family:var(--mono)}
         (next ? '<button class="sb-btn ghost" type="button" data-go="' + next.id + '">' + esc(next.title) + ' →</button>' : '') +
         '</nav></article>';
 
+      if ($('sb-used')) $('sb-used').addEventListener('toggle', function () { P.termsOpen = $('sb-used').open; save(); });
       $('sb-main').querySelectorAll('[data-go]').forEach(function (b) {
         b.onclick = function () { P.cur = b.getAttribute('data-go'); save(); renderAll(); $('sb-main').scrollIntoView({ block: 'start' }); };
       });
@@ -711,6 +894,231 @@ code,.mono{font-family:var(--mono)}
       });
     }
   };
+})();
+</script>
+<script>
+/* Shared security glossary. Every sandbox can use it; a sandbox may append its own entries.
+   Each entry: [term, full name ('' if none), what it is, why it matters for security, other spellings to match].
+   All-caps terms (KMS, SOC 2) match case-exactly; everything else matches in any case. */
+(function () {
+  'use strict';
+  window.Sandbox = window.Sandbox || { kinds: {} };
+  Sandbox.glossary = [
+    /* ---------- Cloud foundations ---------- */
+    ['CCSP', 'Certified Cloud Security Professional', 'ISC2’s vendor-neutral certification for cloud security, organized into six domains.', 'It gives architects, engineers and auditors a shared vocabulary for designing, running and governing secure cloud systems. This sandbox follows its six domains.'],
+    ['ISC2', 'International Information System Security Certification Consortium', 'The non-profit that runs the CCSP and CISSP certifications.', 'Its exam outline defines what a cloud security professional is expected to know.'],
+    ['IaaS', 'Infrastructure as a Service', 'You rent raw computing from a provider (virtual machines, storage and networks) and run everything from the operating system up.', 'You get the most control and the most security work: patching, hardening, firewall rules and identities are all yours.'],
+    ['PaaS', 'Platform as a Service', 'The provider runs the servers, operating system and runtime. You deploy code or use managed services such as databases.', 'There’s less to patch, but your code, its configuration and who can access it are still your job.'],
+    ['SaaS', 'Software as a Service', 'A finished application you use over the internet, such as email, CRM or HR systems.', 'You can’t patch it, but you still control who has accounts, whether MFA is on and how data is shared, which is where most SaaS breaches start.'],
+    ['Shared responsibility model', '', 'The split of security duties between cloud provider and customer, which changes with the service model (IaaS, PaaS or SaaS).', 'Gaps appear when each side assumes the other is handling a control. Most cloud breaches happen on the customer’s side of the line.', ['shared responsibility', 'Shared responsibility']],
+    ['Deployment models', '', 'Public cloud (shared with everyone), private cloud (one organization), community cloud (a group with shared needs), hybrid (a mix) and multi-cloud (several providers).', 'The model decides who you share infrastructure with and how much control and isolation you get.', ['deployment model', 'Multi-cloud', 'multi-cloud', 'hybrid']],
+    ['Multi-tenant', '', 'Many customers (tenants) share the same physical hardware and services, kept apart by software.', 'Isolation between tenants is critical. It also means you can’t take a physical disk away for forensics or destroy it yourself.', ['multi-tenant', 'multi-tenancy']],
+    ['CISO', 'Chief Information Security Officer', 'The executive who leads an organization’s security program.', 'Owns security strategy and risk decisions, and reports cyber risk to leadership and the board.'],
+    ['VM', 'Virtual machine', 'A software computer that runs on shared physical hardware, with its own operating system.', 'Each VM needs the same hardening and patching as a physical server, and a misconfigured cloud VM can be found online within minutes.', ['VMs', 'virtual machine', 'virtual machines']],
+    ['Hypervisor', '', 'Software that runs many virtual machines on one physical host and keeps them separate.', 'A hypervisor flaw could let one customer reach another’s VM, so tenant isolation is a core provider duty.', ['hypervisor']],
+    ['OS', 'Operating system', 'The base software that runs a computer, such as Linux or Windows.', 'Unpatched operating systems are one of the most common ways in. Whoever owns the OS must patch it.', ['operating system']],
+    ['Runtime', '', 'Software an application needs in order to run, such as a language interpreter, a web server or middleware.', 'These components have vulnerabilities too. Someone has to patch them: you in IaaS, the provider in PaaS.', ['runtime', 'middleware', 'Middleware']],
+    ['OpenSSL', '', 'A widely used open-source library that encrypts network connections.', 'Flaws in it, such as Heartbleed in 2014, affected millions of servers. Unpatched libraries are a common way in.'],
+    ['API', 'Application Programming Interface', 'A defined way for programs to talk to each other over a network. Every cloud service is controlled through APIs.', 'APIs are a prime target. Each one needs authentication, authorization, input validation and logging.', ['APIs']],
+    ['Data owner', '', 'The person or business unit accountable for a dataset. They decide its classification, who may access it and how long it is kept.', 'Ownership and accountability can’t be handed to a cloud provider.', ['data owner']],
+    ['Data controller', '', 'Under GDPR, the organization that decides why and how personal data is processed. In cloud, usually the customer.', 'The controller carries the main legal duties, including breach notification, even when a provider stores the data.', ['controller']],
+    ['Data processor', '', 'Under GDPR, an organization that processes personal data on the controller’s behalf, such as a cloud provider.', 'Processors must follow the controller’s instructions under a Data Processing Agreement (DPA).', ['processor']],
+    ['Accountability', '', 'Being answerable for an outcome, even when someone else does the work.', 'You can delegate security tasks to a provider, but regulators and customers still hold you accountable for your data.', ['accountability', 'accountable']],
+    ['Attestation', '', 'A formal report from an independent auditor confirming that controls exist and work.', 'It lets you trust a provider you aren’t allowed to audit yourself.', ['attestation', 'attestations', 'Attestations']],
+    ['Endpoint', '', 'A device at the end of a network connection, such as a laptop or phone. The word also refers to a service’s network address.', 'Compromised endpoints are a top way in. Always the customer’s responsibility, in every cloud model.', ['endpoint']],
+    ['Firewall', '', 'A control that allows or blocks network traffic based on rules (source, destination, port).', 'The basic network barrier. One overly broad rule can expose a whole system.', ['firewall', 'firewalls']],
+    ['Security group', '', 'A virtual firewall attached to cloud instances that lists which traffic may come in and go out. It is stateful.', 'The main network control in IaaS. A rule open to 0.0.0.0/0 exposes the server to the entire internet.', ['security group', 'security groups', 'Security groups']],
+    ['Network ACL', 'Network Access Control List', 'A stateless allow/deny rule list applied to a whole subnet.', 'A second network layer on top of security groups (defense in depth).', ['Network ACLs', 'network ACL']],
+    ['Stateful', '', 'A stateful firewall remembers connections, so reply traffic is allowed automatically. A stateless one checks every packet on its own, so return traffic needs its own rule.', 'Knowing the difference avoids rules that are accidentally too open or that break traffic.', ['stateful', 'stateless', 'Stateless']],
+    ['SOC 2', 'System and Organization Controls 2', 'An independent audit report (AICPA standard) on a service provider’s controls for security, availability, processing integrity, confidentiality and privacy.', 'The standard way to get assurance about a cloud or SaaS provider when you can’t audit them yourself.'],
+    ['SOC 1', 'System and Organization Controls 1', 'An audit report on a provider’s controls that affect customers’ financial reporting.', 'Useful for financial auditors. It isn’t meant to give assurance about security in general.'],
+    ['SOC 3', 'System and Organization Controls 3', 'A short, public summary version of a SOC 2 report, without test details.', 'Good for marketing and a first look, too thin for real due diligence.'],
+    ['Type II', '', 'A SOC report that tests whether controls actually worked over a period, usually 6–12 months. A Type I report only checks the design at one point in time.', 'Type II is the stronger evidence, because controls that look good on paper can still fail in practice.', ['Type I']],
+    ['ISO/IEC 27001', '', 'The international standard for an information security management system (ISMS). Organizations can be certified against it.', 'Certification shows security is run as a managed, audited program. It isn’t proof that every control is perfect.'],
+    ['ISO/IEC 27017', '', 'Guidance standards: 27017 adds cloud-specific security controls, and 27018 covers protecting personal data in public clouds.', 'Providers certified to them have been checked against cloud-specific and privacy controls.', ['27017/27018']],
+    ['ISO/IEC 17788', '', 'International standards that define cloud computing vocabulary (17788) and the cloud reference architecture with its roles (17789).', 'They give everyone the same definitions for customer, provider, partner and service models.', ['ISO/IEC 17789']],
+    ['CSA', 'Cloud Security Alliance', 'A non-profit that publishes cloud security best practice, including the Cloud Controls Matrix and the cloud data lifecycle.', 'Its frameworks are widely used to assess cloud providers.'],
+    ['CSA STAR', 'Security, Trust, Assurance and Risk registry', 'A public registry where cloud providers publish self-assessments or third-party audits against the CSA Cloud Controls Matrix.', 'A quick, comparable view of a provider’s security posture.'],
+    ['NIST', 'National Institute of Standards and Technology', 'The US agency that publishes widely used security standards, including the SP 800 series and the Cybersecurity Framework.', 'NIST definitions and guidance are the reference point for much of the industry, and for the exam.'],
+    ['NIST SP 800-145', '', 'NIST’s short definition of cloud computing: five essential characteristics, three service models and four deployment models.', 'It is the standard definition the CCSP builds on.'],
+    ['NIST SP 800-61', '', 'NIST’s Computer Security Incident Handling Guide.', 'Defines the incident response lifecycle most teams follow.'],
+    ['MFA', 'Multi-factor authentication', 'Signing in with two or more proofs, such as a password plus a phone app or hardware key.', 'Stops the large majority of attacks that rely on stolen or guessed passwords.'],
+    ['IAM', 'Identity and Access Management', 'The systems and rules that decide who can sign in and what each identity (person, service or role) may do. In the cloud, IAM policies grant permissions.', 'In the cloud, identity is the new perimeter. An over-permissive IAM policy is behind many breaches.'],
+    ['IAM role', '', 'An identity that a service, such as a VM, takes on to get short-lived credentials instead of storing permanent keys.', 'Safer than long-lived keys, but the role’s permissions decide how much an attacker gets if that service is compromised.', ['role credentials', 'Attached IAM role']],
+    ['AWS', 'Amazon Web Services', 'Amazon’s cloud platform, the largest public cloud provider. Some examples here use its names (S3, IAM, SCPs).', 'Most CCSP concepts map directly onto AWS, Microsoft Azure and Google Cloud features, even though the exam itself is vendor-neutral.'],
+    ['VPN', 'Virtual Private Network', 'An encrypted tunnel that connects a user or office to a private network over the internet.', 'Restricting admin access to the corporate VPN range keeps management ports away from the open internet.'],
+    ['HTTP', 'Hypertext Transfer Protocol', 'The protocol web browsers and APIs use to send requests and responses.', 'Unencrypted HTTP can be read and altered in transit, so production traffic should use HTTPS. WAFs inspect HTTP requests for attacks.'],
+    ['TLS', 'Transport Layer Security', 'The encryption protocol that secures HTTPS and many other connections.', 'Protects data in transit. Old versions (TLS 1.0 and 1.1) are weak and should be disabled.'],
+    ['URL', 'Uniform Resource Locator', 'A web address, such as https://example.com/page.', 'If an app fetches any URL a user supplies, attackers can point it at internal addresses (SSRF).', ['URLs']],
+    ['SQL', 'Structured Query Language', 'The language used to query and change data in relational databases.', 'Building SQL queries by pasting in user input leads to SQL injection.'],
+    ['UTC', 'Coordinated Universal Time', 'The global reference time zone, with no daylight saving.', 'Logs from many systems must use one time zone (usually UTC) so investigators can line up events correctly.'],
+    ['AICPA', 'American Institute of Certified Public Accountants', 'The US professional body that defines the SOC 1, SOC 2 and SOC 3 reporting standards.', 'Its standards decide what a SOC report covers and how auditors test controls.'],
+    ['ISMS', 'Information Security Management System', 'A managed program of policies, risk assessments and controls for information security, as defined by ISO/IEC 27001.', 'Shows that security is run continuously and improved, not done once.'],
+    ['FIPS 140', 'Federal Information Processing Standard 140', 'The US government standard for validating cryptographic modules such as HSMs (levels 1–4).', 'Regulated industries often require keys to be kept in FIPS 140 validated hardware.', ['FIPS']],
+    ['EU', 'European Union', 'The political and economic union of 27 European countries.', 'Its laws, especially GDPR, govern how EU residents’ personal data may be used and transferred, wherever the company is based.'],
+    ['SQL injection', '', 'An attack where user input is treated as part of a database query, letting the attacker read or change data.', 'One of the most damaging and common web flaws. Fix it with parameterized queries.', ['SQLi']],
+    ['Red team', '', 'Security testers who act like real attackers to find weaknesses before criminals do.', 'Shows how controls hold up against a determined adversary, not just a checklist.', ['red team']],
+
+    /* ---------- Data security ---------- */
+    ['PAN', 'Primary Account Number', 'The long number on a payment card.', 'It is the data PCI DSS exists to protect. Every system that stores, processes or transmits it falls under PCI audits.'],
+    ['PCI DSS', 'Payment Card Industry Data Security Standard', 'Security rules, set by the card brands, that every organization handling card data must follow.', 'Failing it can mean fines and losing the right to take card payments. Keeping card data in fewer systems makes compliance much easier.'],
+    ['Encryption at rest', '', 'Encrypting stored data on disks, databases, snapshots and backups.', 'It protects against stolen media. If the platform decrypts automatically for anyone with access, it won’t stop attacks through the app or with valid credentials.', ['encryption at rest', 'encrypted at rest']],
+    ['Plaintext', '', 'Data in readable form, not encrypted.', 'Anything stored or sent in plaintext can be read by whoever gets hold of it.', ['plaintext', 'plain text', 'Plain text']],
+    ['Ciphertext', '', 'Encrypted data, unreadable without the right key.', 'Stolen ciphertext is useless to an attacker as long as the key stays safe.', ['ciphertext']],
+    ['KMS', 'Key Management Service', 'A cloud service that creates, stores and controls encryption keys. Keys never leave it, and every use is logged.', 'Encryption is only as strong as its key management. KMS key policies decide who can decrypt, and the logs show who did.'],
+    ['HSM', 'Hardware Security Module', 'A tamper-resistant hardware device that generates and stores keys and does cryptographic work internally, so keys can’t be extracted.', 'The strongest protection for high-value keys, often required by banks and regulators (FIPS 140 validated).'],
+    ['HYOK', 'Hold Your Own Key', 'Keys stay in a system you run, such as your own HSM, outside the cloud provider. The provider never holds the key.', 'The strongest separation: provider staff, or a legal demand served on the provider, can’t decrypt your data without you.'],
+    ['BYOK', 'Bring Your Own Key', 'You generate a key in your own HSM and import it into the provider’s KMS.', 'Proves where the key came from and lets you revoke it, but the provider’s KMS then holds a copy. That is weaker separation than HYOK.'],
+    ['Customer-managed key', '', 'A key in the provider’s KMS that you create and control: you set its access policy and rotation, and you can disable or delete it.', 'Gives you control over who can decrypt, and lets you crypto-shred data by destroying the key.', ['customer-managed key', 'customer-managed keys', 'customer-held keys', 'Customer key']],
+    ['Provider-managed key', '', 'A default encryption key created and controlled entirely by the cloud provider.', 'Easy and free, but data is decrypted automatically for anyone with access, so it mainly protects against physical theft of disks.', ['provider-managed key', 'provider-managed keys', 'Provider-managed keys']],
+    ['Key policy', '', 'The access rules attached to an encryption key, listing which identities may use it to encrypt or decrypt.', 'A second lock: even someone who can read the encrypted data can’t open it without permission on the key.', ['key policy', 'key policies', 'KMS key policy']],
+    ['Key custody', '', 'Who holds and controls the encryption keys.', 'Whoever holds the keys can read the data. Separating key custody from data custody is a core cloud principle.', ['key custody']],
+    ['Tokenization', '', 'Replacing a sensitive value with a random stand-in (a token) that has no mathematical link to the original. The real value is kept in a secured token vault.', 'Systems that hold only tokens hold nothing worth stealing, which shrinks PCI DSS scope dramatically.', ['tokenization', 'tokenized', 'Tokenized', 'tokenize', 'Tokenize', 'tokens']],
+    ['Token vault', '', 'The tightly secured system that stores the real values behind tokens and maps tokens back to them.', 'It becomes the one place that must be heavily protected and audited.', ['token vault']],
+    ['Masking', '', 'Hiding part of a value, such as showing only the last 4 digits of a card. Static masking permanently replaces data, for example in test copies.', 'Lets people do their job with the minimum data visible, limiting what a compromised account can see.', ['masking', 'masked', 'Masked']],
+    ['Hashing', '', 'A one-way function that turns data into a fixed-length fingerprint. The original can’t be recovered from it.', 'Good for checking integrity and storing passwords, useless when the original value is needed again.', ['hashing', 'hashed', 'Hashed', 'hash']],
+    ['Salt', '', 'A random value added to data before hashing, so identical inputs give different hashes.', 'Stops attackers using precomputed tables to reverse hashes of passwords or emails.', ['salted', 'unsalted', 'salted hash', 'Salted hash']],
+    ['Pseudonymization', '', 'Replacing identifiers with a consistent alias, so records can still be linked without showing who they belong to.', 'Reduces risk while keeping data useful. Under GDPR it is still personal data, because it can be re-linked.', ['pseudonymization', 'pseudonymize', 'Pseudonymize', 'pseudonymized', 'Pseudonymized', 'pseudonymous']],
+    ['Anonymization', '', 'Removing or altering data so it can never be linked back to a person.', 'Truly anonymized data falls outside GDPR, but real anonymization is harder than it looks.', ['anonymization', 'anonymized', 'Anonymized']],
+    ['Personal data', '', 'Any information relating to an identifiable person: name, email, IP address, location and so on.', 'Triggers privacy laws such as GDPR, including breach-notification duties.', ['personal data']],
+    ['Snapshot', '', 'A point-in-time copy of a disk or database in the cloud.', 'Snapshots are full copies of your data. If they can be shared or copied, they need the same protection as the original.', ['snapshot', 'snapshots']],
+    ['DLP', 'Data Loss Prevention', 'Tools that find sensitive data (in motion, at rest and in use) and block or alert when it is about to leave.', 'Catches accidental and malicious leaks of things like card numbers or patient data.'],
+    ['Cloud data lifecycle', '', 'The CSA model of the phases data passes through: Create → Store → Use → Share → Archive → Destroy.', 'Each phase needs different controls, such as classification at creation and crypto-shredding at destruction.', ['data lifecycle']],
+    ['Data classification', '', 'Labeling data by sensitivity (for example public, internal, confidential, restricted).', 'You can’t choose the right protection until you know what the data is.', ['data classification', 'classification', 'classify']],
+    ['Data discovery', '', 'Finding where sensitive data actually lives across systems and clouds.', 'Unknown copies of data are unprotected copies.', ['data discovery']],
+    ['Phishing', '', 'Tricking people into giving away credentials or running malware, usually by email or text.', 'The most common first step in breaches. MFA and least privilege limit the damage.', ['phishing', 'phished']],
+    ['Session hijacking', '', 'Taking over a user’s logged-in session, often by stealing its session cookie or token.', 'Bypasses the password and sometimes MFA, so what each session can see matters.', ['session hijacked']],
+
+    /* ---------- Platform & infrastructure ---------- */
+    ['VPC', 'Virtual Private Cloud', 'Your own isolated network inside a public cloud, with subnets, routing and firewalls you control.', 'It is the network boundary for your workloads. What’s inside should be private by default.'],
+    ['Subnet', '', 'A slice of a VPC’s address range. A public subnet has a route to the internet. A private subnet does not.', 'Putting databases and internal servers in private subnets keeps them out of reach of internet scans.', ['subnet', 'subnets', 'private subnet', 'public subnet', 'Private subnet', 'Public subnet']],
+    ['CIDR', 'Classless Inter-Domain Routing', 'Notation for a range of IP addresses, such as 10.0.0.0/16 (65,536 addresses).', 'Firewall rules use CIDR ranges. Getting the range wrong can open a service to far more machines than intended.', ['10.0.0.0/16']],
+    ['0.0.0.0/0', '', 'CIDR notation for every IPv4 address, meaning the entire internet.', 'A rule allowing 0.0.0.0/0 exposes that port to every attacker and scanner in the world.'],
+    ['Load balancer', '', 'A service that spreads incoming traffic across several servers and often terminates HTTPS.', 'Makes it the single public entry point, so the servers behind it can stay private.', ['load balancer']],
+    ['WAF', 'Web Application Firewall', 'A filter in front of a web app that inspects HTTP requests and blocks attacks such as SQL injection and cross-site scripting.', 'A useful compensating control, but it doesn’t fix vulnerable code.'],
+    ['SSH', 'Secure Shell', 'An encrypted protocol for remote command-line access to servers, normally on port 22.', 'Open SSH with passwords is a constant target for brute-force attacks. Restrict it, require keys plus MFA, or replace it.'],
+    ['Port', '', 'A number that identifies a network service on a machine, such as 443 for HTTPS, 22 for SSH or 5432 for Postgres.', 'Every open port is a door. Only open the ones a service needs, to the sources that need them.', ['port', 'ports']],
+    ['HTTPS', 'HTTP Secure', 'Web traffic encrypted with TLS, normally on port 443.', 'Protects data in transit from eavesdropping and tampering.'],
+    ['Postgres', 'PostgreSQL', 'A popular open-source relational database, normally on port 5432.', 'Databases hold the crown jewels and should never be reachable from the internet.', ['PostgreSQL']],
+    ['Metadata service', 'Instance Metadata Service (IMDS)', 'An internal address (169.254.169.254) each cloud VM can call to learn about itself, including temporary credentials for its IAM role.', 'If an attacker can make the server call it (SSRF), they can steal those credentials.', ['metadata service', 'Instance metadata service', 'IMDS']],
+    ['IMDSv2', 'Instance Metadata Service version 2', 'A hardened metadata service that only answers after a session token is fetched with a special PUT request.', 'Blocks most SSRF-based credential theft, because a simple forged GET request can’t get the token.'],
+    ['SSRF', 'Server-Side Request Forgery', 'A flaw where an attacker makes the server send requests on their behalf, often to internal addresses.', 'In the cloud it is used to reach the metadata service and steal credentials, as in the Capital One breach.'],
+    ['Least privilege', '', 'Giving each identity only the permissions it needs, and nothing more.', 'Limits the damage when an account or service is compromised.', ['least privilege', 'least-privilege']],
+    ['Blast radius', '', 'How much damage one compromised account, key or system can cause.', 'Least privilege and segmentation exist to keep the blast radius small.', ['blast radius']],
+    ['Lateral movement', '', 'An attacker moving from the first system they compromise to others on the network.', 'Flat networks make it easy. Segmentation stops it.', ['lateral movement', 'pivots', 'pivot']],
+    ['Microsegmentation', '', 'Fine-grained network rules per workload, so each system only talks to the exact systems it needs.', 'Stops an attacker in one system from reaching everything else.', ['microsegmentation']],
+    ['Jump box', 'Bastion host', 'A single hardened server admins connect through to reach internal systems.', 'Concentrates admin access in one place that can be locked down and monitored.', ['jump box', 'jump-box', 'bastion', 'Bastion', 'jump host']],
+    ['Session manager', '', 'Provider-brokered admin access to servers through the cloud API, authenticated by IAM and fully logged, with no inbound ports open.', 'Removes SSH from the internet entirely while keeping a full record of admin sessions.', ['session manager']],
+    ['Password spraying', '', 'Trying a few common passwords against many accounts, to avoid lockouts.', 'Works against any internet-facing login without MFA.', ['password spraying']],
+    ['Credential stuffing', '', 'Trying username and password pairs leaked from other breaches.', 'Works because people reuse passwords. MFA defeats it.', ['credential-stuffing', 'credential stuffing']],
+    ['Shodan', '', 'A search engine that constantly scans the internet and lists exposed devices and services.', 'Attackers use it to find open databases and admin ports within hours of exposure.', ['Shodan-style']],
+    ['Bucket', '', 'A container in cloud object storage (such as Amazon S3) that holds files, called objects.', 'Misconfigured public buckets are among the most common sources of cloud data leaks.', ['bucket', 'buckets']],
+    ['S3', 'Amazon Simple Storage Service', 'Amazon Web Services’ object storage service.', 'Its buckets are often the target of data-exposure incidents and cloud attacks.'],
+    ['Object lock', '', 'A storage setting that prevents objects from being changed or deleted for a set time, even by administrators.', 'Makes backups survive ransomware and stolen admin credentials.', ['object lock']],
+    ['WORM', 'Write Once, Read Many', 'Storage where data can be written once and then only read, never changed or deleted until retention ends.', 'Protects backups, logs and legal records from tampering.'],
+    ['Immutable backups', '', 'Backups that can’t be altered or deleted during their retention period.', 'Often the difference between restoring after ransomware and paying the ransom.', ['immutable']],
+    ['Ransomware', '', 'Malware or attackers that encrypt or delete data and demand payment to restore it.', 'Attackers now go after backups first, which is why backups must be isolated and immutable.', ['ransomware']],
+    ['Flow logs', '', 'Records of network connections (source, destination, port, allowed or denied) in a VPC.', 'Show which systems talked to which, which is vital for spotting and investigating intrusions.', ['flow logs', 'flow logging']],
+    ['Audit log', '', 'A record of every management action in the cloud account: who did what, when, from where, and whether it worked.', 'The primary evidence in a cloud investigation. It should be stored where attackers can’t delete it.', ['audit log', 'audit trail', 'Audit trail', 'audit-trail', 'audit logging']],
+    ['Management plane', '', 'The cloud provider’s console and API used to create, change and delete everything in an account.', 'Whoever controls it controls everything, so it needs MFA, least privilege and full logging.', ['management plane', 'control-plane']],
+    ['Zero trust', '', 'A security model that never trusts a request because of its network location. Identity, device and context are checked every time.', 'Limits what attackers can do after getting inside the network.', ['zero trust']],
+    ['Defense in depth', '', 'Layering several independent controls, so one failure doesn’t mean a breach.', 'No single control is perfect. Layers buy time and reduce damage.', ['defense in depth']],
+    ['Assume breach', '', 'Designing as if attackers are already inside, and limiting what they can reach.', 'Shifts focus from keeping attackers out to limiting the blast radius and detecting them fast.', ['assume breach']],
+    ['BCDR', 'Business Continuity and Disaster Recovery', 'Plans and capabilities for keeping critical services running and restoring them after a major incident.', 'In the cloud this means backups in another account or region, immutability and tested restores.'],
+    ['Compensating control', '', 'An alternative control used when the primary one can’t be applied yet, such as a WAF in front of vulnerable code.', 'Reduces risk in the meantime but doesn’t replace fixing the root cause.', ['compensating control']],
+    ['AdministratorAccess', '', 'AWS’s built-in full-admin policy, which allows every action on every resource (written *:*).', 'Granting it to apps or new users gives an attacker the whole account if that identity is compromised.'],
+
+    /* ---------- Application security ---------- */
+    ['IaC', 'Infrastructure as Code', 'Defining cloud infrastructure (networks, servers, databases) in code files that tools deploy automatically.', 'Mistakes are copied everywhere the code deploys, but they can also be caught by scanners before anything goes live.', ['infrastructure-as-code', 'Infrastructure-as-code', 'infrastructure as code']],
+    ['Terraform', '', 'A popular Infrastructure as Code tool that deploys resources to many cloud providers.', 'Its files often contain the misconfigurations (and sometimes the secrets) behind cloud breaches.'],
+    ['Pull request', '', 'A proposed code change that others review before it is merged.', 'The cheapest place to catch security flaws, before they reach production.', ['pull request', 'PR']],
+    ['Git', '', 'The version-control system most code is stored in. It keeps the full history of every change.', 'A secret committed once stays in the history even after it is deleted from the latest version.', ['GitHub']],
+    ['Flask', '', 'A lightweight Python web framework.', 'Like any framework, it is only as secure as how you configure and use it.'],
+    ['SAST', 'Static Application Security Testing', 'Scanning source code for vulnerabilities without running it (white-box).', 'Finds flaws early in development, when they’re cheapest to fix.'],
+    ['DAST', 'Dynamic Application Security Testing', 'Testing a running application from the outside by sending attack-like requests (black-box).', 'Finds issues that only show up at runtime, such as misconfigurations.'],
+    ['SCA', 'Software Composition Analysis', 'Scanning an application’s open-source dependencies for known vulnerabilities and license problems.', 'Most modern code is open-source libraries, and attackers exploit known flaws in them.'],
+    ['OWASP Top 10', 'Open Worldwide Application Security Project Top 10', 'A widely used list of the ten most critical web application security risks.', 'A shared checklist for developers and testers. The exam expects you to know its categories.', ['OWASP']],
+    ['A02', 'OWASP A02: Cryptographic Failures', 'Weak or missing encryption, such as unencrypted data or fast hashes like MD5 for passwords.', 'Leads to exposure of sensitive data.'],
+    ['A03', 'OWASP A03: Injection', 'Untrusted input that is run as part of a command or query, as in SQL injection.', 'Can give an attacker full access to the database.'],
+    ['A05', 'OWASP A05: Security Misconfiguration', 'Insecure defaults or settings, such as public buckets, open ports or debug mode.', 'The most common root cause of cloud breaches.'],
+    ['A10', 'OWASP A10: Server-Side Request Forgery', 'The server is tricked into fetching attacker-chosen URLs.', 'In the cloud it often leads to stolen credentials via the metadata service.'],
+    ['Secrets management', '', 'Storing passwords, API keys and certificates in a dedicated vault and handing them to apps at runtime, never in code.', 'Hard-coded secrets leak through repositories, logs and backups.', ['secrets management', 'secrets manager', 'Secrets manager']],
+    ['OIDC', 'OpenID Connect', 'An identity protocol. In CI/CD, the pipeline swaps a signed identity token for short-lived cloud credentials.', 'Removes the need to store long-lived cloud keys in pipelines at all.'],
+    ['MD5', 'Message Digest 5', 'An old, fast hash function.', 'Far too fast for passwords (billions of guesses per second) and broken for security uses. Use bcrypt, scrypt or Argon2.'],
+    ['Argon2', '', 'Modern password-hashing algorithms (Argon2, bcrypt, scrypt) that are deliberately slow and salted.', 'Make cracking stolen password hashes very expensive.', ['bcrypt', 'scrypt']],
+    ['Debug mode', '', 'A development setting that shows detailed errors and, in Flask, an interactive console.', 'In production it leaks internals and can let attackers run code on the server.', ['debug mode', 'debugger']],
+    ['ACL', 'Access Control List', 'A list attached to a resource stating who may access it and how.', 'A single "public-read" ACL can expose an entire bucket.', ['ACLs']],
+    ['IaC scanners', '', 'Tools such as Checkov, tfsec and KICS that check infrastructure code for misconfigurations before deployment.', 'Catch public buckets and open ports in the pull request, not after a breach.', ['Checkov', 'tfsec', 'KICS']],
+    ['SBOM', 'Software Bill of Materials', 'A list of every component and library inside a piece of software.', 'Lets you find out quickly whether you are affected when a new library vulnerability is announced.', ['SBOMs']],
+    ['Supply chain', '', 'Everything your software depends on: libraries, build tools, pipelines and vendors.', 'Attackers compromise one upstream component to reach thousands of downstream victims.', ['supply-chain', 'supply chain']],
+    ['Threat modeling', '', 'Systematically working out how a system could be attacked, before building it.', 'Fixes design flaws when they are cheapest to change.', ['threat modeling']],
+    ['STRIDE', '', 'A threat-modeling checklist: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.', 'Gives teams a structured way to find threats in each part of a design.'],
+    ['DREAD', '', 'A risk-rating model: Damage, Reproducibility, Exploitability, Affected users, Discoverability.', 'Helps rank threats so the worst are fixed first.'],
+    ['PASTA', 'Process for Attack Simulation and Threat Analysis', 'A seven-stage, risk-centric threat-modeling method that ties threats to business impact.', 'Connects technical threats to business risk.'],
+    ['SDLC', 'Software Development Life Cycle', 'The phases of building software: requirements, design, coding, testing, deployment and operations. A secure SDLC adds security to each phase.', 'Building security in from the start is cheaper and more effective than bolting it on at the end.', ['Secure SDLC']],
+    ['White-box', '', 'White-box testing sees the source code. Black-box testing only sees the running system, like an outside attacker.', 'Each finds different kinds of flaws, so mature programs use both.', ['white-box', 'black-box', 'Black-box']],
+    ['CI/CD', 'Continuous Integration / Continuous Delivery', 'Automated pipelines that build, test and deploy code on every change.', 'Pipelines hold powerful credentials, which makes them a prime target. They are also the ideal place for automated security checks.', ['CI', 'pipeline', 'delivery pipeline']],
+    ['Access key', '', 'A long-lived ID and secret pair that lets a program call a cloud API as a user.', 'Leaked access keys give attackers direct access to your account. Prefer short-lived credentials.', ['access key', 'access keys']],
+    ['Secret scanning', '', 'Automatically searching code repositories for committed passwords, keys and tokens.', 'Catches leaked credentials before attackers, who run their own scanners, find them.', ['secret scanning']],
+    ['Shift left', '', 'Moving security checks earlier in development, into design, code review and the pipeline.', 'Flaws found earlier are faster and cheaper to fix.', ['shift security left']],
+
+    /* ---------- Security operations ---------- */
+    ['Incident response lifecycle', '', 'NIST’s phases: preparation → detection and analysis → containment, eradication and recovery → post-incident activity.', 'A structured process stops panicked decisions that destroy evidence or miss the attacker’s back doors.', ['incident response']],
+    ['Containment', '', 'Stopping an attack from spreading or continuing, for example by disabling keys or isolating systems, without yet removing everything.', 'Limits damage fast while keeping evidence for investigation.', ['containment']],
+    ['Eradication', '', 'Removing the attacker’s access and footholds completely: back-door users, malware, stolen keys.', 'Skip it, or do it too early, and the attacker comes straight back.', ['eradication', 'eradicate']],
+    ['Persistence', '', 'Ways an attacker keeps access even after the original entry point is closed, such as new users, keys or scheduled jobs.', 'You must find and remove every persistence mechanism, or the incident isn’t over.', ['persistence']],
+    ['Exfiltration', '', 'Copying data out of an organization without permission.', 'Usually the attacker’s goal, and what triggers breach-notification duties.', ['exfiltration', 'exfiltrated']],
+    ['Initial access', '', 'How the attacker first got in: a leaked key, a phishing email, an exposed service.', 'Finding it tells you what to fix so it doesn’t happen again.', ['initial access']],
+    ['Chain of custody', '', 'A documented record of who collected, handled and stored each piece of evidence, and when.', 'Without it, evidence may be rejected in court or disciplinary proceedings.', ['chain of custody']],
+    ['Forensics', '', 'Collecting and analyzing digital evidence to work out what happened.', 'In the cloud you rely on provider logs, snapshots and contract terms, because you can’t seize the hardware.', ['forensics', 'forensic']],
+    ['SIEM', 'Security Information and Event Management', 'A platform that collects logs from many systems, correlates them and raises alerts.', 'Gives the security team one place to spot and investigate attacks.'],
+    ['SOAR', 'Security Orchestration, Automation and Response', 'Tools that automate response steps, such as disabling a key or isolating a host, when an alert fires.', 'Cuts response time from hours to seconds.'],
+    ['SCP', 'Service Control Policy', 'An AWS Organizations policy that sets the maximum permissions for every account in the organization. Even account admins can’t exceed it.', 'Lets you enforce guardrails, such as “nobody can turn off audit logging”, that a compromised admin can’t undo.', ['SCPs']],
+    ['Guardrail', '', 'An organization-wide preventive rule (such as an SCP or Azure Policy) that blocks dangerous actions everywhere.', 'Holds even when an attacker gains administrator rights inside one account.', ['guardrail', 'guardrails', 'org policy']],
+    ['ITIL', 'Information Technology Infrastructure Library', 'A widely used framework for IT service management: incident, problem, change, release and configuration management.', 'Security operations plug into these processes, for example by making sure every change is reviewed.'],
+    ['ISO/IEC 27037', '', 'International guidance for identifying, collecting and preserving digital evidence.', 'Following it helps evidence hold up legally.'],
+    ['ISO/IEC 27050', '', 'International standard for electronic discovery (eDiscovery).', 'Guides how electronically stored information is preserved and produced for legal cases.'],
+    ['IP address', '', 'The numeric network address of a device, such as 185.220.101.47.', 'A known identity suddenly calling from a new IP is a classic sign of stolen credentials.', ['IP', 'source IP', 'Source IP', 'IP allow-lists']],
+    ['GetObject', '', 'The cloud storage API call that downloads a file (object) from a bucket. PutObject uploads one, and ListObjects lists them.', 'Large bursts of GetObject from an unfamiliar identity are a classic sign of data theft.', ['PutObject', 'ListObjects', 'ListBuckets']],
+    ['CreateUser', '', 'IAM API calls that create a user (CreateUser), give it permissions (AttachUserPolicy) and issue it keys (CreateAccessKey).', 'Attackers chain these to build a hidden back-door account.', ['AttachUserPolicy', 'CreateAccessKey', 'ListAttachedUserPolicies']],
+    ['StopLogging', '', 'API calls that pause (StopLogging) or remove (DeleteTrail) the account’s audit trail.', 'Attackers try them to hide their tracks. Guardrails should block both.', ['DeleteTrail']],
+    ['GetCallerIdentity', '', 'An API call that answers “who am I?” for the credentials being used.', 'Often an attacker’s very first call after stealing a key, to see what it is worth.'],
+
+    /* ---------- Legal, risk & compliance ---------- */
+    ['GDPR', 'General Data Protection Regulation', 'The EU law on personal data. It applies to any organization handling EU residents’ data.', 'Fines reach 4% of global annual turnover. It sets rules on transfers, breach notification and data subjects’ rights.'],
+    ['EEA', 'European Economic Area', 'The EU countries plus Iceland, Liechtenstein and Norway.', 'GDPR restricts transferring personal data outside the EEA.'],
+    ['SCCs', 'Standard Contractual Clauses', 'Contract terms approved by the European Commission that make transfers of personal data outside the EEA lawful.', 'The most common transfer mechanism in cloud contracts.', ['Standard Contractual Clauses']],
+    ['BCRs', 'Binding Corporate Rules', 'Internal data protection rules approved by regulators for transfers within a multinational group.', 'An alternative to SCCs for large groups.', ['Binding Corporate Rules']],
+    ['Adequacy decision', '', 'A European Commission ruling that a country protects personal data to EU standards, so data can flow there freely.', 'The simplest transfer mechanism, when one exists.', ['adequacy', 'Adequacy decisions']],
+    ['EU-US Data Privacy Framework', '', 'The 2023 adequacy arrangement allowing personal data transfers to certified US companies.', 'Replaced Privacy Shield, which the EU Court struck down in 2020.'],
+    ['Transfer impact assessment', '', 'An assessment of whether the destination country’s laws could undermine the protection of transferred personal data.', 'Required alongside SCCs since the EU Court’s Schrems II ruling.', ['transfer impact assessment']],
+    ['Transfer mechanism', '', 'The legal basis that makes sending personal data abroad lawful: adequacy, SCCs, BCRs or narrow exceptions.', 'Without one, a cross-border transfer breaks GDPR, whatever the provider’s security certifications say.', ['transfer mechanism', 'Transfer mechanisms']],
+    ['Supervisory authority', '', 'The national data protection regulator, such as the CNIL in France or the ICO in the UK.', 'You must notify it of personal data breaches under GDPR.', ['supervisory authority']],
+    ['Article 33', 'GDPR Article 33', 'The GDPR rule requiring controllers to notify the supervisory authority of a personal data breach within 72 hours of becoming aware.', 'Missing it can bring fines on top of the breach itself.'],
+    ['Legal hold', '', 'An instruction to preserve all data relevant to a lawsuit or investigation, suspending normal deletion.', 'Destroying relevant data after litigation is anticipated (spoliation) can lead to court sanctions.', ['legal hold']],
+    ['eDiscovery', 'Electronic discovery', 'Identifying, preserving, collecting, reviewing and producing electronic information for legal cases.', 'In SaaS and cloud, the data sits with the provider, so you need tools and contract terms to do it properly.'],
+    ['ESI', 'Electronically Stored Information', 'Any digital information that may be evidence: email, chats, documents, logs.', 'Must be preserved once litigation is reasonably anticipated.'],
+    ['Spoliation', '', 'Destroying or altering evidence relevant to legal proceedings.', 'Courts can sanction parties or assume the lost evidence was damaging.', ['spoliation']],
+    ['Custodian', '', 'In eDiscovery, a person whose data is relevant to a case.', 'Their mailboxes and files are what get placed on legal hold.', ['custodians']],
+    ['ICFR', 'Internal Control over Financial Reporting', 'The controls that make sure a company’s financial statements are accurate.', 'SOC 1 reports are about these controls, not security in general.'],
+    ['Trust Services Criteria', '', 'The AICPA criteria SOC 2 audits against: security, availability, processing integrity, confidentiality and privacy.', 'Defines what a SOC 2 report actually covers.'],
+    ['NDA', 'Non-Disclosure Agreement', 'A contract promising to keep shared information confidential.', 'Providers usually share detailed audit reports only under NDA.'],
+    ['SLA', 'Service Level Agreement', 'The contract’s measurable promises, such as 99.9% monthly uptime, and the remedies if they are missed.', 'Defines what availability you can count on and what you get (usually service credits) when it fails.', ['SLAs']],
+    ['Service credits', '', 'Discounts a provider owes when it misses its SLA, usually only if the customer claims them in time.', 'Often the only remedy, and rarely enough to cover the business impact of an outage.', ['service credits', 'credits']],
+    ['MSA', 'Master Services Agreement', 'The main contract governing a relationship with a provider, with the SLA, DPA and other terms attached.', 'Where liability, audit rights and exit terms are set.'],
+    ['DPA', 'Data Processing Agreement', 'The contract GDPR requires between a controller and a processor, covering how personal data is handled.', 'Without one, using a cloud provider for personal data breaks GDPR.'],
+    ['Right to audit', '', 'A contract clause letting the customer audit the provider or receive audit evidence.', 'Large providers usually replace on-site audits with SOC 2 and ISO reports.', ['right to audit']],
+    ['Crypto-shredding', '', 'Making data unrecoverable by destroying the encryption keys that protect it.', 'The accepted way to sanitize data in multi-tenant cloud, where you can’t destroy the physical disks.', ['crypto-shredding', 'Crypto-shred', 'crypto-shred']],
+    ['Degaussing', '', 'Erasing magnetic media with a strong magnetic field.', 'Doesn’t work on SSDs and is impossible on a provider’s shared drives.', ['degaussing', 'degauss', 'degaussed']],
+    ['SSD', 'Solid-State Drive', 'Flash-based storage with no magnetic platters.', 'Wear-leveling leaves old copies of data in hidden areas, so overwriting and degaussing aren’t reliable ways to erase it.', ['SSDs']],
+    ['Certificate of deletion', '', 'A provider’s formal written confirmation that customer data has been destroyed.', 'Evidence for auditors and regulators that data was disposed of properly.', ['certificate of deletion']],
+    ['Portability', '', 'Being able to move your data and workloads out of a provider in a usable format.', 'Avoids vendor lock-in and makes a clean exit possible.', ['portability']],
+    ['Data residency', '', 'Where data is physically stored.', 'Some laws and contracts require data to stay in a particular country or region.', ['data residency', 'residency']],
+    ['Data sovereignty', '', 'Which country’s laws apply to data, which can differ from where it is stored.', 'A US provider may have to hand over data held in Europe under US law.', ['sovereignty']],
+    ['CLOUD Act', 'Clarifying Lawful Overseas Use of Data Act (US, 2018)', 'A US law letting US authorities compel US-based providers to produce data they control, wherever it is stored.', 'Raises sovereignty concerns, and is a reason some organizations choose HYOK.'],
+    ['Risk treatment', '', 'The four responses to a risk: avoid, mitigate, transfer (insurance, contracts) or accept.', 'Moving to the cloud transfers some responsibility, never accountability.', ['risk treatment']],
+    ['Due diligence', '', 'Investigating a provider’s security, finances and compliance before and during a contract.', 'Shows you took reasonable care, which matters to regulators after an incident.', ['due diligence']]
+  ];
 })();
 </script>
 <script>
@@ -1354,7 +1762,8 @@ code,.mono{font-family:var(--mono)}
     eyebrow: 'Practice range · CCSP domains 1–6',
     title: 'Cloud Security Sandbox',
     subtitle: 'Six hands-on missions, one for each CCSP domain. Each one puts you in a broken cloud environment. Change the settings, run the simulation, and see whether the attacker gets in.',
-    intro: '<b>How it works.</b> Pick a mission, read the briefing, and work in the panel below it. Fix settings, flag code, read logs or make the call, then run it to see what holds. Hints cost 10 points and failed runs cost 5. Your progress stays in this browser, and nothing here connects to a real cloud.',
+    intro: '<b>How it works.</b> Pick a mission, read the briefing, and work in the panel below it. Fix settings, flag code, read logs or make the call, then run it to see what holds. Hints cost 10 points and failed runs cost 5. Your progress stays in this browser, and nothing here connects to a real cloud. <b>New to a term?</b> Dotted words like KMS or SSRF explain themselves when you hover or tap them, each mission lists its terms under the briefing, and the Glossary button has all of them.',
+    glossary: Sandbox.glossary,
     footer: 'Fictional companies, people, keys and IP addresses. Nothing here connects to a real cloud. Not affiliated with or endorsed by ISC2. CCSP is a registered mark of ISC2, Inc.',
     missions: missions
   });
