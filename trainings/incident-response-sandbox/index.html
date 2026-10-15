@@ -744,7 +744,7 @@ code,.mono{font-family:var(--mono)}
         var d = m.debrief;
         $('sb-debrief').className = r.done ? 'sb-debrief' : 'sb-locked';
         $('sb-debrief').innerHTML = !r.done
-          ? 'The debrief, with the CCSP concepts behind this mission, unlocks when you complete it.'
+          ? 'The debrief unlocks when you complete this mission.'
           : '<div class="sb-eyebrow">Debrief</div><h3>' + esc(d.title) + '</h3><p>' + d.summary + '</p>' +
             '<dl class="sb-terms">' + d.terms.map(function (t) { return '<div><dt>' + t[0] + '</dt><dd>' + t[1] + '</dd></div>'; }).join('') + '</dl>' +
             '<div><h4 class="sb-eyebrow" style="margin-bottom:8px">On the exam</h4><ul class="sb-exam">' + d.exam.map(function (e) { return '<li>' + e + '</li>'; }).join('') + '</ul></div>' +
