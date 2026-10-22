@@ -966,18 +966,21 @@ async function exportCSV(){
    Reports — dashboard/heat map extracts and 10-K Item 1C iXBRL draft
    ===================================================================== */
 const LIBS={
-  pptx:['https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',()=>window.PptxGenJS],
-  docx:['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js',()=>window.docx],
-  pdf:['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf&&window.jspdf.jsPDF],
-  pdfTable:['https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js',()=>window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable]
+  pptx:['https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',()=>window.PptxGenJS,'sha384-Cck14aA9cifjYolcnjebXRfWGkz5ltHMBiG4px/j8GS+xQcb7OhNQWZYyWjQ+UwQ'],
+  docx:['https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js',()=>window.docx,'sha384-4xaIisuLEy2lo2HkB2C4rEf7v8jbTb2kuogX6TkuEt9feTWKBSFSOzsqNNbV+sKh'],
+  pdf:['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf&&window.jspdf.jsPDF,'sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk'],
+  pdfTable:['https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js',()=>window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable,'sha384-Xl/CUCfJbzsngMp0CFxkmF0VW/8C160IsGujqeQlIhaGxKz2+JsIGORFqtCPeldF']
 };
 const libCache={};
 function loadLib(k){ // document libraries are loaded on first use, not with the page
   if(libCache[k])return libCache[k];
-  const [url,probe]=LIBS[k];
+  const [url,probe,integrity]=LIBS[k];
   libCache[k]=new Promise((res,rej)=>{
     if(probe())return res(probe());
     const s=document.createElement('script');s.src=url;
+    // Subresource Integrity: if the CDN ever serves a file that is not the exact build we
+    // pinned, the browser refuses to run it rather than executing it in this origin.
+    if(integrity){s.integrity=integrity;s.crossOrigin='anonymous';s.referrerPolicy='no-referrer';}
     s.onload=()=>probe()?res(probe()):rej(new Error('Library did not initialise: '+k));
     s.onerror=()=>{delete libCache[k];rej(new Error('Could not load '+k));};
     document.head.appendChild(s);

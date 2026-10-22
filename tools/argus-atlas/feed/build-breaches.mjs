@@ -19,6 +19,10 @@ const WINDOW_DAYS = Number(arg('--days', 60));
 const OUT = resolve(arg('--out', resolve(dirname(fileURLToPath(import.meta.url)), '../data/breaches.json')));
 const UA = 'Satya Salyankar satyajitsalyankar@gmail.com';
 
+// Upstream feeds supply the link for each record, so treat it as untrusted: keep http(s) only.
+// Anything else (javascript:, data:) would end up in an href on the dashboard and run in its origin.
+const httpUrl = u => { try { const p = new URL(String(u)); return (p.protocol === 'https:' || p.protocol === 'http:') ? p.href : ''; } catch (e) { return ''; } };
+
 const now = new Date();
 const since = new Date(now.getTime() - WINDOW_DAYS * 864e5);
 const iso = d => d.toISOString().slice(0, 10);
@@ -144,7 +148,7 @@ async function fetchRansomwareLive() {
         status: 'Listed on a leak site; not a confirmed disclosure',
         records: v.data_size ? String(v.data_size) : '',
         detail: [v.activity && v.activity !== 'Not Found' ? v.activity : '', desc].filter(Boolean).join(' · '),
-        url: v.url || '',
+        url: httpUrl(v.url),
       });
     }
     await sleep(500);
