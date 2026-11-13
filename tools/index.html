@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tools · Satya Salyankar</title>
-<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting; Argus Atlas, a world map of cybersecurity regulations, recent breaches and supply-chain risk by sector; Argus Gate, a third-party risk management tool for vendor intake, risk tiering, due diligence and re-assessment; and CSF 2.0 Baseline, a NIST Cybersecurity Framework 2.0 self-assessment with a maturity dashboard.">
+<meta name="description" content="Browser-based cybersecurity tools built by Satya Salyankar with Claude — including Argus Watch, a cyber risk register with board reporting and SEC Item 1C disclosure drafting; Argus Atlas, a world map of cybersecurity regulations, recent breaches and supply-chain risk by sector; Argus Gate, a third-party risk management tool for vendor intake, risk tiering, due diligence and re-assessment; CSF 2.0 Baseline, a NIST Cybersecurity Framework 2.0 self-assessment with a maturity dashboard; and ISO 21434 Baseline, a connected-vehicle cybersecurity engineering self-assessment across clauses 5 to 15 with UN R155 CSMS themes.">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -152,6 +152,19 @@
         </div>
       </div>
 
+      <div class="ttile" data-tool="iso21434-baseline">
+        <button class="ttile-expand" type="button" aria-expanded="false" aria-controls="panel-iso21434-baseline">
+          <span class="chev" aria-hidden="true">⌄</span>
+          <span class="mark" aria-hidden="true">⬡</span>
+          <span class="tname">ISO 21434 Baseline</span>
+          <span class="tsum">Connected-vehicle cybersecurity engineering, clauses 5 to 15, with R155 themes.</span>
+        </button>
+        <div class="ttile-foot">
+          <a class="tlaunch" href="iso21434-baseline/" target="_blank" rel="noopener">Open ↗</a>
+          <span class="tver">v1</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- ===================== DETAIL PANELS =====================
@@ -273,6 +286,35 @@
           <li><span class="ic">▤</span><div><b>Priority gaps</b><span>Categories ranked by the distance to target, flagged High, Medium or On target, with your notes alongside.</span></div></li>
           <li><span class="ic">⇩</span><div><b>Export and import</b><span>Download the assessment as CSV for a spreadsheet or JSON to reload later.</span></div></li>
           <li><span class="ic">⌂</span><div><b>Private by design</b><span>Opens with a labelled example assessment. Your ratings are saved in your own browser — no accounts, nothing sent anywhere.</span></div></li>
+        </ul>
+      </section>
+
+      <section class="tpanel" id="panel-iso21434-baseline" data-tool="iso21434-baseline" role="region" aria-labelledby="iso-h">
+        <div>
+          <h2 id="iso-h">ISO 21434 Baseline</h2>
+          <p class="tag-line">Cybersecurity engineering for connected vehicles.</p>
+          <p class="lede">
+            A self-assessment aligned to the structure of ISO/SAE 21434, covering clauses 5 to 15 —
+            organisational management through concept, development, validation, production, operations
+            and the TARA methods. Each of the 42 items is rated for conformance <em>and</em> for whether
+            the evidence actually exists, because "we do that" and "we can show it" are different findings.
+          </p>
+          <div class="row">
+            <a class="btn primary" href="iso21434-baseline/" target="_blank" rel="noopener">Open ISO 21434 Baseline ↗</a>
+            <span class="meta">v1 · Nov 2026 · single HTML file</span>
+          </div>
+          <div class="flow" aria-label="Workflow">
+            <em>Pick your role</em><i>→</i><em>Rate conformance</em><i>→</i><em>Flag evidence</em><i>→</i><em>Dashboard</em><i>→</i><em>Priority gaps</em>
+          </div>
+        </div>
+
+        <ul class="caps">
+          <li><span class="ic">◎</span><div><b>Clauses 5 to 15</b><span>42 items across organisational and project management, distributed activities, continual monitoring, concept, development, validation, production, operations, end of support and the TARA methods — each with a plain-language guiding question.</span></div></li>
+          <li><span class="ic">▦</span><div><b>Conformance plus evidence</b><span>Not met, Partial, Met or N/A, paired with an evidence flag and a prompt for the work products an assessor would ask to see. The dashboard calls out anything rated Met with no evidence recorded.</span></div></li>
+          <li><span class="ic">⛨</span><div><b>Role-aware</b><span>Pick OEM, Tier-1 or Tier-2+ and the tool marks which items you lead and which you only support — vehicle-level validation and fleet updates sit very differently for a supplier than a manufacturer.</span></div></li>
+          <li><span class="ic">◈</span><div><b>R155 themes</b><span>Items are grouped against indicative UN R155 CSMS themes — governance, risk, verification, monitoring, suppliers, incident response, updates — so you can see type-approval readiness alongside 21434 alignment.</span></div></li>
+          <li><span class="ic">▤</span><div><b>Gaps and exclusions</b><span>Not-met items first, weighted to the ones you lead, plus a separate list of every N/A that still needs its written justification.</span></div></li>
+          <li><span class="ic">⌂</span><div><b>Not the standard</b><span>Clause numbers are referenced so you can find the requirement in your own copy; all wording here is original. Runs entirely in your browser — nothing is sent anywhere.</span></div></li>
         </ul>
       </section>
 

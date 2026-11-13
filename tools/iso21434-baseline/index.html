@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="ISO 21434 Baseline — a self-assessment aligned to the structure of ISO/SAE 21434 road-vehicle cybersecurity engineering, clauses 5 to 15, rated for conformance and supporting evidence, with indicative UN R155 CSMS themes.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<style>html,body{margin:0}[hidden]{display:none!important}</style>
+<title>ISO 21434 Baseline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --surface-2:#eaeef2; --line:#d5dce3; --line-soft:#e4e9ee;
+  --ink:#0f1720; --ink-2:#48525e; --ink-3:#6c7682;
+  --accent:#1f5fae; --accent-soft:#dce8f7; --focus:#1f5fae;
+  --met:#2f7d3e; --met-bg:#e1f1e4; --part:#9a6200; --part-bg:#fcefd6;
+  --not:#b3261e; --not-bg:#fbe3e1; --na:#6c7682; --na-bg:#eaeef2;
+  --display:"IBM Plex Sans Condensed",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111318; --surface:#181b21; --surface-2:#20242c; --line:#2c313b; --line-soft:#242931;
+  --ink:#e9e7e1; --ink-2:#b1aea6; --ink-3:#7f7c74;
+  --accent:#45b6bf; --accent-soft:#173b3f; --focus:#6cd0d8;
+  --met:#6cc28f; --met-bg:#17301f; --part:#e2b84a; --part-bg:#3a2e10;
+  --not:#e86868; --not-bg:#3e1a1a; --na:#7f7c74; --na-bg:#20242c;
+}}
+:root[data-theme="dark"]{
+  --bg:#111318; --surface:#181b21; --surface-2:#20242c; --line:#2c313b; --line-soft:#242931;
+  --ink:#e9e7e1; --ink-2:#b1aea6; --ink-3:#7f7c74;
+  --accent:#45b6bf; --accent-soft:#173b3f; --focus:#6cd0d8;
+  --met:#6cc28f; --met-bg:#17301f; --part:#e2b84a; --part-bg:#3a2e10;
+  --not:#e86868; --not-bg:#3e1a1a; --na:#7f7c74; --na-bg:#20242c;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.2}
+.wrap{max-width:1120px;margin:0 auto;padding:22px 20px 64px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--ink-2)}
+.eyebrow{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:6px}
+.top h1{font-size:clamp(23px,3vw,30px)}
+.top p{margin:5px 0 0;color:var(--ink-2);max-width:72ch}
+.save-state{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);text-align:right;white-space:nowrap}
+
+.notice{margin:16px 0 0;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:9px;font-size:13.5px;color:var(--ink-2)}
+.notice b{color:var(--ink)}
+.notice ul{margin:7px 0 0;padding-left:17px}
+.notice li{margin:3px 0}
+
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 0}
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px}
+.tabs button{appearance:none;border:0;background:none;font:inherit;font-weight:500;color:var(--ink-2);padding:7px 15px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.btn{appearance:none;font:inherit;font-size:13.5px;padding:7px 13px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0a1417}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0a1417}}
+.btn:focus-visible,.seg button:focus-visible,.tabs button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.role-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0 0;padding:13px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.role-row .lbl{font-family:var(--display);font-weight:600;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3)}
+.seg{display:flex;gap:3px;background:var(--surface-2);padding:3px;border-radius:8px;flex-wrap:wrap}
+.seg button{appearance:none;border:0;background:none;font:inherit;font-size:13px;color:var(--ink-2);padding:6px 12px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.role-row .hint{font-size:13px;color:var(--ink-2);flex:1;min-width:220px}
+
+.scale{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px;margin:14px 0 0}
+.scale div{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:12.5px;color:var(--ink-2)}
+.scale b{display:block;font-family:var(--display);font-size:13.5px;color:var(--ink)}
+
+.cl{margin:22px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cl-head{padding:14px 17px;border-bottom:1px solid var(--line-soft);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.cl-head .n{font-family:var(--mono);font-size:12.5px;color:#fff;background:var(--accent);padding:2px 8px;border-radius:5px}
+:root[data-theme="dark"] .cl-head .n{color:#0a1417}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cl-head .n{color:#0a1417}}
+.cl-head h3{font-size:17px}
+.cl-head .pct{margin-left:auto;font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+
+.item{padding:15px 17px;border-top:1px solid var(--line-soft);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:start}
+.cl-head + .item{border-top:0}   /* .item:first-of-type never matches: .cl-head is the first div */
+.item .id{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.item h4{font-size:15px;margin:1px 0 4px}
+.item .q{font-size:13.5px;color:var(--ink-2);margin:0}
+.item .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.tag{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--ink-3);background:var(--surface-2)}
+.tag.r155{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.tag.lead{border-color:var(--met);color:var(--met);background:var(--met-bg)}
+.item .ctl{display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.ev{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.ev input{accent-color:var(--accent);width:15px;height:15px}
+.item .note{grid-column:1/-1;margin-top:2px}
+.item .note textarea{width:100%;min-height:0;height:34px;resize:vertical;font:inherit;font-size:13px;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:7px 9px}
+.item .note textarea:focus{outline:2px solid var(--focus);outline-offset:-1px}
+.item .evhint{grid-column:1/-1;font-size:12.5px;color:var(--ink-3);margin:0}
+.item .evhint b{color:var(--ink-2);font-weight:500}
+@media (max-width:720px){.item{grid-template-columns:1fr}.item .ctl{align-items:flex-start}}
+
+.s-ni button[data-v="ni"][aria-pressed="true"]{background:var(--not-bg);color:var(--not)}
+.s-pa button[data-v="pa"][aria-pressed="true"]{background:var(--part-bg);color:var(--part)}
+.s-me button[data-v="me"][aria-pressed="true"]{background:var(--met-bg);color:var(--met)}
+.s-na button[data-v="na"][aria-pressed="true"]{background:var(--na-bg);color:var(--na)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:20px 0 0}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+.kpi .eyebrow{margin-bottom:4px}
+.kpi b{display:block;font-family:var(--display);font-size:27px;font-weight:700;line-height:1.1}
+.kpi span{font-size:12.5px;color:var(--ink-2)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:17px;margin:18px 0 0}
+.card h3{font-size:16px;margin-bottom:3px}
+.card .sub{font-size:13px;color:var(--ink-2);margin:0 0 14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:18px}
+
+.row{display:grid;grid-template-columns:minmax(150px,auto) 1fr auto;gap:11px;align-items:center;margin:0 0 8px;font-size:13px}
+.row .nm{color:var(--ink-2)}
+.meter{height:11px;border-radius:6px;background:var(--surface-2);overflow:hidden;display:flex}
+.meter i{display:block;height:100%}
+.meter i.me{background:var(--met)} .meter i.pa{background:var(--part)}
+.meter i.ni{background:var(--not)} .meter i.na{background:var(--na);opacity:.45}
+.row .v{font-family:var(--mono);font-size:12px;color:var(--ink-3);text-align:right;min-width:52px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:8px 9px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+th{font-family:var(--display);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+td.mono{font-family:var(--mono);font-size:12px;color:var(--ink-3);white-space:nowrap}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px}
+.pill.ni{background:var(--not-bg);color:var(--not)} .pill.pa{background:var(--part-bg);color:var(--part)}
+.pill.me{background:var(--met-bg);color:var(--met)} .pill.na{background:var(--na-bg);color:var(--na)}
+.empty{color:var(--ink-3);font-style:italic;padding:14px 9px}
+.flag{margin:14px 0 0;padding:11px 14px;border-radius:9px;background:var(--part-bg);border:1px solid var(--part);font-size:13px;color:var(--ink)}
+.flag b{font-family:var(--display)}
+.foot{margin-top:30px;font-size:12.5px;color:var(--ink-3);text-align:center}
+[hidden]{display:none!important}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>ISO 21434 Baseline</h1>
+      <p>A self-assessment aligned to the structure of ISO/SAE 21434 road-vehicle cybersecurity engineering —
+         clauses 5 to 15, rated for conformance and supporting evidence, with indicative UN R155 CSMS themes.</p>
+    </div>
+    <div class="save-state" id="saveState">Saved in this browser</div>
+  </header>
+
+  <div class="notice">
+    <b>Read this first.</b> This tool is not the standard and does not reproduce it.
+    <ul>
+      <li>Clause numbers and short titles are referenced so you can find the matching requirement in your own copy of <b>ISO/SAE 21434:2021</b>. Every question and evidence prompt here is written from scratch and is my interpretation, not normative text.</li>
+      <li>The <b>R155 themes</b> are an indicative grouping to help you see type-approval readiness. The regulation's CSMS process requirements sit in §7.2.2 — confirm the specific paragraphs against the current text before relying on this for an approval submission.</li>
+      <li>A real conformance judgement needs an independent assessor and the actual work products. Treat this as a structured conversation starter, not an audit result.</li>
+    </ul>
+  </div>
+
+  <div class="role-row">
+    <span class="lbl">Your role</span>
+    <div class="seg" id="roleSeg" role="group" aria-label="Organisation role"></div>
+    <span class="hint" id="roleHint"></span>
+  </div>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tab-assess" aria-selected="true" aria-controls="v-assess">Assess</button>
+      <button role="tab" id="tab-dash" aria-selected="false" aria-controls="v-dash">Dashboard</button>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnExample">Load example</button>
+      <button class="btn" id="btnReset">Reset</button>
+      <button class="btn" id="btnCsv">Export CSV</button>
+      <button class="btn" id="btnJson">Export JSON</button>
+      <button class="btn primary" id="btnImport">Import JSON</button>
+      <input type="file" id="fileIn" accept="application/json,.json" hidden>
+    </div>
+  </div>
+
+  <section id="v-assess" role="tabpanel" aria-labelledby="tab-assess">
+    <div class="scale" id="scale"></div>
+    <div id="clauses"></div>
+  </section>
+
+  <section id="v-dash" role="tabpanel" aria-labelledby="tab-dash" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div id="evFlag"></div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Conformance by clause</h3>
+        <p class="sub">Each bar shows met, partial, not met and not-applicable across that clause's items.</p>
+        <div id="byClause"></div>
+      </div>
+      <div class="card">
+        <h3>R155 CSMS themes</h3>
+        <p class="sub">Indicative readiness by theme. Confirm paragraph references against the regulation.</p>
+        <div id="byR155"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Priority gaps</h3>
+      <p class="sub">Not met first, then partial. Items you lead come before items you support.</p>
+      <div id="gaps"></div>
+    </div>
+    <div class="card">
+      <h3>Not-applicable items</h3>
+      <p class="sub">Every exclusion needs a written justification — an assessor will ask for each one.</p>
+      <div id="naList"></div>
+    </div>
+  </section>
+
+  <p class="foot">Built by Satya Salyankar with Claude · runs entirely in your browser · nothing is sent anywhere</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t,c,x) => { const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e; };
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------------------------------------------------------------------
+   Rating scale. ISO/SAE 21434 states requirements and work products rather than
+   maturity tiers, so conformance is paired with an explicit evidence flag:
+   "we say we do it" and "we can show it" are different findings.
+   --------------------------------------------------------------------------- */
+const STATES = [
+  {k:'ni', n:'Not met', d:'No process, or it happens case by case with nothing to show.'},
+  {k:'pa', n:'Partial', d:'Practised in part — some projects, some products, or incomplete evidence.'},
+  {k:'me', n:'Met',     d:'Defined, applied consistently, and evidenced in work products.'},
+  {k:'na', n:'N/A',     d:'Genuinely out of scope for this organisation. Needs a written justification.'}
+];
+const SK = Object.fromEntries(STATES.map(s=>[s.k,s.n]));
+
+const ROLES = [
+  {id:'oem', n:'OEM / vehicle manufacturer', h:'You hold type-approval responsibility and own vehicle-level validation, fleet monitoring and update campaigns.'},
+  {id:'t1',  n:'Tier-1 supplier',            h:'You answer customer cybersecurity interface agreements and hand over evidence packages, while flowing requirements down to your own suppliers.'},
+  {id:'t2',  n:'Tier-2+ / component supplier', h:'You typically develop out of context: your assumptions and the duties you pass to the integrator carry the weight.'}
+];
+
+const R155 = {
+  gov:  'CSMS governance',
+  risk: 'Risk assessment & treatment',
+  ver:  'Verification & testing',
+  mon:  'Monitoring, detection & response',
+  sup:  'Supplier & dependency management',
+  inc:  'Incident response & forensics',
+  upd:  'Post-production & updates'
+};
+
+/* Items: [id, title, question, r155 key, evidence prompt, roles that typically lead] */
+const CLAUSES = [
+ {n:'5', t:'Organizational cybersecurity management', items:[
+  ['5.4.1','Cybersecurity governance','Is there a cybersecurity policy with assigned authority, resources and accountability that actually governs how engineering is executed — not a document that exists only for audits?','gov','Signed policy, named cybersecurity authority on the org chart, evidence the role is resourced.',['oem','t1','t2']],
+  ['5.4.2','Cybersecurity culture','Do engineers and managers demonstrably understand their cybersecurity duties, with competence maintained and a climate where raising a concern is safe and acted on?','gov','Competence matrix, training records, examples of concerns raised and resolved.',['oem','t1','t2']],
+  ['5.4.3','Information sharing','Are there defined channels for receiving and sharing cybersecurity information with suppliers, customers, CERTs and outside researchers — including a published intake route for reports?','mon','Disclosure policy and contact point, CERT/ISAC membership, inbound and outbound sharing log.',['oem','t1']],
+  ['5.4.4','Management systems','Is cybersecurity engineering integrated into the quality management system — change, configuration, documentation and requirements management — rather than running in parallel to it?','gov','QMS procedures that reference cybersecurity, configuration and change records covering security artefacts.',['oem','t1','t2']],
+  ['5.4.5','Tool management','Are the tools whose output you rely on identified, with confidence in that output justified and the consequences of tool compromise or misuse considered?','ver','Tool inventory with versions, confidence or qualification rationale, access controls on the toolchain.',['oem','t1','t2']],
+  ['5.4.6','Information security management','Is your own information protected — TARA results, keys, source code, unfixed vulnerabilities — given that exposure of any of it would undermine vehicle security?','gov','ISMS scope or equivalent, classification of cybersecurity artefacts, key management practice.',['oem','t1','t2']],
+  ['5.4.7','Organizational cybersecurity audit','Is the cybersecurity process itself audited independently on a defined cycle, with findings tracked to closure rather than noted and filed?','ver','Audit plan and reports, independence statement, finding closure records with dates.',['oem','t1']]
+ ]},
+ {n:'6', t:'Project dependent cybersecurity management', items:[
+  ['6.4.1','Cybersecurity responsibilities','For this item or component, are cybersecurity responsibilities assigned to named people with the authority and the time to discharge them?','gov','Project responsibility matrix, named cybersecurity manager, resourcing plan.',['oem','t1','t2']],
+  ['6.4.2','Cybersecurity planning','Is there a cybersecurity plan covering activities, work products, milestones and dependencies for this project — and is it maintained as the project changes?','gov','Versioned cybersecurity plan aligned to project gates and the development schedule.',['oem','t1','t2']],
+  ['6.4.3','Tailoring','Where activities are omitted or reduced, is each decision documented with a rationale and approved — so tailoring is a decision rather than a silent gap?','gov','Tailoring register with rationale and named approver per deviation.',['oem','t1','t2']],
+  ['6.4.4','Reuse','When a previously developed component is reused, is it re-analysed against the new context, including whether the assumptions behind its original assessment still hold?','risk','Reuse analysis, delta TARA, record of which original assumptions were revalidated.',['t1','t2']],
+  ['6.4.5','Component out-of-context','For components developed without a specific vehicle context, are the assumed context and the obligations handed to the integrator stated explicitly rather than left implied?','risk','Assumptions document and the integration requirements passed to the customer.',['t1','t2']],
+  ['6.4.6','Off-the-shelf component','Are off-the-shelf and open-source components assessed for suitability, with an inventory good enough that a new CVE can be traced to the products it affects?','sup','SBOM or component inventory with versions, supplier evidence, suitability assessment.',['oem','t1','t2']],
+  ['6.4.7','Cybersecurity case','Is there a structured argument, backed by evidence, that the item meets its cybersecurity goals — assembled as you go rather than written the week before release?','ver','Cybersecurity case with claims, argument and references to the supporting evidence.',['oem','t1']],
+  ['6.4.8','Cybersecurity assessment','Is an independent assessment performed, reaching a stated recommendation on whether the item is acceptable from a cybersecurity standpoint?','ver','Assessment report, assessor independence record, recommendation and how it was dispositioned.',['oem','t1']],
+  ['6.4.9','Release for post-development','Is release gated on the cybersecurity case and assessment, with the decision, conditions and open issues recorded by an accountable person?','gov','Signed release record, open-issue list with dispositions, conditions carried into production and operations.',['oem','t1']]
+ ]},
+ {n:'7', t:'Distributed cybersecurity activities', items:[
+  ['7.4.1','Supplier capability','Is a supplier’s capability to perform cybersecurity activities evaluated before award — rather than inferred from a questionnaire they filled in themselves?','sup','Capability assessment or audit results, maturity evidence held on file.',['oem','t1']],
+  ['7.4.2','Request for quotation','Do RFQs state cybersecurity expectations — activities, work products and evidence — so they are priced and contracted up front instead of negotiated after award?','sup','RFQ text carrying cybersecurity requirements, and the supplier’s documented response.',['oem','t1']],
+  ['7.4.3','Alignment of responsibilities','Is there a cybersecurity interface agreement that divides activities between the parties, names the contacts, and sets how evidence and incident information flow in both directions?','sup','Signed interface agreement, responsibility matrix, named interfaces, escalation route.',['oem','t1','t2']]
+ ]},
+ {n:'8', t:'Continual cybersecurity activities', items:[
+  ['8.3','Cybersecurity monitoring','Are internal and external sources monitored continuously for information affecting fielded vehicles, with defined triggers rather than whoever happens to read the mailing list?','mon','Source list and cadence, triage queue, demonstrated coverage of all fielded variants.',['oem','t1']],
+  ['8.4','Cybersecurity event assessment','Is each event triaged to decide whether it indicates a weakness or a vulnerability, within a defined timeframe and by someone competent to judge?','mon','Triage procedure with timeframes, event log showing outcomes and the reasoning.',['oem','t1']],
+  ['8.5','Vulnerability analysis','Are vulnerabilities analysed for attack paths and exploitability in the actual vehicle context, rather than accepted at whatever a generic severity score says?','risk','Vulnerability analyses showing attack paths and feasibility reasoning for your architecture.',['oem','t1','t2']],
+  ['8.6','Vulnerability management','Are vulnerabilities treated and tracked to closure, with an explicit recorded decision when the choice is to accept, and the fielded fleet accounted for?','risk','Register with owners, dates, treatment decisions, and named approval for each acceptance.',['oem','t1','t2']]
+ ]},
+ {n:'9', t:'Concept', items:[
+  ['9.3','Item definition','Is the item’s boundary, function, operating environment and external interfaces defined well enough that a second analyst would scope the same system?','risk','Item definition with boundary diagram, interfaces, assumptions and operating environment.',['oem']],
+  ['9.4','Cybersecurity goals','Do cybersecurity goals follow from the risk assessment and state what must be achieved, with a treatment decision recorded per threat scenario?','risk','Goals traceable to threat scenarios, risk treatment decisions, stated cybersecurity claims.',['oem','t1']],
+  ['9.5','Cybersecurity concept','Are the goals turned into requirements allocated to specific components, with the operational and maintenance duties they imply identified?','risk','Concept document, requirement-to-component allocation, operational assumptions passed on.',['oem','t1']]
+ ]},
+ {n:'10', t:'Product development', items:[
+  ['10.4.1','Refinement of requirements and design','Are cybersecurity requirements refined into design and allocated through the architecture, with traceability maintained in both directions as the design moves?','ver','Requirements under configuration control, architecture showing the controls, trace matrix.',['t1','t2']],
+  ['10.4.2','Weakness analysis','Is the design analysed for weaknesses — including those the architecture itself introduces — and are findings fed back into the design rather than logged and closed?','risk','Weakness and threat-modelling records, findings with disposition and evidence of re-analysis.',['t1','t2']],
+  ['10.4.3','Integration and verification','Is verification planned against the requirements and does it include adversarial work — fuzzing and penetration testing — not only confirmation that features function?','ver','Verification plan and specification, results, fuzz and penetration test reports, coverage rationale.',['oem','t1','t2']]
+ ]},
+ {n:'11', t:'Cybersecurity validation', items:[
+  ['11.4.1','Cybersecurity validation','At vehicle level, is it validated that the goals are adequate for the item and actually achieved once integrated, with residual risk judged and accepted by someone accountable?','ver','Vehicle-level validation report, residual risk statement, named acceptance.',['oem']]
+ ]},
+ {n:'12', t:'Production', items:[
+  ['12.4.1','Production control plan','Does production implement what the design assumed — key injection, debug interface lockdown, firmware provisioning — and is conformance of produced units actually checked?','ver','Production control plan, line controls for keys and debug access, unit conformance records.',['oem','t1']]
+ ]},
+ {n:'13', t:'Operations and maintenance', items:[
+  ['13.3','Cybersecurity incident response','Is there an incident response plan for fielded vehicles — exercised, with roles, communications, remedial action, and the ability to establish what actually happened?','inc','IR plan with roles, exercise records, log and forensic capability, customer and authority communications.',['oem']],
+  ['13.4','Updates','Can cybersecurity updates reach fielded vehicles safely and verifiably, with campaign tracking, rollback and a known affected population?','upd','Update process, campaign records, verification that installation succeeded, rollback plan.',['oem']]
+ ]},
+ {n:'14', t:'End of cybersecurity support and decommissioning', items:[
+  ['14.3','End of cybersecurity support','Is there a defined point at which support ends, communicated to owners, with the consequences stated rather than left for them to discover?','upd','End-of-support policy with dates per product, and the record of customer communication.',['oem']],
+  ['14.4','Decommissioning','Is decommissioning handled so keys, credentials and personal data do not persist in a vehicle or component that leaves the owner’s control?','upd','Decommissioning procedure, key and credential revocation, evidence of data erasure.',['oem','t1']]
+ ]},
+ {n:'15', t:'Threat analysis and risk assessment methods', items:[
+  ['15.3','Asset identification','Are assets and their cybersecurity properties identified, with damage scenarios derived from what would genuinely harm road users or the business?','risk','Asset register with properties, damage scenarios linked to each asset.',['oem','t1','t2']],
+  ['15.4','Threat scenario identification','Are threat scenarios derived systematically from assets and their properties, using a repeatable method rather than a workshop that depended on who was in the room?','risk','Threat scenarios traced to assets, with the method described.',['oem','t1','t2']],
+  ['15.5','Impact rating','Is impact rated across safety, financial, operational and privacy consequences, with the rationale for each rating written down?','risk','Impact ratings per damage scenario with the reasoning for each category.',['oem','t1','t2']],
+  ['15.6','Attack path analysis','Are attack paths identified to a depth that shows how a threat would actually be realised, including chained steps across components and entry points?','risk','Attack paths or trees per threat scenario, with entry points identified.',['oem','t1','t2']],
+  ['15.7','Attack feasibility rating','Is feasibility rated using a declared approach, applied consistently enough that two analysts would reach comparable results?','risk','Feasibility ratings with the chosen approach and its parameters documented.',['oem','t1','t2']],
+  ['15.8','Risk value determination','Is risk derived from impact and feasibility by a defined rule, so the same inputs always produce the same risk value?','risk','Documented determination method and the resulting risk values per threat scenario.',['oem','t1','t2']],
+  ['15.9','Risk treatment decision','Is a treatment decision recorded for every threat scenario — avoid, reduce, share or retain — with a named owner and the residual risk accepted explicitly?','risk','Treatment decision per scenario, owner, residual risk and named acceptance.',['oem','t1','t2']]
+ ]}
+];
+
+const ITEMS = CLAUSES.flatMap(c => c.items.map(i => ({
+  id:i[0], title:i[1], q:i[2], r155:i[3], ev:i[4], lead:i[5], clause:c.n, clauseTitle:c.t
+})));
+const BY_ID = Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+
+/* ---- state ---- */
+const LS_KEY = "iso21434-baseline-v1";
+let S = { role:'oem', items:{} };
+function blank(){ return { role:'oem', items:{} }; }
+function get(id){ return S.items[id] || (S.items[id] = {c:'', e:false, n:''}); }
+
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p && typeof p === 'object') {
+        S.role = ROLES.some(r=>r.id===p.role) ? p.role : 'oem';
+        S.items = {};
+        for (const [k,v] of Object.entries(p.items||{})) {
+          if (!BY_ID[k] || !v || typeof v !== 'object') continue;
+          S.items[k] = { c: STATES.some(s=>s.k===v.c) ? v.c : '', e: !!v.e, n: typeof v.n==='string' ? v.n.slice(0,2000) : '' };
+        }
+      }
+    }
+  } catch(e) { /* corrupt or blocked storage: start clean */ }
+}
+let saveOk = true;
+function save(){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+  catch(e){ saveOk = false; }
+  $('#saveState').textContent = saveOk ? 'Saved in this browser' : 'Not saving — storage blocked';
+}
+
+/* ---- derived ---- */
+const rated = () => ITEMS.filter(i => get(i.id).c);
+const counted = () => ITEMS.filter(i => { const c = get(i.id).c; return c && c !== 'na'; });
+function tally(list){
+  const t = {ni:0,pa:0,me:0,na:0,none:0};
+  list.forEach(i => { const c = get(i.id).c; t[c || 'none']++; });
+  return t;
+}
+function conformancePct(list){
+  const inScope = list.filter(i => { const c=get(i.id).c; return c && c!=='na'; });
+  if (!inScope.length) return null;
+  const score = inScope.reduce((a,i) => a + (get(i.id).c==='me' ? 1 : get(i.id).c==='pa' ? 0.5 : 0), 0);
+  return Math.round(score / inScope.length * 100);
+}
+const isLead = i => i.lead.indexOf(S.role) !== -1;
+
+/* ---- render: scale legend ---- */
+function renderScale(){
+  const wrap = $('#scale'); wrap.replaceChildren();
+  STATES.forEach(s => { const d = el('div'); d.append(el('b',null,s.n), document.createTextNode(s.d)); wrap.append(d); });
+}
+
+/* ---- render: role ---- */
+function renderRole(){
+  const seg = $('#roleSeg'); seg.replaceChildren();
+  ROLES.forEach(r => {
+    const b = el('button', null, r.n);
+    b.type='button'; b.dataset.role=r.id;
+    b.setAttribute('aria-pressed', String(S.role===r.id));
+    b.addEventListener('click', () => { S.role=r.id; save(); renderRole(); renderClauses(); renderDash(); });
+    seg.append(b);
+  });
+  $('#roleHint').textContent = (ROLES.find(r=>r.id===S.role)||ROLES[0]).h;
+}
+
+/* ---- render: assess ---- */
+function renderClauses(){
+  const root = $('#clauses'); root.replaceChildren();
+  CLAUSES.forEach(c => {
+    const box = el('div','cl');
+    const head = el('div','cl-head');
+    head.append(el('span','n','Clause '+c.n), el('h3',null,c.t));
+    const pct = conformancePct(c.items.map(i=>BY_ID[i[0]]));
+    head.append(el('span','pct', pct===null ? 'not rated' : pct+'% conformance'));
+    box.append(head);
+
+    c.items.forEach(row => {
+      const it = BY_ID[row[0]], st = get(it.id);
+      const d = el('div','item');
+
+      const left = el('div');
+      left.append(el('div','id', it.id), el('h4',null,it.title), el('p','q',it.q));
+      const tags = el('div','tags');
+      if (it.r155) tags.append(el('span','tag r155','R155 · '+R155[it.r155]));
+      tags.append(el('span', 'tag' + (isLead(it) ? ' lead' : ''), isLead(it) ? 'You lead this' : 'Supporting role'));
+      left.append(tags);
+      d.append(left);
+
+      const ctl = el('div','ctl');
+      const seg = el('div','seg s-'+(st.c||'none'));
+      STATES.forEach(s => {
+        const b = el('button', null, s.n);
+        b.type='button'; b.dataset.v=s.k;
+        b.setAttribute('aria-pressed', String(st.c===s.k));
+        b.title = s.d;
+        b.addEventListener('click', () => {
+          st.c = (st.c===s.k) ? '' : s.k;
+          save(); renderClauses(); renderDash();
+        });
+        seg.append(b);
+      });
+      ctl.append(seg);
+
+      const ev = el('label','ev');
+      const cb = document.createElement('input'); cb.type='checkbox'; cb.checked = !!st.e;
+      cb.addEventListener('change', () => { st.e = cb.checked; save(); renderDash(); });
+      ev.append(cb, el('span',null,'Evidence exists'));
+      ctl.append(ev);
+      d.append(ctl);
+
+      const hint = el('p','evhint');
+      hint.append(el('b',null,'Evidence to look for: '), document.createTextNode(it.ev));
+      d.append(hint);
+
+      const note = el('div','note');
+      const ta = document.createElement('textarea');
+      ta.value = st.n;
+      ta.placeholder = st.c==='na' ? 'Justification for marking this not applicable (required)' : 'Notes, gaps, owner, target date…';
+      ta.setAttribute('aria-label','Notes for '+it.id);
+      ta.addEventListener('input', () => { st.n = ta.value.slice(0,2000); save(); });
+      ta.addEventListener('blur', renderDash);
+      note.append(ta);
+      d.append(note);
+
+      box.append(d);
+    });
+    root.append(box);
+  });
+}
+
+/* ---- render: dashboard ---- */
+function meter(list){
+  const t = tally(list), n = list.length || 1;
+  const m = el('div','meter');
+  ['me','pa','ni','na'].forEach(k => { if(!t[k]) return; const i=el('i',k); i.style.width=(t[k]/n*100)+'%'; m.append(i); });
+  return m;
+}
+function barRow(name, list){
+  const r = el('div','row');
+  r.append(el('span','nm',name), meter(list));
+  const p = conformancePct(list);
+  r.append(el('span','v', p===null ? '—' : p+'%'));
+  return r;
+}
+function renderDash(){
+  const t = tally(ITEMS), inScope = counted(), pct = conformancePct(ITEMS);
+  const evOk = inScope.filter(i => get(i.id).e).length;
+  const claimedNoEv = inScope.filter(i => get(i.id).c==='me' && !get(i.id).e);
+  const leadItems = ITEMS.filter(isLead);
+
+  const k = $('#kpis'); k.replaceChildren();
+  const kpi = (lab,val,sub) => { const d=el('div','kpi'); d.append(el('div','eyebrow',lab), el('b',null,val), el('span',null,sub)); return d; };
+  k.append(
+    kpi('Conformance', pct===null?'—':pct+'%', inScope.length+' of '+ITEMS.length+' items in scope and rated'),
+    kpi('Met', String(t.me), 'partial '+t.pa+' · not met '+t.ni),
+    kpi('Evidence', inScope.length? Math.round(evOk/inScope.length*100)+'%':'—', evOk+' of '+inScope.length+' rated items have evidence'),
+    kpi('You lead', String(leadItems.length), 'items primarily yours as '+(ROLES.find(r=>r.id===S.role)||{}).n),
+    kpi('Not rated', String(t.none), t.na+' marked not applicable')
+  );
+
+  const flag = $('#evFlag'); flag.replaceChildren();
+  if (claimedNoEv.length) {
+    const f = el('div','flag');
+    f.append(el('b',null,claimedNoEv.length+' item'+(claimedNoEv.length>1?'s':'')+' rated Met with no evidence recorded. '),
+      document.createTextNode('This is the gap an assessor finds first — ' + claimedNoEv.slice(0,6).map(i=>i.id).join(', ') + (claimedNoEv.length>6?' and more.':'.')));
+    flag.append(f);
+  }
+
+  const bc = $('#byClause'); bc.replaceChildren();
+  CLAUSES.forEach(c => bc.append(barRow('Clause '+c.n+' · '+c.t.split(' ').slice(0,3).join(' '), c.items.map(i=>BY_ID[i[0]]))));
+
+  const br = $('#byR155'); br.replaceChildren();
+  Object.entries(R155).forEach(([key,name]) => {
+    const list = ITEMS.filter(i => i.r155===key);
+    if (list.length) br.append(barRow(name, list));
+  });
+
+  const gapList = ITEMS.filter(i => ['ni','pa'].indexOf(get(i.id).c) !== -1)
+    .sort((a,b) => {
+      const w = x => (get(x.id).c==='ni'?0:1) + (isLead(x)?0:0.5);
+      return w(a)-w(b) || a.id.localeCompare(b.id, undefined, {numeric:true});
+    });
+  const g = $('#gaps'); g.replaceChildren();
+  if (!gapList.length) g.append(el('p','empty','No gaps recorded yet — rate some items, or everything in scope is met.'));
+  else {
+    const tb = el('table');
+    const hd = el('tr'); ['Item','Title','Status','Role','Evidence','Notes'].forEach(h=>hd.append(el('th',null,h)));
+    tb.append(el('thead').appendChild(hd).parentNode);
+    const body = el('tbody');
+    gapList.forEach(i => {
+      const st = get(i.id), tr = el('tr');
+      tr.append(el('td','mono',i.id), el('td',null,i.title));
+      const sc = el('td'); sc.append(el('span','pill '+st.c, SK[st.c])); tr.append(sc);
+      tr.append(el('td',null, isLead(i)?'Lead':'Support'), el('td',null, st.e?'Yes':'—'), el('td','muted', st.n || '—'));
+      body.append(tr);
+    });
+    tb.append(body); g.append(tb);
+  }
+
+  const naItems = ITEMS.filter(i => get(i.id).c==='na');
+  const na = $('#naList'); na.replaceChildren();
+  if (!naItems.length) na.append(el('p','empty','Nothing marked not applicable.'));
+  else {
+    const tb = el('table');
+    const hd = el('tr'); ['Item','Title','Justification'].forEach(h=>hd.append(el('th',null,h)));
+    tb.append(el('thead').appendChild(hd).parentNode);
+    const body = el('tbody');
+    naItems.forEach(i => {
+      const tr = el('tr'), n = get(i.id).n;
+      tr.append(el('td','mono',i.id), el('td',null,i.title));
+      const j = el('td', n ? 'muted' : null);
+      if (n) j.textContent = n; else { j.append(el('span','pill ni','Missing')); }
+      tr.append(j); body.append(tr);
+    });
+    tb.append(body); na.append(tb);
+  }
+}
+
+/* ---- tabs ---- */
+function tab(which){
+  const a = which==='assess';
+  $('#tab-assess').setAttribute('aria-selected', String(a));
+  $('#tab-dash').setAttribute('aria-selected', String(!a));
+  $('#v-assess').hidden = !a; $('#v-dash').hidden = a;
+  if (!a) renderDash();
+}
+$('#tab-assess').addEventListener('click', ()=>tab('assess'));
+$('#tab-dash').addEventListener('click', ()=>tab('dash'));
+
+/* ---- example, reset ---- */
+const EXAMPLE = {
+  role:'t1',
+  items:{
+    '5.4.1':{c:'me',e:true,n:'Policy issued 2026; cybersecurity manager reports to the engineering director.'},
+    '5.4.2':{c:'pa',e:true,n:'Training exists but competence is not tracked per role.'},
+    '5.4.3':{c:'pa',e:false,n:'Auto-ISAC member; no published researcher intake route yet.'},
+    '5.4.4':{c:'me',e:true,n:''},
+    '5.4.5':{c:'pa',e:false,n:'Tool list exists, confidence rationale missing for the fuzzer.'},
+    '5.4.6':{c:'me',e:true,n:'ISMS certified; TARA results classified.'},
+    '5.4.7':{c:'ni',e:false,n:'No independent process audit performed yet — planned Q2.'},
+    '6.4.1':{c:'me',e:true,n:''}, '6.4.2':{c:'me',e:true,n:''},
+    '6.4.3':{c:'pa',e:false,n:'Tailoring discussed but not registered with approvals.'},
+    '6.4.4':{c:'pa',e:true,n:'Delta analysis done for two of five reused modules.'},
+    '6.4.5':{c:'me',e:true,n:'Assumptions and integrator duties in the handover pack.'},
+    '6.4.6':{c:'pa',e:true,n:'SBOM generated at build; not yet linked to CVE monitoring.'},
+    '6.4.7':{c:'pa',e:false,n:'Case started late in the programme.'},
+    '6.4.8':{c:'ni',e:false,n:'Independent assessor not appointed.'},
+    '6.4.9':{c:'pa',e:true,n:''},
+    '7.4.1':{c:'me',e:true,n:''}, '7.4.2':{c:'pa',e:true,n:'Requirements in RFQ, evidence expectations vague.'},
+    '7.4.3':{c:'me',e:true,n:'CIA signed with the OEM; sub-tier agreements in progress.'},
+    '8.3':{c:'pa',e:true,n:'Monitoring covers current platform only.'},
+    '8.4':{c:'pa',e:false,n:'No defined triage timeframe.'},
+    '8.5':{c:'me',e:true,n:''}, '8.6':{c:'pa',e:true,n:'Register exists; acceptances not formally approved.'},
+    '9.3':{c:'na',e:false,n:'Item definition is owned by the OEM; we work to their boundary and hold it as an input.'},
+    '9.4':{c:'pa',e:true,n:''}, '9.5':{c:'me',e:true,n:''},
+    '10.4.1':{c:'me',e:true,n:'Requirements in DOORS with bidirectional trace.'},
+    '10.4.2':{c:'pa',e:true,n:'Threat modelling on the main ECU only.'},
+    '10.4.3':{c:'me',e:true,n:'Fuzzing and pen test in the verification plan.'},
+    '11.4.1':{c:'na',e:false,n:'Vehicle-level validation is performed by the OEM; we supply component evidence into it.'},
+    '12.4.1':{c:'pa',e:true,n:'Key injection controlled; debug lockdown check not sampled.'},
+    '13.3':{c:'pa',e:false,n:'Plan drafted, never exercised.'},
+    '13.4':{c:'ni',e:false,n:'Update delivery depends on the OEM campaign; our side undefined.'},
+    '14.3':{c:'ni',e:false,n:''}, '14.4':{c:'ni',e:false,n:''},
+    '15.3':{c:'me',e:true,n:''}, '15.4':{c:'me',e:true,n:''}, '15.5':{c:'pa',e:true,n:'Privacy impact rated inconsistently.'},
+    '15.6':{c:'pa',e:true,n:''}, '15.7':{c:'pa',e:false,n:'Approach not documented; analysts differ.'},
+    '15.8':{c:'me',e:true,n:''}, '15.9':{c:'pa',e:true,n:'Owners named for high risks only.'}
+  }
+};
+$('#btnExample').addEventListener('click', () => {
+  S = JSON.parse(JSON.stringify(EXAMPLE));
+  save(); renderRole(); renderClauses(); renderDash();
+});
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm('Clear every rating, evidence flag and note?')) return;
+  S = blank(); save(); renderRole(); renderClauses(); renderDash();
+});
+
+/* ---- export / import ---- */
+function download(name, text, mime){
+  const b = new Blob([text], {type:mime});
+  const u = URL.createObjectURL(b), a = document.createElement('a');
+  a.href=u; a.download=name; document.body.append(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(u), 2000);
+}
+const csvCell = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+$('#btnCsv').addEventListener('click', () => {
+  const rows = [['Clause','Clause title','Item','Title','Conformance','Evidence','R155 theme','Role','Notes','Evidence to look for']];
+  ITEMS.forEach(i => {
+    const st = get(i.id);
+    rows.push([i.clause, i.clauseTitle, i.id, i.title, st.c?SK[st.c]:'Not rated', st.e?'Yes':'No',
+      i.r155?R155[i.r155]:'', isLead(i)?'Lead':'Support', st.n, i.ev]);
+  });
+  download('iso21434-baseline.csv', rows.map(r=>r.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
+});
+$('#btnJson').addEventListener('click', () => {
+  download('iso21434-baseline.json', JSON.stringify({tool:'ISO 21434 Baseline', version:1, exported:new Date().toISOString(), role:S.role, items:S.items}, null, 2), 'application/json');
+});
+$('#btnImport').addEventListener('click', () => $('#fileIn').click());
+$('#fileIn').addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const p = JSON.parse(String(r.result));
+      // Imported files come from outside, so take only known keys and known values.
+      const next = blank();
+      next.role = ROLES.some(x=>x.id===p.role) ? p.role : 'oem';
+      for (const [k,v] of Object.entries((p && p.items) || {})) {
+        if (!BY_ID[k] || !v || typeof v !== 'object') continue;
+        next.items[k] = { c: STATES.some(s=>s.k===v.c) ? v.c : '', e: !!v.e, n: typeof v.n==='string' ? v.n.slice(0,2000) : '' };
+      }
+      // Count before rendering: the renderers back-fill a blank entry for every item.
+      const n = Object.keys(next.items).length;
+      if (!n) { alert('No recognisable ISO 21434 Baseline items in that file.'); return; }
+      S = next; save(); renderRole(); renderClauses(); renderDash();
+      alert('Imported ' + n + ' of ' + ITEMS.length + ' items. Anything unrecognised was ignored.');
+    } catch(err) { alert('That file could not be read as JSON.'); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+
+/* ---- go ---- */
+load(); save(); renderScale(); renderRole(); renderClauses(); renderDash();
+})();
+</script>
